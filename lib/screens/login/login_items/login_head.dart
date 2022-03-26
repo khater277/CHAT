@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class LoginHead extends StatelessWidget {
   const LoginHead({Key? key}) : super(key: key);
@@ -8,18 +9,18 @@ class LoginHead extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "What is your phone number?",
           style: TextStyle(
-              fontSize: 20,
+              fontSize: 20.sp,
               fontWeight: FontWeight.bold
           ),
         ),
-        const SizedBox(height: 30,),
+        SizedBox(height: 4.h,),
         Text(
           "please enter your phone number to verify your account",
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
-            fontSize: 16,
+            fontSize: 18.sp,
             color: Colors.grey.shade600
           ),
         ),

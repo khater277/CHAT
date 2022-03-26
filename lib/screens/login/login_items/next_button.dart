@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../../cubit/login/login_cubit.dart';
 import '../../../cubit/login/login_states.dart';
 import '../../../shared/default_widgets.dart';
@@ -18,26 +19,26 @@ class NextButton extends StatelessWidget {
       alignment: AlignmentDirectional.centerEnd,
       child: DefaultElevatedButton(
           child: state is! LoginLoadingState?
-          const Text(
+          Text(
             "Next",
             style: TextStyle(
-                color: Colors.white,
-                fontSize: 16
+                color: Colors.black,
+                fontSize: 17.sp
             ),
           )
-        :const DefaultButtonLoader(size: 20, width: 3, color: Colors.white),
-          color: Colors.black,
-          rounded: 4,
-          height: 45,
-          width: 80,
+        :DefaultButtonLoader(size: 20.sp, width: 3.sp, color: Colors.black),
+          color: Colors.white,
+          rounded: 8.sp,
+          height: 6.h,
+          width: 10.w,
           onPressed: (){
             if(LoginCubit.get(context).phoneTextFieldValidate==false){
               showSnackBar(
                   context: context,
                   title: "warning",
                   content: LoginCubit.get(context).validationMsg,
-                  color: Colors.white,
-                  fontColor: Colors.black,
+                  color: Colors.black,
+                  fontColor: Colors.white,
                   icon: IconBroken.Danger
               );
             }else{

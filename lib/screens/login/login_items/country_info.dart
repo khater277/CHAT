@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 
 class CountryInfo extends StatelessWidget {
@@ -18,14 +19,14 @@ class CountryInfo extends StatelessWidget {
       flex: 1,
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 12),
+          padding: EdgeInsets.symmetric(vertical: 2.h,horizontal: 3.5.w),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(8.sp),
           ),
           child: Text("${countryFlag()}  +20",
             style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                fontSize: 16,
+                fontSize: 17.sp,
             ),),
         ),
       ),
