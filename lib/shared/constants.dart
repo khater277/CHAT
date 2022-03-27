@@ -39,8 +39,6 @@ class GenerateMaterialColor{
 }
 
 
-const Color pink = Color(0xffFE4775);
-const Color blue = Color(0xff161060);
 String? otp;
 String? lang;
 String? defaultLang;

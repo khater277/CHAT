@@ -1,3 +1,4 @@
+import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class PhoneInfo extends StatelessWidget {
         focusBorder: Colors.blue.withOpacity(0.7),
         border: Colors.blue.withOpacity(0.7),
         autoFocus: true,
-        cursorColor: Colors.black,
+        cursorColor: MyColors.white,
         rounded: 8.sp,
         letterSpacing: 2,
         inputType: TextInputType.phone,

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:chat/shared/constants.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import '../styles/icons_broken.dart';
 
 
@@ -409,8 +410,9 @@ class DefaultTextFiled extends StatelessWidget {
       onSubmitted: onSubmitted ?? (value) {},
       onChanged: onChanged ?? (value) {},
       obscureText: obscure ?? false,
-      style: TextStyle(
-          letterSpacing: letterSpacing??0
+      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        fontSize: 18.sp,
+        letterSpacing: letterSpacing??0,
       ),
       decoration: InputDecoration(
         errorText: validate == true ? null : errorText??"",
@@ -418,7 +420,8 @@ class DefaultTextFiled extends StatelessWidget {
         hintStyle: TextStyle(
           fontSize: hintSize,
         ),
-        contentPadding: EdgeInsets.symmetric(vertical: height, horizontal: 15),
+        contentPadding: EdgeInsets.symmetric(
+            vertical: height, horizontal: 4.w),
         suffixIcon: suffix,
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(rounded),

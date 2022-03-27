@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
+import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../cubit/login/login_cubit.dart';
 import '../../cubit/login/login_states.dart';
 import '../../shared/default_widgets.dart';
 import '../../styles/icons_broken.dart';
+import '../home/home_screen.dart';
 import 'otp_items/otp_filed.dart';
 import 'otp_items/otp_head.dart';
 import 'otp_items/verify_button.dart';
@@ -21,7 +22,7 @@ class OtpScreen extends StatelessWidget {
       listener: (context,state){
         if(state is LoginSubmitOtpState){
           GetStorage().write('loggedIn', true).then((value){
-            //Get.to(()=>const HomeScreen());
+            Get.to(()=>const HomeScreen());
           });
         }
         if(state is LoginErrorState){
@@ -47,9 +48,9 @@ class OtpScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     OtpHead(phoneNumber: phoneNumber,),
-                    const SizedBox(height: 50,),
+                    SizedBox(height: 7.h,),
                     const OtpFiled(),
-                    const SizedBox(height: 80,),
+                    SizedBox(height: 10.5.h,),
                     VerifyButton(state: state,)
                   ],
                 ),

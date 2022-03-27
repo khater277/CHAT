@@ -4,7 +4,6 @@ import 'package:chat/cubit/app/maps_cubit.dart';
 import 'package:chat/cubit/app/maps_states.dart';
 import 'package:chat/cubit/login/login_cubit.dart';
 import 'package:chat/screens/login/login_screen.dart';
-import 'package:chat/screens/opening/opening_screen.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/themes.dart';
 import 'package:firebase_core/firebase_core.dart';

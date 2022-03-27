@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -22,24 +23,24 @@ class _OtpFiledState extends State<OtpFiled> {
       length: 6,
       obscureText: false,
       autoFocus: true,
-      cursorColor: Colors.black,
+      cursorColor: MyColors.white,
       animationType: AnimationType.scale,
       pinTheme: PinTheme(
         shape: PinCodeFieldShape.box,
         borderRadius: BorderRadius.circular(5),
-        fieldHeight: 5.h,
-        fieldWidth: 4.w,
+        fieldHeight: 8.h,
+        fieldWidth: 12.w,
         borderWidth: 1,
-        activeFillColor: Colors.white,
+        activeFillColor: MyColors.black.withOpacity(0.7),
+        activeColor: MyColors.grey.withOpacity(0.3),
         inactiveColor: Colors.blue.withOpacity(0.4),
-        activeColor: Colors.grey.withOpacity(0.5),
-        selectedFillColor: blue.withOpacity(0.2),
-        selectedColor: Colors.blue.withOpacity(0.4),
+        selectedFillColor: MyColors.blue.withOpacity(0.2),
+        selectedColor: MyColors.blue.withOpacity(0.5),
         disabledColor: Colors.blue.withOpacity(0.4),
-        inactiveFillColor: Colors.white
+        inactiveFillColor: MyColors.black.withOpacity(0.7)
       ),
       animationDuration: const Duration(milliseconds: 300),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       enableActiveFill: true,
       onCompleted: (smsCode) {
         LoginCubit.get(context).submitOtp(smsCode);

@@ -1,9 +1,11 @@
+import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 ThemeData darkTheme=ThemeData(
-    primarySwatch: GenerateMaterialColor().generateMaterialColor(Colors.white),
+    primarySwatch: GenerateMaterialColor().generateMaterialColor(MyColors.blue),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: Colors.white70,
         foregroundColor: Colors.black,
@@ -14,7 +16,7 @@ ThemeData darkTheme=ThemeData(
       color: Colors.white,
     ),
     textTheme: TextTheme(
-        bodyText1:const TextStyle(
+        bodyText1: const TextStyle(
           color: Colors.white,
           //fontWeight: FontWeight.w600,
           fontFamily: "SF-PRO-MEDIUM",
@@ -30,7 +32,7 @@ ThemeData darkTheme=ThemeData(
             color: Colors.white.withOpacity(0.5)
         )
     ),
-    scaffoldBackgroundColor: const Color(0xff333739),
+    scaffoldBackgroundColor: MyColors.black,
     appBarTheme: const AppBarTheme(
         iconTheme: IconThemeData(
           color: Colors.white,
