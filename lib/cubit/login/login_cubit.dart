@@ -1,8 +1,11 @@
 // ignore_for_file: avoid_print
 
+import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../shared/constants.dart';
 import 'login_states.dart';
@@ -12,6 +15,19 @@ class LoginCubit extends Cubit<LoginStates>{
   LoginCubit() : super(LoginInitialState());
   static LoginCubit get(context)=>BlocProvider.of(context);
 
+
+  void getContacts(context){
+    emit(LoginLoadingState());
+    ContactsService.getContacts().then((value){
+      AppCubit.get(context).contacts=value;
+      print(value[10].displayName);
+      print("=============GET CONTACTS=============");
+      emit(LoginGetContactsState());
+    }).catchError((error){
+      emit(LoginErrorState(error.toString())
+      );
+    });
+  }
 
   bool phoneTextFieldValidate = false;
   String validationMsg = "please enter your phone number!";

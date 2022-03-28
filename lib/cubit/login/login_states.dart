@@ -9,6 +9,8 @@ class LoginErrorState extends LoginStates{
   LoginErrorState(this.error);
 }
 
+class LoginGetContactsState extends LoginStates{}
+
 class LoginPhoneValidationState extends LoginStates{}
 
 class LoginPhoneAuthState extends LoginStates{}

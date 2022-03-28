@@ -8,3 +8,7 @@ class AppErrorState extends AppStates{
   AppErrorState(this.error);
 }
 class AppLogoutState extends AppStates{}
+
+class AppChangeNavBarState extends AppStates{}
+
+class AppGetContactsState extends AppStates{}

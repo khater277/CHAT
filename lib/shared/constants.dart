@@ -39,6 +39,8 @@ class GenerateMaterialColor{
 }
 
 
+bool? contactsPermission;
+bool? loggedIn;
 String? otp;
 String? lang;
 String? defaultLang;

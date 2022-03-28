@@ -15,7 +15,8 @@ class DefaultBackButton extends StatelessWidget {
     return IconButton(
       onPressed: (){Get.back();},
       icon: Icon(
-          languageFun(ar: IconBroken.Arrow___Right_2, en: IconBroken.Arrow___Left_2)
+          languageFun(ar: IconBroken.Arrow___Right_2, en: IconBroken.Arrow___Left_2),
+        size: 20.sp,
       ),
     );
   }

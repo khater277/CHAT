@@ -2,7 +2,6 @@ import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 ThemeData darkTheme=ThemeData(
     primarySwatch: GenerateMaterialColor().generateMaterialColor(MyColors.blue),
@@ -38,11 +37,11 @@ ThemeData darkTheme=ThemeData(
           color: Colors.white,
         ),
         elevation: 0,
-        backgroundColor: Color(0xff333739),
+        backgroundColor: MyColors.black,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
-          statusBarColor: Color(0xff333739),
+          statusBarColor: MyColors.black,
         ),
         titleTextStyle: TextStyle(
             fontFamily: 'SF-Pro-Display',
@@ -54,13 +53,12 @@ ThemeData darkTheme=ThemeData(
           color: Colors.white,
         )
     ),
-    cardColor: const Color(0xff333739),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    cardColor: MyColors.black,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       showSelectedLabels: true,
       showUnselectedLabels: true,
-      backgroundColor: const Color(0xff333739),
+      backgroundColor: MyColors.darkBlack,
       type: BottomNavigationBarType.fixed,
-      unselectedItemColor: Colors.grey[500],
     )
 );
 
