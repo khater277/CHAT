@@ -55,4 +55,16 @@ class AppCubit extends Cubit<AppStates>{
     }
   }
 
+
+  void addNewContact(Contact contact){
+    ContactsService.addContact(contact)
+        .then((value){
+          print("NEW CONTACT ADDED ===> $value");
+          getContacts();
+        emit(AppAddNewContactState());
+    }).catchError((error){
+      emit(AppErrorState(error.toString()));
+    });
+  }
+
 }

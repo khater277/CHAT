@@ -16,8 +16,6 @@ class ContactItem extends StatelessWidget {
     String phoneNumber = contact.phones!.isNotEmpty?
     contact.phones![0].value!:"unknown";
 
-
-
     return Row(
       children: [
         Icon(
@@ -26,24 +24,31 @@ class ContactItem extends StatelessWidget {
           color: MyColors.blue,
         ),
         SizedBox(width: 3.w,),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                name,
-              style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  fontSize: 16.5.sp
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  name,
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                    fontSize: 16.5.sp
+                ),
               ),
-            ),
-            SizedBox(height: 0.5.h,),
-            Text(
-              phoneNumber,
-              style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                  fontSize: 14.sp,
-                color: MyColors.grey
+              SizedBox(height: 0.5.h,),
+              Text(
+                phoneNumber,
+                style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                    fontSize: 14.sp,
+                  color: MyColors.grey
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+        ),
+        SizedBox(width: 3.w,),
+        GestureDetector(
+          onTap: (){},
+          child: Icon(IconBroken.Arrow___Right_2,size: 16.sp,color: Colors.grey,),
         )
       ],
     );

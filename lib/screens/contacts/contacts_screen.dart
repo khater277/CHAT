@@ -33,7 +33,7 @@ class ContactsScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children:  [
-                      const NewContact(),
+                      NewContact(cubit: cubit,),
                       SizedBox(height: 3.5.h,),
                       Text(
                         "Contacts",

@@ -39,7 +39,7 @@ class HomeScreen extends StatelessWidget {
                   top: 1.4.h,
                   bottom: 1.8.h,
                 ),
-                borderRadius: 50,
+                borderRadius: 50.sp,
                 items: [
                   DotNavigationBarItem(
                     icon: Icon(IconBroken.Chat,size: 21.sp,),

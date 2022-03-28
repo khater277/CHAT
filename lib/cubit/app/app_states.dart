@@ -12,3 +12,5 @@ class AppLogoutState extends AppStates{}
 class AppChangeNavBarState extends AppStates{}
 
 class AppGetContactsState extends AppStates{}
+
+class AppAddNewContactState extends AppStates{}

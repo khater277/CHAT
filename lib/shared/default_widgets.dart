@@ -36,27 +36,27 @@ SnackbarController showSnackBar ({
       title!,
       content!,
       titleText: Text(title,
-        style: Theme.of(context!).textTheme.bodyText1!.copyWith(
-            fontSize: 18,
+        style: Theme.of(context!).textTheme.bodyText2!.copyWith(
+            fontSize: 16.5.sp,
             color: fontColor!
         ),
       ),
       messageText: Text(
         content,
-        style: Theme.of(context).textTheme.bodyText1!.copyWith(
-            fontSize: 15,
+        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+            fontSize: 15.sp,
             color: fontColor
         ),
       ),
       icon: Icon(
         icon!,
         color: fontColor,
-        size: 25,),
+        size: 20.sp,),
       duration: const Duration(seconds: 3),
       snackPosition: SnackPosition.TOP,
       backgroundColor: color!,
-      borderRadius: 10,
-      margin: const EdgeInsets.symmetric(vertical: 5,horizontal: 7)
+      borderRadius: 10.sp,
+      margin:  EdgeInsets.symmetric(horizontal: 2.w)
     //padding: const EdgeInsets.all(0)
   );
 }
@@ -263,11 +263,13 @@ class DefaultTextFormFiled extends StatelessWidget{
   final String? validateText;
   final double rounded;
   final List<TextInputFormatter> formatters;
+  String? label;
   bool? autoFocus;
   Widget? prefix;
   Widget? suffix;
   double? heightPadding;
   double? widthPadding;
+  Color? cursorColor;
   double? cursorHeight;
   bool? isPassword;
 
@@ -284,9 +286,11 @@ class DefaultTextFormFiled extends StatelessWidget{
     required this.border,
     required this.textSize,
     required this.formatters,
+    this.label,
     this.autoFocus,
     this.isPassword,
     this.validateText,
+    this.cursorColor,
     this.cursorHeight,
     this.heightPadding,
     this.widthPadding,
@@ -301,7 +305,7 @@ class DefaultTextFormFiled extends StatelessWidget{
       inputFormatters: formatters,
       autofocus: autoFocus??false,
       controller: controller,
-      cursorColor: focusBorder,
+      cursorColor: cursorColor,
       validator: (value) {
         if (value!.isEmpty) {
           if(validateText!=null) {
@@ -312,9 +316,10 @@ class DefaultTextFormFiled extends StatelessWidget{
         }
         return null;
       },
-      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+      style: Theme.of(context).textTheme.bodyText2!.copyWith(
           color: textColor,
-          fontSize: textSize
+          fontSize: textSize,
+        letterSpacing: 1
       ),
       cursorHeight: cursorHeight,
       keyboardType: inputType,
@@ -322,21 +327,24 @@ class DefaultTextFormFiled extends StatelessWidget{
       decoration: InputDecoration(
         hintText: hint!,
         hintStyle: TextStyle(
-          color: hintColor
+          color: hintColor,
         ),
         contentPadding: EdgeInsets.symmetric(vertical: heightPadding==null?18:heightPadding!,
         horizontal: widthPadding==null?10:widthPadding!),
         prefixIcon: prefix,
         suffixIcon: suffix,
+        errorStyle: TextStyle(
+            color: Colors.red.withOpacity(0.6)
+        ),
         focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(rounded),
-            borderSide: const BorderSide(
-              color: Colors.red,
+            borderSide: BorderSide(
+              color: Colors.red.withOpacity(0.6),
             )),
         errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(rounded),
-            borderSide: const BorderSide(
-              color: Colors.red,
+            borderSide: BorderSide(
+              color: Colors.red.withOpacity(0.6),
             )),
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(rounded),
@@ -348,7 +356,7 @@ class DefaultTextFormFiled extends StatelessWidget{
             borderSide: BorderSide(
               color: focusBorder,
             )),
-        //labelText: label,
+        labelText: label,
         labelStyle: TextStyle(
           color: textColor,
         ),
