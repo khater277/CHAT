@@ -1,7 +1,11 @@
+import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/contacts/contacts_items/contact_item.dart';
 import 'package:chat/screens/contacts/contacts_items/new_contact.dart';
+import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ContactsScreen extends StatelessWidget {
@@ -9,45 +13,56 @@ class ContactsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.only(
-          right: 5.w,
-          left: 5.w,
-          top: 3.h,
-        ),
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:  [
-              const NewContact(),
-              SizedBox(height: 3.5.h,),
-              Text(
-                "Contacts",
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    fontSize: 17.sp,
-                    color: MyColors.grey,
-                    letterSpacing: 1.5
-                ),
-              ),
-              Flexible(
-                fit: FlexFit.loose,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context,index)=>Padding(
-                    padding:  EdgeInsets.symmetric(vertical: 2.5.h),
-                    child: const ContactItem(),
+    return BlocConsumer<AppCubit,AppStates>(
+      listener: (context,state){},
+      builder: (context,state){
+        AppCubit cubit = AppCubit.get(context);
+        return Scaffold(
+          body: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              const HomeAppBar(),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: 5.w,
+                    left: 5.w,
+                    top: 3.h,
                   ),
-                  itemCount: 20,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:  [
+                      const NewContact(),
+                      SizedBox(height: 3.5.h,),
+                      Text(
+                        "Contacts",
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            fontSize: 17.sp,
+                            color: MyColors.grey,
+                            letterSpacing: 1.5
+                        ),
+                      ),
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context,index)=>Padding(
+                            padding:  EdgeInsets.symmetric(vertical: 2.5.h),
+                            child: ContactItem(contact: cubit.contacts[index],),
+                          ),
+                          itemCount: cubit.contacts.length,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              )
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

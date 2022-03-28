@@ -12,7 +12,7 @@ class HomeAppBar extends StatelessWidget {
       pinned: false,
       snap: false,
       floating: false,
-      expandedHeight: 10.h,
+      expandedHeight: 12.h,
       flexibleSpace: FlexibleSpaceBar(
         background: Row(
           children: [
