@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../screens/calls/calls_screen.dart';
 import '../../shared/constants.dart';
 import 'app_states.dart';
@@ -59,7 +58,7 @@ class AppCubit extends Cubit<AppStates>{
   void addNewContact(Contact contact){
     ContactsService.addContact(contact)
         .then((value){
-          print("NEW CONTACT ADDED ===> $value");
+          print("NEW CONTACT ADDED");
           getContacts();
         emit(AppAddNewContactState());
     }).catchError((error){

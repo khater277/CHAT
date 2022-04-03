@@ -1,3 +1,4 @@
+import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -378,6 +379,7 @@ class DefaultTextFiled extends StatelessWidget {
   final List<TextInputFormatter> formatters;
   final TextInputType inputType;
   bool? validate;
+  Color? fillColor;
   bool? autoFocus;
   String? errorText;
   double? letterSpacing;
@@ -397,6 +399,7 @@ class DefaultTextFiled extends StatelessWidget {
         required this.border,
         required this.inputType,
         required this.formatters,
+        this.fillColor,
         this.validate,
         this.letterSpacing,
         this.autoFocus,
@@ -424,13 +427,16 @@ class DefaultTextFiled extends StatelessWidget {
         letterSpacing: letterSpacing??0,
       ),
       decoration: InputDecoration(
+        filled: fillColor==null?false:true,
+        fillColor: fillColor,
         errorText: validate == true ? null : errorText??"",
         hintText: hint,
         hintStyle: TextStyle(
           fontSize: hintSize,
+          color: MyColors.grey.withOpacity(0.7)
         ),
         contentPadding: EdgeInsets.symmetric(
-            vertical: height, horizontal: 4.w),
+            vertical: 0, horizontal: 4.w),
         suffixIcon: suffix,
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(rounded),

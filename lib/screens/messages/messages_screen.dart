@@ -9,9 +9,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'messages_items/friend_message.dart';
+import 'messages_items/message_filed.dart';
 
-class MessagesScreen extends StatelessWidget {
+class MessagesScreen extends StatefulWidget {
   const MessagesScreen({Key? key}) : super(key: key);
+
+  @override
+  State<MessagesScreen> createState() => _MessagesScreenState();
+}
+
+class _MessagesScreenState extends State<MessagesScreen> {
+
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +40,19 @@ class MessagesScreen extends StatelessWidget {
                 toolbarHeight: 10.h,
                 backgroundColor: MyColors.darkBlack,
                 centerTitle: true,
-               shape: RoundedRectangleBorder(
-                 borderRadius: BorderRadius.only(
-                   bottomLeft: Radius.circular(20.sp),
-                   bottomRight: Radius.circular(20.sp),
-                 )
-               ),
-               title: Text(
-                 "Ahmed Khater",
-                 style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                   fontSize: 17.sp
-                 ),
-               ),
-               leading: const DefaultBackButton(),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20.sp),
+                      bottomRight: Radius.circular(20.sp),
+                    )
+                ),
+                title: Text(
+                  "Ahmed Khater",
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      fontSize: 17.sp
+                  ),
+                ),
+                leading: const DefaultBackButton(),
                 actions: [
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 3.w),
@@ -54,9 +69,16 @@ class MessagesScreen extends StatelessWidget {
                 builder: (BuildContext context, Orientation orientation, ScreenType screenType) {
                   if(screenType.name=="mobile") {
                     return Column(
-                      children: const [
-                        MyMessage(),
-                        FriendMessage()
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: const [
+                              MyMessage(),
+                              FriendMessage(),
+                            ],
+                          ),
+                        ),
+                        SendMessageTextFiled(controller: _messageController)
                       ],
                     );
                   } else {
