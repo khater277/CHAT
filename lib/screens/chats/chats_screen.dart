@@ -6,7 +6,7 @@ import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class ChatsScreen extends StatelessWidget {
                               children: [
                                 GestureDetector(
                                   onTap: (){
-                                    Get.to(()=>const MessagesScreen());
+                                    //Get.to(()=>const MessagesScreen());
                                   },
                                   child: Row(
                                     children: [
@@ -63,7 +63,7 @@ class ChatsScreen extends StatelessWidget {
                             );
                           },
                           separatorBuilder: (context,index)=>Padding(
-                            padding: EdgeInsets.symmetric(vertical: 2.h),
+                            padding: EdgeInsets.symmetric(vertical: 2.1.h),
                             child: Divider(
                               color: MyColors.grey.withOpacity(0.08),
                             ),

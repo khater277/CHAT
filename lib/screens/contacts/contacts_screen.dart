@@ -6,7 +6,7 @@ import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 class ContactsScreen extends StatelessWidget {
   const ContactsScreen({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class ContactsScreen extends StatelessWidget {
                       Text(
                         "Contacts",
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            fontSize: 17.sp,
+                            fontSize: 14.sp,
                             color: MyColors.grey,
                             letterSpacing: 1.5
                         ),
@@ -50,9 +50,9 @@ class ContactsScreen extends StatelessWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context,index)=>Padding(
                             padding:  EdgeInsets.symmetric(vertical: 2.5.h),
-                            child: ContactItem(contact: cubit.contacts[index],),
+                            child: ContactItem(user: cubit.users[index],),
                           ),
-                          itemCount: cubit.contacts.length,
+                          itemCount: cubit.users.length,
                         ),
                       ),
                     ],

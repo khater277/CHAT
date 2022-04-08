@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 import 'cubit/app/app_cubit.dart';
 import 'cubit/app/app_states.dart';
 import 'cubit/app/bloc_observer.dart';
@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
               translations: Translation(),
               locale: Locale(languageFun(ar: 'ar', en: 'en')),
               fallbackLocale: const Locale('en'),
-              home: ResponsiveSizer(
+              home: Sizer(
                 builder: (context, orientation, screenType) {
                   return homeWidget;
                 },

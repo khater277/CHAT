@@ -37,7 +37,7 @@ dependencies:
   progress_indicators: ^1.0.0
   flutter_chat_bubble: ^2.0.0
   socket_io_client: ^1.0.2
-  responsive_sizer: ^3.0.5+1
+  sizer: ^2.0.15
   pin_code_fields: ^7.3.0
   device_preview: ^1.0.0
   dot_navigation_bar: ^1.0.1+4

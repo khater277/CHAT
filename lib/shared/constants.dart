@@ -50,7 +50,7 @@ bool? disableNotifications;
 
 
 String phoneFormat({required String phoneNumber}){
-  return phoneNumber.split('').reversed.join('').substring(0,11);
+  return phoneNumber.replaceAll(' ', '').split('').reversed.join('').substring(0,11);
 }
 
 dynamic languageFun({

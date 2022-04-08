@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 import '../../../cubit/login/login_cubit.dart';
 import '../../../cubit/login/login_states.dart';
 import '../../../shared/constants.dart';
@@ -30,14 +30,14 @@ class NextButton extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1!
-                      .copyWith(color: MyColors.black, fontSize: 17.sp),
+                      .copyWith(color: MyColors.black, fontSize: 12.sp),
                 )
               : DefaultButtonLoader(
-                  size: 20.sp, width: 2.5, color: MyColors.black),
+                  size: 16.sp, width: 2.sp, color: MyColors.black),
           color: MyColors.white,
-          rounded: 8.sp,
-          height: 6.h,
-          width: 20.w,
+          rounded: 2.5.sp,
+          height: 5.8.h,
+          width: 18.w,
           onPressed: () {
             if (!contactsPermission!) {
               Permission.contacts.request().then((value) {

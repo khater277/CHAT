@@ -1,12 +1,6 @@
-import 'package:chat/models/UserModel.dart';
-import 'package:chat/screens/home/home_screen.dart';
-import 'package:chat/screens/set_image/set_image_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 import '../../cubit/login/login_cubit.dart';
 import '../../cubit/login/login_states.dart';
 import '../../shared/default_widgets.dart';
@@ -49,7 +43,7 @@ class OtpScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     OtpHead(phoneNumber: phoneNumber,),
-                    SizedBox(height: 7.h,),
+                    SizedBox(height: 8.h,),
                     const OtpFiled(),
                     SizedBox(height: 10.5.h,),
                     VerifyButton(state: state,)

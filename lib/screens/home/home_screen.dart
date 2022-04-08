@@ -6,7 +6,7 @@ import 'package:chat/styles/icons_broken.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -38,22 +38,22 @@ class HomeScreen extends StatelessWidget {
                 itemPadding: EdgeInsets.only(
                   left: 7.w,
                   right: 7.w,
-                  top: 1.4.h,
-                  bottom: 1.8.h,
+                  top: 1.h,
+                  bottom: 1.6.h,
                 ),
                 borderRadius: 50.sp,
                 items: [
                   DotNavigationBarItem(
-                    icon: Icon(IconBroken.Chat,size: 21.sp,),
+                    icon: Icon(IconBroken.Chat,size: 19.sp,),
                   ),
                   DotNavigationBarItem(
-                    icon: Icon(IconBroken.Camera,size: 21.sp,),
+                    icon: Icon(IconBroken.Camera,size: 19.sp,),
                   ),
                   DotNavigationBarItem(
-                    icon: Icon(IconBroken.Call,size: 21.sp,),
+                    icon: Icon(IconBroken.Call,size: 19.sp,),
                   ),
                   DotNavigationBarItem(
-                    icon: Icon(IconBroken.User1,size: 21.sp,),
+                    icon: Icon(IconBroken.User1,size: 19.sp,),
                   ),
                 ],
               ),

@@ -8,7 +8,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 
 class AddNewContactScreen extends StatefulWidget {
@@ -69,7 +69,7 @@ class _AddNewContactScreenState extends State<AddNewContactScreen> {
             title: Text(
               "Add Contact",
             style: Theme.of(context).textTheme.bodyText1!.copyWith(
-              fontSize: 19.sp
+              fontSize: 16.sp
             ),),
             leading: const DefaultBackButton(),
             actions: [
@@ -97,7 +97,7 @@ class _AddNewContactScreenState extends State<AddNewContactScreen> {
                     }
                   },
                   icon: const Icon(IconBroken.Add_User,color: MyColors.blue,),
-                  iconSize: 20.sp,
+                  iconSize: 16.sp,
                 ),
               )
             ],
@@ -140,7 +140,7 @@ class _AddNewContactScreenState extends State<AddNewContactScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 2.5.h,),
+                        SizedBox(height: 2.3.h,),
                         NewContactTextFiled(
                             isName: false,
                             inputType: TextInputType.phone,
@@ -152,7 +152,7 @@ class _AddNewContactScreenState extends State<AddNewContactScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 2.5.h,),
+                  SizedBox(height: 2.3.h,),
                   NewContactTextFiled(
                       isName: false,
                       inputType: TextInputType.text,
@@ -161,7 +161,7 @@ class _AddNewContactScreenState extends State<AddNewContactScreen> {
                       hint: "company",
                       formatters: [NoLeadingSpaceFormatter()]
                   ),
-                  SizedBox(height: 2.5.h,),
+                  SizedBox(height: 2.3.h,),
                   NewContactTextFiled(
                       isName: false,
                       inputType: TextInputType.emailAddress,

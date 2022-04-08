@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../shared/colors.dart';
 
@@ -14,7 +14,7 @@ class ChatsName extends StatelessWidget {
           child: Text(
             "Ahmed Khater",
             style: Theme.of(context).textTheme.bodyText1!.copyWith(
-              fontSize: 16.5.sp
+              fontSize: 12.sp
             ),
             overflow: TextOverflow.ellipsis,
           ),
@@ -22,7 +22,7 @@ class ChatsName extends StatelessWidget {
         Text(
           "now",
           style: Theme.of(context).textTheme.bodyText2!.copyWith(
-              fontSize: 15.sp,
+              fontSize: 10.8.sp,
               color: MyColors.grey
           ),
           overflow: TextOverflow.ellipsis,

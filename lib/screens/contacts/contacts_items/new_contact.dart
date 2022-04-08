@@ -1,10 +1,9 @@
 import 'package:chat/screens/add_new_contact/add_new_contact_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../cubit/app/app_cubit.dart';
 
@@ -22,19 +21,19 @@ class NewContact extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 12.2.w,
-            height: 6.h,
+            width: 11.8.w,
+            height: 6.2.h,
             decoration: BoxDecoration(
               color: MyColors.blue,
-              borderRadius: BorderRadius.circular(12.sp)
+              borderRadius: BorderRadius.circular(5.sp)
             ),
-            child: Icon(IconBroken.Add_User,size: 19.sp,),
+            child: Icon(IconBroken.Add_User,size: 16.sp,),
           ),
-          SizedBox(width: 5.w,),
+          SizedBox(width: 3.w,),
           Text(
             "New contact",
             style: Theme.of(context).textTheme.bodyText2!.copyWith(
-              fontSize: 17.sp
+              fontSize: 14.sp
             ),
           )
         ],

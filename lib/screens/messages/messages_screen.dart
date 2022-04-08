@@ -4,15 +4,17 @@ import 'package:chat/screens/messages/messages_items/my_message.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:sizer/sizer.dart';
+import '../../models/UserModel.dart';
 import 'messages_items/friend_message.dart';
 import 'messages_items/message_filed.dart';
 
 class MessagesScreen extends StatefulWidget {
-  const MessagesScreen({Key? key}) : super(key: key);
+  final UserModel user;
+  const MessagesScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -49,7 +51,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 title: Text(
                   "Ahmed Khater",
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      fontSize: 17.sp
+                      fontSize: 14.sp
                   ),
                 ),
                 leading: const DefaultBackButton(),
@@ -60,14 +62,28 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         onPressed: (){
                           //cubit.getContacts();
                         },
-                        icon: Icon(IconBroken.Call,color: MyColors.blue,size: 20.sp,)
+                        icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
                     ),
                   )
                 ],
               ),
-              body: ResponsiveSizer(
-                builder: (BuildContext context, Orientation orientation, ScreenType screenType) {
-                  if(screenType.name=="mobile") {
+              body: Sizer(
+                builder: (BuildContext context, Orientation orientation, DeviceType screenType) {
+                  if(orientation==Orientation.portrait) {
+                    return Column(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: const [
+                            MyMessage(),
+                            FriendMessage(),
+                          ],
+                        ),
+                      ),
+                      SendMessageTextFiled(controller: _messageController)
+                    ],
+                  );
+                  }else{
                     return Column(
                       children: [
                         Expanded(
@@ -78,14 +94,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             ],
                           ),
                         ),
-                        SendMessageTextFiled(controller: _messageController)
-                      ],
-                    );
-                  } else {
-                    return Column(
-                      children: const [
-                        TabletMyMessage(),
-                        TabletFriendMessage()
+                       LandscapeSendMessageTextFiled(controller: _messageController)
                       ],
                     );
                   }

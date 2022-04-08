@@ -1,7 +1,7 @@
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 
 class OtpHead extends StatelessWidget {
@@ -16,15 +16,15 @@ class OtpHead extends StatelessWidget {
         Text(
           "otpHead".tr,
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
-              fontSize: 20.sp,
+              fontSize: 16.sp,
           ),
         ),
-        SizedBox(height: 4.5.h,),
+        SizedBox(height: 4.h,),
         RichText(
             text: TextSpan(
               text: "otpCaption".tr,
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                  fontSize: 18.sp,
+                  fontSize: 13.5.sp,
                 color: MyColors.grey,
                 height: 1.5
               ),
@@ -32,7 +32,7 @@ class OtpHead extends StatelessWidget {
                 TextSpan(
                   text: phoneNumber,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      fontSize: 17.sp,
+                      fontSize: 13.5.sp,
                       color: MyColors.blue
                   ),
                 )

@@ -141,7 +141,10 @@ class LoginCubit extends Cubit<LoginStates>{
     }
   }
 
-  void uploadProfileImage({bool? isOpening}){
+  void uploadProfileImage({
+    @required String? name,
+    bool? isOpening
+  }){
     emit(LoginLoadingState());
     FirebaseStorage.instance
         .ref("profile_image/${Uri.file(image!.path).pathSegments.last}")
@@ -149,7 +152,7 @@ class LoginCubit extends Cubit<LoginStates>{
     .then((p0){
       p0.ref.getDownloadURL().then((value){
         if(isOpening==true){
-          createUser(image: value);
+          createUser(image: value,name: name!);
         }else{
           emit(LoginUploadProfileImageState());
         }
@@ -191,9 +194,13 @@ class LoginCubit extends Cubit<LoginStates>{
     });
   }
 
-  void createUser({String? image}){
+  void createUser({
+    String? name,
+    String? image
+  }){
     emit(LoginLoadingState());
     UserModel userModel = UserModel(
+      name: name??"user",
       uId: uId,
       phone: getLoggedUser().phoneNumber!,
       image: image??""

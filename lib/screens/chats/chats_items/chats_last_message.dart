@@ -1,6 +1,6 @@
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 class ChatsLastMessage extends StatelessWidget {
   const ChatsLastMessage({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class ChatsLastMessage extends StatelessWidget {
           child: Text(
               "hello there, can you help me ?",
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
-              fontSize: 15.sp,
+              fontSize: 10.5.sp,
                 color: MyColors.grey
               ),
             overflow: TextOverflow.ellipsis,
@@ -22,7 +22,7 @@ class ChatsLastMessage extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 0.4.w),
           child: CircleAvatar(
-            radius: 8.sp,
+            radius: 2.5.sp,
             backgroundColor: MyColors.blue,
           ),
         )

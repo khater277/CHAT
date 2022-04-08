@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 import 'country_info.dart';
 import 'phone_info.dart';
@@ -14,7 +15,7 @@ class CountryAndPhone extends StatelessWidget {
     return Row(
       children: [
         const CountryInfo(),
-        const SizedBox(width: 8,),
+        SizedBox(width: 3.5.w,),
         PhoneInfo(phoneController: phoneController),
       ],
     );

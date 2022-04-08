@@ -1,9 +1,7 @@
 import 'package:chat/shared/colors.dart';
-import 'package:chat/shared/constants.dart';
-import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../cubit/login/login_cubit.dart';
 import '../../../shared/default_widgets.dart';
@@ -29,7 +27,7 @@ class PhoneInfo extends StatelessWidget {
         border: Colors.blue.withOpacity(0.7),
         autoFocus: true,
         cursorColor: MyColors.white,
-        rounded: 8.sp,
+        rounded: 3.sp,
         letterSpacing: 2,
         inputType: TextInputType.phone,
         onChanged: (value){

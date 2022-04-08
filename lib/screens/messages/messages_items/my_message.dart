@@ -2,9 +2,8 @@ import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_1.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 class MyMessage extends StatelessWidget {
   const MyMessage({Key? key}) : super(key: key);
@@ -24,7 +23,7 @@ class MyMessage extends StatelessWidget {
         child: Text(
           "Lorem",
           style: Theme.of(context).textTheme.bodyText2!.copyWith(
-            fontSize: 17.sp
+            fontSize: 11.5.sp
           ),
         ),
       ),

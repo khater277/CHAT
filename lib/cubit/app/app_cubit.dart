@@ -42,28 +42,38 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   List<Contact> contacts = [];
+  List<UserModel> users = [];
   void getContacts(){
     if(contactsPermission!){
       emit(AppLoadingState());
-      ContactsService.getContacts().then((value){
-        for (var element in value) {
+      ContactsService.getContacts().then((contactList){
+        for (var element in contactList) {
           FirebaseFirestore.instance.collection('users')
               .get()
               .then((value){
-                for (var e in value.docs) {
-                  UserModel user = UserModel.fromJson(e.data());
-                  if(phoneFormat(phoneNumber: element.phones![0].value!)==
-                  phoneFormat(phoneNumber: user.phone!)){
-                    contacts.add(element);
-                  }
+            if(element.phones!.isNotEmpty){
+              for (var e in value.docs) {
+                UserModel user = UserModel.fromJson(e.data());
+                //print("==========> ${element.phones!}");
+                if((phoneFormat(phoneNumber: element.phones![0].value!)==
+                   phoneFormat(phoneNumber: user.phone!))){
+                  users.add(UserModel(
+                    name: element.displayName,
+                    uId: user.uId,
+                    phone: user.phone,
+                    image: user.image
+                  ));
+                  contacts.add(element);
                 }
-            print(contacts[10].displayName);
-            print("=============GET CONTACTS=============");
-            emit(AppGetContactsState());
+              }
+            }
           }).catchError((error){
+            printError("getContacts",error.toString());
             emit(AppErrorState(error.toString()));
           });
         }
+        print("=============GET CONTACTS=============");
+        emit(AppGetContactsState());
       }).catchError((error){
         emit(AppErrorState(error.toString()));
       });

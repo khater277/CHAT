@@ -4,7 +4,7 @@ import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../cubit/login/login_cubit.dart';
 
@@ -23,11 +23,12 @@ class _OtpFiledState extends State<OtpFiled> {
       length: 6,
       obscureText: false,
       autoFocus: true,
+      textStyle: Theme.of(context).textTheme.bodyText2,
       cursorColor: MyColors.white,
       animationType: AnimationType.scale,
       pinTheme: PinTheme(
         shape: PinCodeFieldShape.box,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(5.sp),
         fieldHeight: 8.h,
         fieldWidth: 12.w,
         borderWidth: 1,

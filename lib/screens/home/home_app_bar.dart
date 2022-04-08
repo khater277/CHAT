@@ -1,7 +1,7 @@
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 
 class HomeAppBar extends StatelessWidget {
   const HomeAppBar({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class HomeAppBar extends StatelessWidget {
               padding:  EdgeInsets.symmetric(horizontal: 2.w),
               child: IconButton(
                   onPressed: (){},
-                  icon: Icon(IconBroken.Edit_Square,size: 20.sp,color: MyColors.grey,)
+                  icon: Icon(IconBroken.Edit_Square,size: 18.sp,color: MyColors.grey,)
               ),
             ),
             Expanded(
@@ -29,7 +29,7 @@ class HomeAppBar extends StatelessWidget {
                   "NUNTIUS",
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       letterSpacing: 2,
-                      fontSize: 18.sp,
+                      fontSize: 17.sp,
                       color: MyColors.blue.withOpacity(0.7)
                   ),
                 ),
@@ -39,7 +39,7 @@ class HomeAppBar extends StatelessWidget {
               padding:  EdgeInsets.symmetric(horizontal: 2.w),
               child: IconButton(
                   onPressed: (){},
-                  icon: Icon(IconBroken.Search,size: 20.sp,color: MyColors.grey,)
+                  icon: Icon(IconBroken.Search,size: 18.sp,color: MyColors.grey,)
               ),
             )
           ],

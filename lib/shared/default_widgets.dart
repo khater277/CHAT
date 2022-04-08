@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:chat/shared/constants.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 import '../styles/icons_broken.dart';
 
 
@@ -17,7 +17,7 @@ class DefaultBackButton extends StatelessWidget {
       onPressed: (){Get.back();},
       icon: Icon(
           languageFun(ar: IconBroken.Arrow___Right_2, en: IconBroken.Arrow___Left_2),
-        size: 20.sp,
+        size: 15.sp,
       ),
     );
   }
@@ -38,25 +38,25 @@ SnackbarController showSnackBar ({
       content!,
       titleText: Text(title,
         style: Theme.of(context!).textTheme.bodyText2!.copyWith(
-            fontSize: 16.5.sp,
+            fontSize: 13.sp,
             color: fontColor!
         ),
       ),
       messageText: Text(
         content,
         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-            fontSize: 15.sp,
+            fontSize: 11.sp,
             color: fontColor
         ),
       ),
       icon: Icon(
         icon!,
         color: fontColor,
-        size: 20.sp,),
+        size: 17.sp,),
       duration: const Duration(seconds: 3),
       snackPosition: SnackPosition.TOP,
       backgroundColor: color!,
-      borderRadius: 10.sp,
+      borderRadius: 5.sp,
       margin:  EdgeInsets.symmetric(horizontal: 2.w)
     //padding: const EdgeInsets.all(0)
   );
@@ -423,7 +423,7 @@ class DefaultTextFiled extends StatelessWidget {
       onChanged: onChanged ?? (value) {},
       obscureText: obscure ?? false,
       style: Theme.of(context).textTheme.bodyText2!.copyWith(
-        fontSize: 18.sp,
+        fontSize: 14.sp,
         letterSpacing: letterSpacing??0,
       ),
       decoration: InputDecoration(

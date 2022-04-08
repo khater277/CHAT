@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:sizer/sizer.dart';
 import '../../../shared/colors.dart';
 import '../../../shared/default_widgets.dart';
 
@@ -22,15 +22,15 @@ class NewContactTextFiled extends StatelessWidget {
       inputType: inputType,
       hint: hint,
       hintColor: Colors.grey.withOpacity(0.5),
-      rounded: 20.sp,
+      rounded: 18.sp,
       focusBorder: MyColors.blue.withOpacity(0.5),
       border: Colors.grey.withOpacity(0.4),
-      textSize: 17.sp,
+      textSize: 13.sp,
       formatters: formatters,
       heightPadding: isName?2.h:2.4.h,
       cursorColor: MyColors.grey.withOpacity(0.5),
       validateText: "*required filed",
-      prefix: Icon(icon,size: 18.sp,color: MyColors.grey.withOpacity(0.8),),
+      prefix: Icon(icon,size: 14.sp,color: MyColors.grey.withOpacity(0.8),),
     );
   }
 }
