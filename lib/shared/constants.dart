@@ -41,11 +41,17 @@ class GenerateMaterialColor{
 
 bool? contactsPermission;
 bool? loggedIn;
+String? uId;
 String? otp;
 String? lang;
 String? defaultLang;
 bool? isDarkMode;
 bool? disableNotifications;
+
+
+String phoneFormat({required String phoneNumber}){
+  return phoneNumber.split('').reversed.join('').substring(0,11);
+}
 
 dynamic languageFun({
   @required ar,

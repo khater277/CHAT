@@ -7,7 +7,7 @@ import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'messages_items/friend_message.dart';
 import 'messages_items/message_filed.dart';
 

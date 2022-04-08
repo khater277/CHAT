@@ -1,6 +1,8 @@
+import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/add_story/add_story_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +21,8 @@ class AppCubit extends Cubit<AppStates>{
     emit(AppLoadingState());
     FirebaseAuth.instance.signOut().then((value){
       otp=null;
-      GetStorage().remove('loggedIn');
+      uId=null;
+      GetStorage().remove('uId');
       emit(AppLogoutState());
     }).catchError((error){
       emit(AppErrorState(error));
@@ -43,13 +46,26 @@ class AppCubit extends Cubit<AppStates>{
     if(contactsPermission!){
       emit(AppLoadingState());
       ContactsService.getContacts().then((value){
-        contacts=value;
-        print(contacts[10].displayName);
-        print("=============GET CONTACTS=============");
-        emit(AppGetContactsState());
+        for (var element in value) {
+          FirebaseFirestore.instance.collection('users')
+              .get()
+              .then((value){
+                for (var e in value.docs) {
+                  UserModel user = UserModel.fromJson(e.data());
+                  if(phoneFormat(phoneNumber: element.phones![0].value!)==
+                  phoneFormat(phoneNumber: user.phone!)){
+                    contacts.add(element);
+                  }
+                }
+            print(contacts[10].displayName);
+            print("=============GET CONTACTS=============");
+            emit(AppGetContactsState());
+          }).catchError((error){
+            emit(AppErrorState(error.toString()));
+          });
+        }
       }).catchError((error){
-        emit(AppErrorState(error.toString())
-        );
+        emit(AppErrorState(error.toString()));
       });
     }
   }

@@ -97,7 +97,7 @@ class DefaultProgressIndicator extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GlowingProgressIndicator(
-            child: Icon(icon,size: 35,color: Colors.grey,),
+            child: Icon(icon,size: 25.sp,color: Colors.grey,),
           ),
           const SizedBox(height: 6,),
         ],

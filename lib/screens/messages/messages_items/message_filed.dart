@@ -3,6 +3,7 @@ import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 import '../../../styles/icons_broken.dart';
 
@@ -77,7 +78,9 @@ class SendMessageTextFiled extends StatelessWidget {
                     fontSize: 3.8.w,
                     color: MyColors.grey.withOpacity(0.6)
                 ),
-                suffixIcon: Icon(IconBroken.Image,size: 6.w,color: MyColors.blue,),
+                suffixIcon: IconButton(
+                  onPressed: (){},
+                    icon: Icon(IconBroken.Image,size: 6.w,color: MyColors.blue,)),
                 contentPadding: EdgeInsets.symmetric(
                     vertical: 2.0.h, horizontal: 4.w),
                 filled: true,

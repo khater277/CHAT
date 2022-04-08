@@ -1,3 +1,7 @@
+import 'package:chat/models/UserModel.dart';
+import 'package:chat/screens/home/home_screen.dart';
+import 'package:chat/screens/set_image/set_image_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -7,7 +11,6 @@ import '../../cubit/login/login_cubit.dart';
 import '../../cubit/login/login_states.dart';
 import '../../shared/default_widgets.dart';
 import '../../styles/icons_broken.dart';
-import '../home/home_screen.dart';
 import 'otp_items/otp_filed.dart';
 import 'otp_items/otp_head.dart';
 import 'otp_items/verify_button.dart';
@@ -21,9 +24,7 @@ class OtpScreen extends StatelessWidget {
     return BlocConsumer<LoginCubit,LoginStates>(
       listener: (context,state){
         if(state is LoginSubmitOtpState){
-          GetStorage().write('loggedIn', true).then((value){
-            Get.to(()=>const HomeScreen());
-          });
+          LoginCubit.get(context).checkUser(phoneNumber);
         }
         if(state is LoginErrorState){
           showSnackBar(

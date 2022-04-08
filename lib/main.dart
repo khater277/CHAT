@@ -10,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'cubit/app/app_cubit.dart';
 import 'cubit/app/app_states.dart';
+import 'cubit/app/bloc_observer.dart';
 import 'firebase_options.dart';
 import 'translation/translations.dart';
 
@@ -26,19 +26,26 @@ void main() async {
   final String defaultLocale = Platform.localeName.substring(0, 2);
   defaultLang = defaultLocale;
   lang = GetStorage().read('lang')??(defaultLang=='ar'?'ar':'en');
-  loggedIn = GetStorage().read('loggedIn')??false;
+  uId = GetStorage().read('uId')??"";
   contactsPermission = GetStorage().read('contactsPermission')??false;
   Widget? homeWidget;
-  if(loggedIn==true){
+  if(uId!.isNotEmpty){
     homeWidget=const HomeScreen();
   }else{
     homeWidget=const LoginScreen();
   }
-  runApp(MyApp(homeWidget: homeWidget,));
+
+  BlocOverrides.runZoned(
+        () {runApp(MyApp(homeWidget: homeWidget!,));},
+    blocObserver: MyBlocObserver(),
+  );
+
   // runApp(DevicePreview(
   //     enabled: !kReleaseMode,
   //     builder: (context) => MyApp(homeWidget: homeWidget!,), // Wrap your app
   //   ));
+
+
 }
 
 class MyApp extends StatelessWidget {

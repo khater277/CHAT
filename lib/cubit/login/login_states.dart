@@ -20,3 +20,11 @@ class LoginVerificationCompletedState extends LoginStates{}
 class LoginCodeSentState extends LoginStates{}
 
 class LoginSubmitOtpState extends LoginStates{}
+
+class LoginCreateUserState extends LoginStates{}
+
+class LoginSelectProfileImageState extends LoginStates{}
+
+class LoginUploadProfileImageState extends LoginStates{}
+
+class LoginCheckUserState extends LoginStates{}

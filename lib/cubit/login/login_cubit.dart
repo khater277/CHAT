@@ -1,12 +1,21 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/models/UserModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../screens/home/home_screen.dart';
+import '../../screens/set_image/set_image_screen.dart';
 import '../../shared/constants.dart';
 import 'login_states.dart';
 
@@ -103,6 +112,8 @@ class LoginCubit extends Cubit<LoginStates>{
        .credential(verificationId: verificationId, smsCode: smsCode);
    FirebaseAuth.instance.signInWithCredential(credential)
        .then((value){
+         uId=value.user!.uid;
+         GetStorage().write('uId', uId);
      print(value.user!.phoneNumber!);
      emit(LoginSubmitOtpState());
    }).catchError((error){
@@ -114,6 +125,88 @@ class LoginCubit extends Cubit<LoginStates>{
   User getLoggedUser(){
     User user = FirebaseAuth.instance.currentUser!;
     return user;
+  }
+
+
+  ImagePicker picker = ImagePicker();
+  File? image;
+  Future<void> selectProfileImage()async{
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if(pickedFile!=null){
+      image = File(pickedFile.path);
+      emit(LoginSelectProfileImageState());
+    }else{
+      emit(LoginErrorState("ERROR"));
+      print("NOT SELECTED");
+    }
+  }
+
+  void uploadProfileImage({bool? isOpening}){
+    emit(LoginLoadingState());
+    FirebaseStorage.instance
+        .ref("profile_image/${Uri.file(image!.path).pathSegments.last}")
+    .putFile(image!)
+    .then((p0){
+      p0.ref.getDownloadURL().then((value){
+        if(isOpening==true){
+          createUser(image: value);
+        }else{
+          emit(LoginUploadProfileImageState());
+        }
+        print("IMAGE UPLOADED");
+      }).catchError((error){
+        emit(LoginErrorState(error.toString()));
+      });
+    }).catchError((error){
+      emit(LoginErrorState(error.toString()));
+    });
+  }
+
+  void checkUser(String phoneNumber){
+    emit(LoginLoadingState());
+    FirebaseFirestore.instance.collection('users')
+        .get()
+        .then((value){
+      bool exist = false;
+      for (var element in value.docs) {
+        UserModel user = UserModel.fromJson(element.data());
+        String? phone = phoneFormat(phoneNumber: user.phone!);
+        print("=================> $phone");
+        if(phone==phoneFormat(phoneNumber: phoneNumber)){
+          exist=true;
+        }
+        if(exist){
+          break;
+        }
+      }
+      print("=================> $exist");
+      if(exist){
+        Get.offAll(()=> const HomeScreen());
+      }else{
+        Get.offAll(()=> SetImageScreen(phone: phoneNumber,));
+      }
+      emit(LoginCheckUserState());
+    }).catchError((error){
+      emit(LoginErrorState(error.toString()));
+    });
+  }
+
+  void createUser({String? image}){
+    emit(LoginLoadingState());
+    UserModel userModel = UserModel(
+      uId: uId,
+      phone: getLoggedUser().phoneNumber!,
+      image: image??""
+    );
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId)
+    .set(userModel.toJson())
+    .then((value){
+      print("USER CREATED");
+      emit(LoginCreateUserState());
+    }).catchError((error){
+      emit(LoginErrorState(error.toString()));
+    });
   }
 }
 

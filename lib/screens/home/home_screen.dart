@@ -1,6 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/shared/colors.dart';
+import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ class HomeScreen extends StatelessWidget {
       builder: (context,state){
         AppCubit cubit = AppCubit.get(context);
         return SafeArea(
-          child: Scaffold(
+          child: state is! AppLoadingState?
+          Scaffold(
             body: cubit.screens[cubit.navBarIndex],
             extendBody: true,
             bottomNavigationBar: Padding(
@@ -56,6 +58,10 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+          )
+              :
+          const Scaffold(
+            body: DefaultProgressIndicator(icon: IconBroken.Chat),
           ),
         );
       },
