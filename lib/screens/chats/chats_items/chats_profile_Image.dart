@@ -3,20 +3,30 @@ import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../models/UserModel.dart';
+import '../../../styles/icons_broken.dart';
+
 class ChatsProfileImage extends StatelessWidget {
-  const ChatsProfileImage({Key? key}) : super(key: key);
+  final UserModel userModel;
+  const ChatsProfileImage({Key? key, required this.userModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: 19.sp,
-      backgroundColor: MyColors.blue.withOpacity(0.2),
-      backgroundImage: const CachedNetworkImageProvider(
-          "https://img.freepik.com/free-photo/waist-up-portrait-handsome-serious-unshaven-male-keeps-hands-together-dressed-dark-blue-shirt-has-talk-with-interlocutor-stands-against-white-wall-self-confident-man-freelancer_273609-16320.jpg?size=626&ext=jpg&uid=R42465912&ga=GA1.2.1541729706.1648353663"
-      ),
-      // backgroundImage: const NetworkImage(
-      //   "https://img.freepik.com/free-photo/waist-up-portrait-handsome-serious-unshaven-male-keeps-hands-together-dressed-dark-blue-shirt-has-talk-with-interlocutor-stands-against-white-wall-self-confident-man-freelancer_273609-16320.jpg?size=626&ext=jpg&uid=R42465912&ga=GA1.2.1541729706.1648353663",
-      // ),
-    );
+    if(userModel.image==""){
+      return SizedBox(
+          width: 13.w,height: 6.5.h,
+          child: Icon(IconBroken.Profile,color: MyColors.blue,size: 25.sp,));
+    }else{
+      return SizedBox(
+        width: 13.w,height: 6.4.h,
+        child: CircleAvatar(
+          radius: 19.sp,
+          backgroundColor: MyColors.blue.withOpacity(0.2),
+          backgroundImage: CachedNetworkImageProvider(
+              "${userModel.image}"
+          ),
+        ),
+      );
+    }
   }
 }

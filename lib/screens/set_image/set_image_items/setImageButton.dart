@@ -11,8 +11,10 @@ class SetImageButton extends StatelessWidget {
   final LoginCubit cubit;
   final LoginStates state;
   final TextEditingController nameController;
+  final String phone;
 
-  const SetImageButton({Key? key, required this.cubit, required this.state, required this.nameController}) : super(key: key);
+  const SetImageButton({Key? key, required this.cubit, required this.state,
+    required this.nameController, required this.phone}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class SetImageButton extends StatelessWidget {
             if(cubit.image!=null) {
               cubit.uploadProfileImage(
                 isOpening: true,
-                name: nameController.text.isEmpty?"user":nameController.text);
+                name: nameController.text.isEmpty?phone:nameController.text);
             }else{
               cubit.createUser(name: nameController.text);
             }

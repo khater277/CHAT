@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
-import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';

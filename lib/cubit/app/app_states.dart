@@ -20,3 +20,5 @@ class AppSendMessageState extends AppStates{}
 
 class AppGetChatsState extends AppStates{}
 
+class AppGetAllUsersState extends AppStates{}
+

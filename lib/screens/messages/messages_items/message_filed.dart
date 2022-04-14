@@ -75,8 +75,8 @@ class SendMessageTextFiled extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(
-              right: languageFun(ar: 1.0.w, en: 0.0),
-              left: languageFun(ar: 0.0, en: 1.0.w),
+              right: languageFun(ar: 2.0.w, en: 0.0),
+              left: languageFun(ar: 0.0, en: 2.0.w),
             ),
             child: TextField(
               inputFormatters: [NoLeadingSpaceFormatter()],

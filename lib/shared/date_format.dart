@@ -1,5 +1,4 @@
 import 'package:chat/shared/constants.dart';
-import 'package:flutter/material.dart';
 
 class DateFormatter {
 
@@ -64,36 +63,36 @@ class DateFormatter {
     );
   }
 
-  dynamic languageFun({
-    @required ar,
-    @required en,
-  }){
-    return lang!=null?
-    lang=='ar'?ar:en
-        :(defaultLang=='ar'?ar:en);
+  String lastMessageDate(String date){
+
+    String? finalDate;
+    DateTime messageDate = DateTime.parse(date);
+    DateTime nowDate = DateTime.now();
+
+
+    DateTime messageDayDate = DateTime(messageDate.year,messageDate.month,messageDate.day);
+    DateTime todayDate = DateTime(nowDate.year,nowDate.month,nowDate.day);
+    DateTime yesterdayDayDate = todayDate.subtract(const Duration(days: 1));
+
+
+    String? min=messageDate.minute.toString();
+    String? hour=messageDate.hour.toString();
+    String x="";
+    if(hour.startsWith('0')||hour=="10"||hour=="11"){
+      x=languageFun(ar: 'ص',en: "AM");
+    }else{
+      x=languageFun(ar: 'م',en: "PM");
+    }
+    String today = "${period[hour]}:$min $x";
+    String yesterday = "Yesterday";
+    String completeDate = "${messageDate.day}/${messageDate.month}/${messageDate.year}";
+    finalDate = messageDayDate==todayDate?today:
+    messageDayDate==yesterdayDayDate?yesterday:completeDate;
+
+    return finalDate;
   }
 
-
-
-
-
-
-  String lastMessageDate(date,index){
-    int lastIndex = dateFormat(date)!['date']!.
-    indexOf('في')+2;
-    int firstIndex = dateFormat(date)!['date']!.
-    indexOf('في')-5;
-    return languageFun(
-        ar:dateFormat(date)!['date']!.contains('في')?
-        dateFormat(date)!['date']!.
-        replaceRange(firstIndex,lastIndex, ',')+checkYear(date, index)
-            :dateFormat(date)!['date'],
-        en: dateFormat(date)!['date']!.
-        replaceRange(7, 15, ",")+checkYear(date, index)
-    );
-  }
-
-  String checkYear(String date, int index){
+  String checkYear(String date){
     return (dateFormat(DateTime.now().toString())!['year']!)==
         dateFormat(date)!['year']?"":
     " ${dateFormat(date)!['year']}";

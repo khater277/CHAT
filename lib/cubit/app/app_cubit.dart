@@ -44,6 +44,7 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   List<Contact> contacts = [];
+  List<String> usersID = [];
   List<UserModel> users = [];
   void getContacts(){
     if(contactsPermission!){
@@ -56,10 +57,11 @@ class AppCubit extends Cubit<AppStates>{
             if(element.phones!.isNotEmpty){
               for (var e in value.docs) {
                 UserModel user = UserModel.fromJson(e.data());
-                //print("==========> ${element.phones!}");
+                //debugPrint("==========> ${element.phones!}");
                 if(element.phones![0].value!.length>=11){
                   if((phoneFormat(phoneNumber: element.phones![0].value!)==
                       phoneFormat(phoneNumber: user.phone!))){
+                    usersID.add(e.id);
                     users.add(UserModel(
                         name: element.displayName,
                         uId: user.uId,
@@ -76,7 +78,7 @@ class AppCubit extends Cubit<AppStates>{
             emit(AppErrorState());
           });
         }
-        print("=============GET CONTACTS=============");
+        debugPrint("=============GET CONTACTS=============");
         //emit(AppGetContactsState());
         getChats();
       }).catchError((error){
@@ -88,7 +90,7 @@ class AppCubit extends Cubit<AppStates>{
   void addNewContact(Contact contact){
     ContactsService.addContact(contact)
         .then((value){
-          print("NEW CONTACT ADDED");
+          debugPrint("NEW CONTACT ADDED");
           getContacts();
         emit(AppAddNewContactState());
     }).catchError((error){
@@ -125,7 +127,7 @@ class AppCubit extends Cubit<AppStates>{
           .add(myMessageModel.toJson())
           .then((value){
             sendLastMessage(friendID: friendID,message: message,image: image);
-            print("MESSAGE SENT");
+            debugPrint("MESSAGE SENT");
             emit(AppSendMessageState());
       }).catchError((error){
         printError("sendMessage", error.toString());
@@ -173,6 +175,8 @@ class AppCubit extends Cubit<AppStates>{
   }
 
   List<String> chatsID = [];
+  List<UserModel> chats = [];
+  List<LastMessageModel> chatsLastMessages = [];
   void getChats(){
     emit(AppLoadingState());
     FirebaseFirestore.instance.collection('users')
@@ -182,12 +186,35 @@ class AppCubit extends Cubit<AppStates>{
     .then((value){
       for (var element in value.docs) {
         chatsID.add(element.id);
+        chatsLastMessages.add(LastMessageModel.fromJson(element.data()));
+        FirebaseFirestore.instance.collection('users')
+        .doc(element.id)
+        .get()
+        .then((value){
+          UserModel userModel = UserModel.fromJson(value.data());
+          String? name;
+          bool isContact = usersID.contains(userModel.uId);
+          name = isContact?users.firstWhere((element) =>
+          element.uId==userModel.uId).name!:userModel.name!;
+          UserModel finalUserModel = UserModel(
+            name: name,
+            uId: userModel.uId,
+            phone: userModel.phone,
+            image: userModel.image
+          );
+          chats.add(finalUserModel);
+          emit(AppGetChatsState());
+        }).catchError((error){
+          printError("getChatsLoop", error.toString());
+          emit(AppErrorState());
+        });
       }
-      print("GET CHATS");
-      emit(AppGetChatsState());
+      debugPrint("GET CHATS");
+      // emit(AppGetChatsState());
     }).catchError((error){
       printError("getChats", error.toString());
       emit(AppErrorState());
     });
   }
+
 }

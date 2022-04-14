@@ -6,7 +6,8 @@ import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
 import 'package:sizer/sizer.dart';
 
 class MyMessage extends StatelessWidget {
-  const MyMessage({Key? key}) : super(key: key);
+  final String message;
+  const MyMessage({Key? key, required this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class MyMessage extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width * 0.7,
         ),
         child: Text(
-          "Lorem",
+          message,
           style: Theme.of(context).textTheme.bodyText2!.copyWith(
             fontSize: 11.5.sp
           ),

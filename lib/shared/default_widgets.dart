@@ -1,3 +1,4 @@
+
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -149,7 +150,7 @@ class DefaultElevatedButton extends StatelessWidget {
   final double rounded;
   final double height;
   final double width;
-  final onPressed;
+  final VoidCallback onPressed;
   const DefaultElevatedButton({Key? key, required this.child, required this.color, required this.rounded,
     required this.height, required this.width, required this.onPressed}) : super(key: key);
 
@@ -176,7 +177,7 @@ class DefaultOutLinedButton extends StatelessWidget {
   final double rounded;
   final double height;
   final double width;
-  final onPressed;
+  final VoidCallback onPressed;
   Color? borderColor;
   DefaultOutLinedButton({Key? key, required this.child, required this.rounded,
     required this.height, required this.width, required this.onPressed,this.borderColor}) : super(key: key);
