@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
             bottomNavigationBar: Padding(
               padding: EdgeInsets.only(bottom: 1.h),
               child: DotNavigationBar(
-                curve: Curves.ease,
+                //curve: Curves.ease,
                 currentIndex: cubit.navBarIndex,
                 onTap: (index) {
                   cubit.changeNavBar(index);

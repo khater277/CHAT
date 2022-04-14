@@ -56,7 +56,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
-          BlocProvider(create: (BuildContext context)=>AppCubit()..getContacts(),),
+          BlocProvider(
+            create: (BuildContext context)=>AppCubit()..getContacts(),
+          ),
           BlocProvider(create: (BuildContext context)=>LoginCubit(),),
         ],
         child: BlocConsumer<AppCubit,AppStates>(
@@ -68,7 +70,8 @@ class MyApp extends StatelessWidget {
               builder: DevicePreview.appBuilder,
               theme: darkTheme,
               translations: Translation(),
-              locale: Locale(languageFun(ar: 'ar', en: 'en')),
+              //locale: Locale(languageFun(ar: 'ar', en: 'en')),
+              locale: const Locale('en'),
               fallbackLocale: const Locale('en'),
               home: Sizer(
                 builder: (context, orientation, screenType) {

@@ -27,14 +27,37 @@ class LoginCubit extends Cubit<LoginStates>{
 
   void getContacts(context){
     emit(LoginLoadingState());
-    ContactsService.getContacts().then((value){
-      AppCubit.get(context).contacts=value;
-      print(value[10].displayName);
+    ContactsService.getContacts().then((contactList){
+      for (var element in contactList) {
+        FirebaseFirestore.instance.collection('users')
+            .get()
+            .then((value){
+          if(element.phones!.isNotEmpty){
+            for (var e in value.docs) {
+              UserModel user = UserModel.fromJson(e.data());
+              if(element.phones![0].value!.length>=11){
+                if((phoneFormat(phoneNumber: element.phones![0].value!)==
+                    phoneFormat(phoneNumber: user.phone!))){
+                  AppCubit.get(context).users.add(UserModel(
+                      name: element.displayName,
+                      uId: user.uId,
+                      phone: user.phone,
+                      image: user.image
+                  ));
+                  AppCubit.get(context).contacts.add(element);
+                }
+              }
+            }
+          }
+        }).catchError((error){
+          printError("getContacts",error.toString());
+          emit(LoginErrorState(error.toString()));
+        });
+      }
       print("=============GET CONTACTS=============");
       emit(LoginGetContactsState());
     }).catchError((error){
-      emit(LoginErrorState(error.toString())
-      );
+      emit(LoginErrorState(error.toString()));
     });
   }
 

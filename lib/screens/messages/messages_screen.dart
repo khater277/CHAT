@@ -49,7 +49,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     )
                 ),
                 title: Text(
-                  "Ahmed Khater",
+                  "${widget.user.name}",
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       fontSize: 14.sp
                   ),
@@ -67,39 +67,61 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   )
                 ],
               ),
-              body: Sizer(
-                builder: (BuildContext context, Orientation orientation, DeviceType screenType) {
-                  if(orientation==Orientation.portrait) {
-                    return Column(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: const [
-                            MyMessage(),
-                            FriendMessage(),
-                          ],
-                        ),
-                      ),
-                      SendMessageTextFiled(controller: _messageController)
-                    ],
-                  );
-                  }else{
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: const [
-                              MyMessage(),
-                              FriendMessage(),
-                            ],
-                          ),
-                        ),
-                       LandscapeSendMessageTextFiled(controller: _messageController)
+              body: Column(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: const [
+                        MyMessage(),
+                        FriendMessage(),
                       ],
-                    );
-                  }
-                },
-              ),
+                    ),
+                  ),
+                  SendMessageTextFiled(
+                      messageController: _messageController,
+                    cubit: cubit,
+                    friendID: widget.user.uId!,
+                  )
+                ],
+              )
+              // Sizer(
+              //   builder: (BuildContext context, Orientation orientation, DeviceType screenType) {
+              //     if(orientation==Orientation.portrait) {
+              //       return Column(
+              //       children: [
+              //         Expanded(
+              //           child: Column(
+              //             children: const [
+              //               MyMessage(),
+              //               FriendMessage(),
+              //             ],
+              //           ),
+              //         ),
+              //         TextField()
+              //         // SendMessageTextFiled(
+              //         //     messageController: _messageController,
+              //         //   cubit: cubit,
+              //         //   friendID: widget.user.uId!,
+              //         // )
+              //       ],
+              //     );
+              //     }else{
+              //       return Column(
+              //         children: [
+              //           Expanded(
+              //             child: Column(
+              //               children: const [
+              //                 MyMessage(),
+              //                 FriendMessage(),
+              //               ],
+              //             ),
+              //           ),
+              //          LandscapeSendMessageTextFiled(controller: _messageController)
+              //         ],
+              //       );
+              //     }
+              //   },
+              // ),
             )
         );
       },

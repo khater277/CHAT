@@ -1,3 +1,4 @@
+import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
@@ -10,8 +11,11 @@ import '../../../styles/icons_broken.dart';
 
 
 class SendMessageButton extends StatelessWidget {
+  final AppCubit cubit;
   final TextEditingController messageController;
-  const SendMessageButton({Key? key, required this.messageController,}) : super(key: key);
+  final String friendID;
+  const SendMessageButton({Key? key, required this.messageController,
+    required this.cubit, required this.friendID,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +34,11 @@ class SendMessageButton extends StatelessWidget {
                 }
               }
             }
+            cubit.sendMessage(
+                friendID: friendID,
+                message: messageController.text.substring(0,messageController.text.length-endCnt)
+            );
+            messageController.clear();
           } : null,
           child: Padding(
             padding: const EdgeInsets.all(7.0),
@@ -51,14 +60,17 @@ class SendMessageButton extends StatelessWidget {
 
 // ignore: must_be_immutable
 class SendMessageTextFiled extends StatelessWidget {
-  final TextEditingController controller;
-
+  final AppCubit cubit;
+  final TextEditingController messageController;
+  final String friendID;
   const SendMessageTextFiled(
-      {Key? key,required this.controller,}) : super(key: key);
+      {Key? key,required this.messageController, required this.cubit,
+        required this.friendID,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return
+      Row(
       children: [
         Expanded(
           child: Padding(
@@ -69,7 +81,7 @@ class SendMessageTextFiled extends StatelessWidget {
             child: TextField(
               inputFormatters: [NoLeadingSpaceFormatter()],
               cursorColor: MyColors.grey.withOpacity(0.7),
-              controller: controller,
+              controller: messageController,
               keyboardType: TextInputType.text,
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
                 fontSize: 13.sp,
@@ -99,7 +111,11 @@ class SendMessageTextFiled extends StatelessWidget {
             ),
           ),
         ),
-        SendMessageButton(messageController: controller)
+        SendMessageButton(
+          cubit: cubit,
+            messageController: messageController,
+          friendID: friendID,
+        )
       ],
     );
   }
