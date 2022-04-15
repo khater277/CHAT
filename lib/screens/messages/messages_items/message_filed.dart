@@ -34,6 +34,7 @@ class SendMessageButton extends StatelessWidget {
                 }
               }
             }
+            scrollDown();
             cubit.sendMessage(
                 friendID: friendID,
                 message: messageController.text.substring(0,messageController.text.length-endCnt)
@@ -65,7 +66,7 @@ class SendMessageTextFiled extends StatelessWidget {
   final String friendID;
   const SendMessageTextFiled(
       {Key? key,required this.messageController, required this.cubit,
-        required this.friendID,}) : super(key: key);
+        required this.friendID, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +87,9 @@ class SendMessageTextFiled extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
                 fontSize: 13.sp,
               ),
+              onTap: (){
+                scrollDown();
+              },
               decoration: InputDecoration(
                 hintText: "type your message...",
                 hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(

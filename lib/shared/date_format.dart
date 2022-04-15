@@ -75,8 +75,10 @@ class DateFormatter {
     DateTime yesterdayDayDate = todayDate.subtract(const Duration(days: 1));
 
 
-    String? min=messageDate.minute.toString();
-    String? hour=messageDate.hour.toString();
+    String? min= messageDate.minute.toString().length==1?
+    "0${messageDate.minute.toString()}":messageDate.minute.toString();
+    String? hour= messageDate.hour.toString().length==1?
+    "0${messageDate.hour.toString()}":messageDate.hour.toString();
     String x="";
     if(hour.startsWith('0')||hour=="10"||hour=="11"){
       x=languageFun(ar: 'ص',en: "AM");

@@ -79,8 +79,9 @@ class AppCubit extends Cubit<AppStates>{
           });
         }
         debugPrint("=============GET CONTACTS=============");
-        //emit(AppGetContactsState());
         getChats();
+        //emit(AppGetContactsState());
+
       }).catchError((error){
         emit(AppErrorState());
       });
@@ -182,35 +183,67 @@ class AppCubit extends Cubit<AppStates>{
     FirebaseFirestore.instance.collection('users')
     .doc(uId)
     .collection('chats')
+    .orderBy('date')
     .get()
-    .then((value){
-      for (var element in value.docs) {
+    .then((v){
+      chatsID=[];
+      chatsLastMessages=[];
+      chats=[];
+      List<int> order = [];
+      List<Map<String,dynamic>> chatsMap = [];
+      List<Map<String,dynamic>> lastMessagesMap = [];
+      for (int i=0;i<v.size;i++) {
+        var element = v.docs[i];
+        //print("==============>${element.reference.firestore.}");
         chatsID.add(element.id);
-        chatsLastMessages.add(LastMessageModel.fromJson(element.data()));
         FirebaseFirestore.instance.collection('users')
-        .doc(element.id)
-        .get()
-        .then((value){
+            .doc(element.id)
+            .get()
+            .then((value){
           UserModel userModel = UserModel.fromJson(value.data());
           String? name;
           bool isContact = usersID.contains(userModel.uId);
           name = isContact?users.firstWhere((element) =>
           element.uId==userModel.uId).name!:userModel.name!;
           UserModel finalUserModel = UserModel(
-            name: name,
-            uId: userModel.uId,
-            phone: userModel.phone,
-            image: userModel.image
+              name: name,
+              uId: userModel.uId,
+              phone: userModel.phone,
+              image: userModel.image
           );
-          chats.add(finalUserModel);
-          emit(AppGetChatsState());
+          //chats.add(finalUserModel);
+          // chatsLastMessages.add(LastMessageModel.fromJson(element.data()));
+          chatsMap.add({
+            "index":i,
+            "item":finalUserModel
+          });
+          lastMessagesMap.add({
+            "index":i,
+            "item":LastMessageModel.fromJson(element.data())
+          });
+          order.add(i);
+          if(v.size==order.length) {
+            chats=[];
+            chatsMap.sort((a, b) => (a['index']).compareTo(b['index']));
+            lastMessagesMap.sort((a, b) => (a['index']).compareTo(b['index']));
+            for (int i=0;i<chatsMap.length;i++) {
+              chats.add(chatsMap[i]['item']);
+              chatsLastMessages.add(lastMessagesMap[i]['item']);
+            }
+            chats = chats.reversed.toList();
+            chatsLastMessages = chatsLastMessages.reversed.toList();
+            emit(AppGetChatsState());
+          }
         }).catchError((error){
           printError("getChatsLoop", error.toString());
           emit(AppErrorState());
         });
       }
       debugPrint("GET CHATS");
-      // emit(AppGetChatsState());
+      // chats = chats.reversed.toList();
+      // chatsID = chatsID.reversed.toList();
+      // chatsLastMessages = chatsLastMessages.reversed.toList();
+      //emit(AppGetChatsState());
     }).catchError((error){
       printError("getChats", error.toString());
       emit(AppErrorState());

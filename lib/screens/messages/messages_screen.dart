@@ -7,6 +7,7 @@ import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../../models/MessageModel.dart';
@@ -24,6 +25,7 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
 
   final TextEditingController _messageController = TextEditingController();
+
   @override
   void dispose() {
     _messageController.dispose();
@@ -72,20 +74,31 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   .doc(uId).collection('chats').doc(widget.user.uId)
                     .collection('messages').orderBy('date').snapshots(),
                 builder: (context, snapshot) {
+                  bool hasData = false;
                   List<MessageModel> messages = [];
                   if(snapshot.hasData){
+                    hasData = true;
                     for (var element in snapshot.data!.docs) {
                       MessageModel messageModel = MessageModel.fromJson(element.data());
                       messages.add(messageModel);
                     }
                   }
-                  return messages.isNotEmpty?
+                  return messages.isNotEmpty || hasData?
                     Column(
                     children: [
                       Expanded(
                         child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                            controller: scrollController,
+                            shrinkWrap: true,
                             itemBuilder:(context,index)=>
-                                MessageBuilder(message: messages[index]),
+                                Column(
+                                  children: [
+                                    MessageBuilder(message: messages[index]),
+                                    if(messages.length-1==index)
+                                      SizedBox(height: 2.h,)
+                                  ],
+                                ),
                             itemCount: messages.length
                         ),
                       ),

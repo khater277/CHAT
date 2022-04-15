@@ -40,6 +40,7 @@ class _SetImageScreenState extends State<SetImageScreen> {
               LoginCubit.get(context)
                   .getLoggedUser().uid)
               .then((value){
+                LoginCubit.get(context).test(context);
             Get.offAll(()=>const HomeScreen());
           });
         }

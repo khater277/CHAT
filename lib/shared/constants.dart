@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 
 class GenerateMaterialColor{
@@ -47,6 +48,19 @@ String? lang;
 String? defaultLang;
 bool? isDarkMode;
 bool? disableNotifications;
+
+
+final ScrollController scrollController = ScrollController();
+void scrollDown() async {
+  await Future.delayed(const Duration(milliseconds: 300));
+  SchedulerBinding.instance?.addPostFrameCallback((_) {
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent+20.0,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 500),
+    );
+  });
+}
 
 
 String phoneFormat({required String phoneNumber}){

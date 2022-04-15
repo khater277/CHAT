@@ -212,11 +212,17 @@ class NoItemsFounded extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             widget,
-            const SizedBox(height: 15,),
-            Text(text,style: Theme.of(context).textTheme.bodyText1!.copyWith(
-              color: Colors.grey[400],
-              fontSize: 22,
-            ),)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 2.w),
+              child: Text(text,style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                color: Colors.grey.withOpacity(0.8),
+                fontSize: 14.sp,
+                height: 1.4,
+                letterSpacing: 0.8
+              ),
+                textAlign: TextAlign.center
+                ,),
+            )
           ],
         ),
       ),
@@ -386,6 +392,7 @@ class DefaultTextFiled extends StatelessWidget {
   double? letterSpacing;
   bool? obscure;
   Color? cursorColor;
+  VoidCallback? onTap;
   var onSubmitted;
   var onChanged;
 
@@ -405,6 +412,7 @@ class DefaultTextFiled extends StatelessWidget {
         this.letterSpacing,
         this.autoFocus,
         this.errorText,
+        this.onTap,
         this.onChanged,
         this.onSubmitted,
         this.cursorColor,
@@ -427,6 +435,7 @@ class DefaultTextFiled extends StatelessWidget {
         fontSize: 14.sp,
         letterSpacing: letterSpacing??0,
       ),
+      onTap: onTap,
       decoration: InputDecoration(
         filled: fillColor==null?false:true,
         fillColor: fillColor,

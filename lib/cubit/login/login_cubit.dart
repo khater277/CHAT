@@ -150,6 +150,10 @@ class LoginCubit extends Cubit<LoginStates>{
     return user;
   }
 
+  void test(context){
+    AppCubit.get(context).getChats();
+  }
+
 
   ImagePicker picker = ImagePicker();
   File? image;
