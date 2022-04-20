@@ -1,3 +1,4 @@
+import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,9 @@ class HomeAppBar extends StatelessWidget {
             Padding(
               padding:  EdgeInsets.symmetric(horizontal: 2.w),
               child: IconButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    AppCubit.get(context).deleteChat(chatID: "B4y2fbSV32Xj50eqRy01mlJzjmD3");
+                  },
                   icon: Icon(IconBroken.Search,size: 18.sp,color: MyColors.grey,)
               ),
             )

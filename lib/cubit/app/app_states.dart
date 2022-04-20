@@ -24,3 +24,6 @@ class AppGetChatsLoopState extends AppStates{}
 
 class AppGetAllUsersState extends AppStates{}
 
+class AppDeleteChatLoadingState extends AppStates{}
+class AppDeleteChatState extends AppStates{}
+

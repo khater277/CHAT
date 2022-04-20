@@ -101,6 +101,7 @@ class AppCubit extends Cubit<AppStates>{
 
   void sendMessage({
     required String friendID,
+    bool? isFirstMessage,
     String? message,
     String? image,
   }){
@@ -129,7 +130,11 @@ class AppCubit extends Cubit<AppStates>{
           .then((value){
             sendLastMessage(friendID: friendID,message: message,image: image);
             debugPrint("MESSAGE SENT");
-            emit(AppSendMessageState());
+            if(isFirstMessage==true){
+              getChats(firstMessage: true);
+            }else {
+              emit(AppSendMessageState());
+            }
       }).catchError((error){
         printError("sendMessage", error.toString());
         emit(AppErrorState());
@@ -146,7 +151,6 @@ class AppCubit extends Cubit<AppStates>{
     String? message,
     String? image,
   }){
-    emit(AppLoadingState());
     LastMessageModel lastMessageModel = LastMessageModel(
       senderID: uId,
       receiverID: friendID,
@@ -178,23 +182,24 @@ class AppCubit extends Cubit<AppStates>{
   List<String> chatsID = [];
   List<UserModel> chats = [];
   List<LastMessageModel> chatsLastMessages = [];
-  void getChats(){
-    emit(AppLoadingState());
+  void getChats({bool? firstMessage}){
+    if(firstMessage!=true) {
+      emit(AppLoadingState());
+    }
     FirebaseFirestore.instance.collection('users')
     .doc(uId)
     .collection('chats')
     .orderBy('date')
     .get()
     .then((v){
-      chatsID=[];
-      chatsLastMessages=[];
-      chats=[];
-      List<int> order = [];
-      List<Map<String,dynamic>> chatsMap = [];
-      List<Map<String,dynamic>> lastMessagesMap = [];
+      // chatsID=[];
+      // chatsLastMessages=[];
+      // chats=[];
+      // List<int> order = [];
+      // List<Map<String,dynamic>> chatsMap = [];
+      // List<Map<String,dynamic>> lastMessagesMap = [];
       for (int i=0;i<v.size;i++) {
         var element = v.docs[i];
-        //print("==============>${element.reference.firestore.}");
         chatsID.add(element.id);
         FirebaseFirestore.instance.collection('users')
             .doc(element.id)
@@ -211,27 +216,27 @@ class AppCubit extends Cubit<AppStates>{
               phone: userModel.phone,
               image: userModel.image
           );
-          //chats.add(finalUserModel);
+          chats.add(finalUserModel);
           // chatsLastMessages.add(LastMessageModel.fromJson(element.data()));
-          chatsMap.add({
-            "index":i,
-            "item":finalUserModel
-          });
-          lastMessagesMap.add({
-            "index":i,
-            "item":LastMessageModel.fromJson(element.data())
-          });
-          order.add(i);
-          if(v.size==order.length) {
-            chats=[];
-            chatsMap.sort((a, b) => (a['index']).compareTo(b['index']));
-            lastMessagesMap.sort((a, b) => (a['index']).compareTo(b['index']));
-            for (int i=0;i<chatsMap.length;i++) {
-              chats.add(chatsMap[i]['item']);
-              chatsLastMessages.add(lastMessagesMap[i]['item']);
-            }
-            chats = chats.reversed.toList();
-            chatsLastMessages = chatsLastMessages.reversed.toList();
+          // chatsMap.add({
+          //   "index":i,
+          //   "item":finalUserModel
+          // });
+          // lastMessagesMap.add({
+          //   "index":i,
+          //   "item":LastMessageModel.fromJson(element.data())
+          // });
+          // order.add(i);
+          if(v.size==chats.length) {
+            // chatsMap.sort((a, b) => (a['index']).compareTo(b['index']));
+            // lastMessagesMap.sort((a, b) => (a['index']).compareTo(b['index']));
+            // for (int i=0;i<chatsMap.length;i++) {
+            //   chats.add(chatsMap[i]['item']);
+            //   chatsLastMessages.add(lastMessagesMap[i]['item']);
+            // }
+            //chats = chats.reversed.toList();
+            // chatsLastMessages = chatsLastMessages.reversed.toList();
+            // chatsID = chatsID.reversed.toList();
             emit(AppGetChatsState());
           }
         }).catchError((error){
@@ -246,6 +251,36 @@ class AppCubit extends Cubit<AppStates>{
       //emit(AppGetChatsState());
     }).catchError((error){
       printError("getChats", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  void deleteChat({required String chatID}){
+    emit(AppDeleteChatLoadingState());
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId)
+    .collection('chats')
+    .doc(chatID)
+    .collection('messages')
+    .get()
+    .then((value){
+      for (var element in value.docs) {
+        element.reference.delete();
+      }
+      FirebaseFirestore.instance.collection('users')
+          .doc(uId)
+          .collection('chats')
+          .doc(chatID)
+      .delete()
+      .then((value){
+        debugPrint("CHAT DELETED");
+        emit(AppDeleteChatState());
+      }).catchError((error){
+        printError("deleteChat", error.toString());
+        emit(AppErrorState());
+      });
+    }).catchError((error){
+      printError("deleteChat", error.toString());
       emit(AppErrorState());
     });
   }

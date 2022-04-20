@@ -12,10 +12,11 @@ import '../../../styles/icons_broken.dart';
 
 class SendMessageButton extends StatelessWidget {
   final AppCubit cubit;
+  final bool isFirstMessage;
   final TextEditingController messageController;
   final String friendID;
   const SendMessageButton({Key? key, required this.messageController,
-    required this.cubit, required this.friendID,}) : super(key: key);
+    required this.cubit, required this.friendID, required this.isFirstMessage,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +38,7 @@ class SendMessageButton extends StatelessWidget {
             scrollDown();
             cubit.sendMessage(
                 friendID: friendID,
+                isFirstMessage: isFirstMessage,
                 message: messageController.text.substring(0,messageController.text.length-endCnt)
             );
             messageController.clear();
@@ -62,11 +64,12 @@ class SendMessageButton extends StatelessWidget {
 // ignore: must_be_immutable
 class SendMessageTextFiled extends StatelessWidget {
   final AppCubit cubit;
+  final bool isFirstMessage;
   final TextEditingController messageController;
   final String friendID;
   const SendMessageTextFiled(
       {Key? key,required this.messageController, required this.cubit,
-        required this.friendID, }) : super(key: key);
+        required this.friendID, required this.isFirstMessage, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +121,7 @@ class SendMessageTextFiled extends StatelessWidget {
         SendMessageButton(
           cubit: cubit,
             messageController: messageController,
+          isFirstMessage: isFirstMessage,
           friendID: friendID,
         )
       ],

@@ -77,11 +77,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   bool hasData = false;
                   List<MessageModel> messages = [];
                   if(snapshot.hasData){
-                    hasData = true;
+                    print(snapshot.data!.size);
                     for (var element in snapshot.data!.docs) {
                       MessageModel messageModel = MessageModel.fromJson(element.data());
                       messages.add(messageModel);
                     }
+                    hasData = true;
                   }
                   return messages.isNotEmpty || hasData?
                     Column(
@@ -104,6 +105,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       ),
                       SendMessageTextFiled(
                           messageController: _messageController,
+                        isFirstMessage: messages.isEmpty,
                         cubit: cubit,
                         friendID: widget.user.uId!,
                       )
