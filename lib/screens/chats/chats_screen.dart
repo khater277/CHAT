@@ -81,25 +81,34 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                       children: [
                                         GestureDetector(
                                           onTap: (){
-                                            Get.to(()=> MessagesScreen(user: chats[index],));
+                                            Get.to(()=> MessagesScreen(
+                                              user: chats[index],
+                                              isFirstMessage: false,
+                                            ));
                                           },
-                                          child: Row(
-                                            children: [
-                                              ChatsProfileImage(userModel: chats[index],),
-                                              SizedBox(width: 4.w,),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    ChatsName(
-                                                      userModel: chats[index],
-                                                      date: lastMessages[index].date!,),
-                                                    SizedBox(height: 0.4.h,),
-                                                    ChatsLastMessage(lastMessage: lastMessages[index],)
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                          child: Container(
+                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                                              child: Row(
+                                                children: [
+                                                  ChatsProfileImage(userModel: chats[index],),
+                                                  SizedBox(width: 4.w,),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        ChatsName(
+                                                          userModel: chats[index],
+                                                          date: lastMessages[index].date!,),
+                                                        SizedBox(height: 0.4.h,),
+                                                        ChatsLastMessage(lastMessage: lastMessages[index],)
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                         if(index==chats.length)
@@ -107,8 +116,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                       ],
                                     );
                                   },
-                                  separatorBuilder: (context,index)=>Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                                  separatorBuilder: (context,index)=>GestureDetector(
+                                    onTap: (){
+                                      print(index);
+                                    },
                                     child: Divider(
                                       color: MyColors.grey.withOpacity(0.08),
                                     ),

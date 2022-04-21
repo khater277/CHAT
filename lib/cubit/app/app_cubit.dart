@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/UserModel.dart';
@@ -6,10 +8,12 @@ import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../screens/calls/calls_screen.dart';
 import '../../shared/constants.dart';
 import 'app_states.dart';
@@ -102,8 +106,9 @@ class AppCubit extends Cubit<AppStates>{
   void sendMessage({
     required String friendID,
     bool? isFirstMessage,
+    MediaSource? mediaSource,
     String? message,
-    String? image,
+    String? file,
   }){
     emit(AppLoadingState());
     ///message model which will be stored in my firestore
@@ -111,7 +116,10 @@ class AppCubit extends Cubit<AppStates>{
       senderID: uId,
       receiverID: friendID,
       message: message??"",
-      image: image??"",
+      media: file??"",
+      isImage: mediaSource==MediaSource.image,
+      isVideo: mediaSource==MediaSource.video,
+      isDoc: mediaSource==MediaSource.doc,
       date: DateTime.now().toString()
     );
     FirebaseFirestore.instance.collection('users')
@@ -128,7 +136,12 @@ class AppCubit extends Cubit<AppStates>{
           .collection('messages')
           .add(myMessageModel.toJson())
           .then((value){
-            sendLastMessage(friendID: friendID,message: message,image: image);
+            sendLastMessage(
+                friendID: friendID,
+                message: message,
+                file: file,
+              mediaSource: mediaSource
+            );
             debugPrint("MESSAGE SENT");
             if(isFirstMessage==true){
               getChats(firstMessage: true);
@@ -149,13 +162,17 @@ class AppCubit extends Cubit<AppStates>{
   void sendLastMessage({
     required String friendID,
     String? message,
-    String? image,
+    String? file,
+    MediaSource? mediaSource,
   }){
     LastMessageModel lastMessageModel = LastMessageModel(
       senderID: uId,
       receiverID: friendID,
       message: message??"",
-      image: image??"",
+      media: file??"",
+      isImage: mediaSource==MediaSource.image,
+      isVideo: mediaSource==MediaSource.video,
+      isDoc: mediaSource==MediaSource.doc,
       date: DateTime.now().toString(),
       isRead: true
     );
@@ -192,12 +209,6 @@ class AppCubit extends Cubit<AppStates>{
     .orderBy('date')
     .get()
     .then((v){
-      // chatsID=[];
-      // chatsLastMessages=[];
-      // chats=[];
-      // List<int> order = [];
-      // List<Map<String,dynamic>> chatsMap = [];
-      // List<Map<String,dynamic>> lastMessagesMap = [];
       for (int i=0;i<v.size;i++) {
         var element = v.docs[i];
         chatsID.add(element.id);
@@ -217,26 +228,7 @@ class AppCubit extends Cubit<AppStates>{
               image: userModel.image
           );
           chats.add(finalUserModel);
-          // chatsLastMessages.add(LastMessageModel.fromJson(element.data()));
-          // chatsMap.add({
-          //   "index":i,
-          //   "item":finalUserModel
-          // });
-          // lastMessagesMap.add({
-          //   "index":i,
-          //   "item":LastMessageModel.fromJson(element.data())
-          // });
-          // order.add(i);
           if(v.size==chats.length) {
-            // chatsMap.sort((a, b) => (a['index']).compareTo(b['index']));
-            // lastMessagesMap.sort((a, b) => (a['index']).compareTo(b['index']));
-            // for (int i=0;i<chatsMap.length;i++) {
-            //   chats.add(chatsMap[i]['item']);
-            //   chatsLastMessages.add(lastMessagesMap[i]['item']);
-            // }
-            //chats = chats.reversed.toList();
-            // chatsLastMessages = chatsLastMessages.reversed.toList();
-            // chatsID = chatsID.reversed.toList();
             emit(AppGetChatsState());
           }
         }).catchError((error){
@@ -245,10 +237,6 @@ class AppCubit extends Cubit<AppStates>{
         });
       }
       debugPrint("GET CHATS");
-      // chats = chats.reversed.toList();
-      // chatsID = chatsID.reversed.toList();
-      // chatsLastMessages = chatsLastMessages.reversed.toList();
-      //emit(AppGetChatsState());
     }).catchError((error){
       printError("getChats", error.toString());
       emit(AppErrorState());
@@ -285,4 +273,50 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
+  ImagePicker picker = ImagePicker();
+  File? file;
+  Future<void> selectMessageImage({required MediaSource mediaSource})async{
+    late XFile? pickedFile;
+    if(mediaSource==MediaSource.image){
+      pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    }else{
+      pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    }
+    if(pickedFile!=null){
+      file = File(pickedFile.path);
+      if(mediaSource==MediaSource.image){
+        emit(AppSelectMessageImageState());
+      }else{
+        emit(AppSelectMessageVideoState());
+      }
+    }else{
+      print("NOT SELECTED");
+      emit(AppErrorState());
+    }
+  }
+
+  void sendMediaMessage({
+  required String friendID,
+  required MediaSource mediaSource,
+  bool? isFirstMessage,
+}){
+    emit(AppSendMediaMessageLoadingState());
+    FirebaseStorage.instance.ref("media/${Uri.file(file!.path).pathSegments.last}")
+    .putFile(file!)
+    .then((p0){
+      p0.ref.getDownloadURL().then((value){
+        sendMessage(
+            friendID: friendID,
+          isFirstMessage: isFirstMessage!,
+          mediaSource: mediaSource,
+          file: value,
+        );
+        print("MEDIA SENT");
+        emit(AppSendMediaMessageState());
+      }).catchError((error){
+        printError("sendMediaMessage", error.toString());
+        emit(AppErrorState());
+      });
+    });
+  }
 }

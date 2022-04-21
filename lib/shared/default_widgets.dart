@@ -1,4 +1,3 @@
-
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +6,16 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:sizer/sizer.dart';
 import '../styles/icons_broken.dart';
+
+
+class DefaultNullWidget extends StatelessWidget {
+  const DefaultNullWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox();
+  }
+}
 
 
 class DefaultBackButton extends StatelessWidget {
@@ -114,12 +123,12 @@ class DefaultLinerIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 5,),
+        SizedBox(height: 1.h,),
         LinearProgressIndicator(
           color: Colors.blue.withOpacity(0.3),
-          backgroundColor: Colors.white,
+          backgroundColor: MyColors.lightBlack,
         ),
-        const SizedBox(height: 5,),
+        SizedBox(height: 1.h,),
       ],
     );
   }

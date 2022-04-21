@@ -27,3 +27,8 @@ class AppGetAllUsersState extends AppStates{}
 class AppDeleteChatLoadingState extends AppStates{}
 class AppDeleteChatState extends AppStates{}
 
+class AppSelectMessageImageState extends AppStates{}
+class AppSelectMessageVideoState extends AppStates{}
+
+class AppSendMediaMessageLoadingState extends AppStates{}
+class AppSendMediaMessageState extends AppStates{}

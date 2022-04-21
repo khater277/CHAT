@@ -12,6 +12,6 @@ class MessageBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return message.senderID==uId?MyMessage(message: message.message!)
-        :FriendMessage(message: message.message!, image: message.image!);
+        :FriendMessage(message: message.message!);
   }
 }

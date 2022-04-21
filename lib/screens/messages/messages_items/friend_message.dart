@@ -7,8 +7,7 @@ import 'package:sizer/sizer.dart';
 
 class FriendMessage extends StatelessWidget {
   final String message;
-  final String image;
-  const FriendMessage({Key? key, required this.message, required this.image}) : super(key: key);
+  const FriendMessage({Key? key, required this.message,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

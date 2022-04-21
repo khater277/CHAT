@@ -16,7 +16,11 @@ class ContactItem extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return GestureDetector(
-      onTap: (){Get.to(()=>MessagesScreen(user: user));},
+      onTap: (){
+        Get.to(()=>MessagesScreen(
+            user: user,
+          isFirstMessage: true,
+        ));},
       child: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Row(
