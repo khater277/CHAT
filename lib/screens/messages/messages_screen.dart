@@ -29,6 +29,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  ValueNotifier valueNotifier = ValueNotifier<bool?>(null);
+  bool? isEnd;
 
 
   @override
@@ -114,19 +116,62 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     Column(
                     children: [
                       Expanded(
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                            controller: _scrollController,
-                            shrinkWrap: true,
-                            itemBuilder:(context,index)=>
-                                Column(
-                                  children: [
-                                    MessageBuilder(message: messages[index]),
-                                    if(messages.length-1==index)
-                                      SizedBox(height: 2.h,)
-                                  ],
-                                ),
-                            itemCount: messages.length
+                        child: Stack(
+                          alignment: AlignmentDirectional.bottomEnd,
+                          children: [
+                            ValueListenableBuilder(
+                              valueListenable: valueNotifier,
+                              builder: (BuildContext context, value, Widget? child) {
+                                return NotificationListener(
+                                  onNotification: (notification) {
+                                    if (notification is ScrollUpdateNotification) {
+                                      if(_scrollController.position.maxScrollExtent
+                                          ==_scrollController.position.pixels){
+                                        valueNotifier.value=true;
+                                      }else{
+                                        valueNotifier.value=false;
+                                      }
+                                    }
+                                    return true;
+                                  },
+                                  child: ListView.builder(
+                                      physics: const BouncingScrollPhysics(),
+                                      controller: _scrollController,
+                                      shrinkWrap: true,
+                                      itemBuilder:(context,index)=>
+                                          Column(
+                                            children: [
+                                              MessageBuilder(message: messages[index]),
+                                              if(messages.length-1==index)
+                                                SizedBox(height: 2.h,)
+                                            ],
+                                          ),
+                                      itemCount: messages.length
+                                  ),
+                                );
+                              },
+                            ),
+                            ValueListenableBuilder(
+                              valueListenable: valueNotifier,
+                              builder: (BuildContext context, value, Widget? child) {
+                                return value!=true?
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2.5.w,vertical: 1.5.h),
+                                  child: SizedBox(
+                                    width: 27.sp,height: 27.sp,
+                                    child: FloatingActionButton(
+                                      onPressed: (){scrollDown(_scrollController);},
+                                      shape: const CircleBorder(),
+                                      backgroundColor: MyColors.lightBlack,
+                                      child: Icon(IconBroken.Arrow___Down_2,size: 13.sp,color: MyColors.blue,),
+                                    ),
+                                  ),
+                                )
+                                :
+                                const DefaultNullWidget();
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       SendMessageTextFiled(

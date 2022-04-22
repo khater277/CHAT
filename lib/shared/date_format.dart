@@ -29,6 +29,22 @@ class DateFormatter {
     '20':'8','21':'9', '22':'10','23':'11',
   };
 
+  String messageTimeFormat(String dateTime){
+    DateTime date = DateTime.parse(dateTime);
+    String? min= date.minute.toString().length==1?
+    "0${date.minute.toString()}":date.minute.toString();
+    String? hour= date.hour.toString().length==1?
+    "0${date.hour.toString()}":date.hour.toString();
+
+    String x="";
+    if(hour.startsWith('0')||hour=="10"||hour=="11"){
+      x=languageFun(ar: 'ص',en: "AM");
+    }else{
+      x=languageFun(ar: 'م',en: "PM");
+    }
+    return "${period[hour]}:$min $x";
+  }
+
   Map<String,String>? dateFormat(String? dateTime){
     String? day=dateTime!.substring(8,10);
     if(day[0]=='0'){
