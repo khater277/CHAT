@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:sizer/sizer.dart';
+import 'package:transparent_image/transparent_image.dart';
 import '../styles/icons_broken.dart';
 
 
@@ -492,6 +493,85 @@ class DefaultDivider extends StatelessWidget {
       width: double.infinity,
       height: 1,
       color: Colors.grey.shade300,
+    );
+  }
+}
+
+
+class DefaultFadedImage extends StatelessWidget {
+  final String imgUrl;
+  final double height;
+  final double width;
+  const DefaultFadedImage(
+      {Key? key,
+        required this.imgUrl,
+        required this.height,
+        required this.width})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      image: imgUrl,
+      fit: BoxFit.cover,
+      height: height,
+      width: width,
+      imageErrorBuilder: (context, s, d) =>
+          ErrorImage(width: width, height: height),
+    );
+  }
+}
+
+class LoadingImage extends StatelessWidget{
+  final double width;
+  final double height;
+  const LoadingImage({Key? key, required this.width, required this.height}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      width: width,
+      child: const Center(
+        child: DefaultProgressIndicator(icon: IconBroken.Image),
+      ),
+    );
+  }
+
+}
+
+class ErrorImage extends StatelessWidget {
+  final double? width;
+  final double? height;
+  const ErrorImage({Key? key, @required this.width, @required this.height})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      color: Colors.transparent,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              IconBroken.Danger,
+              size: 40.sp,
+              color: MyColors.grey,
+            ),
+            Text(
+              "connection error",
+              style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                fontSize: 14.sp,
+                color: MyColors.grey
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

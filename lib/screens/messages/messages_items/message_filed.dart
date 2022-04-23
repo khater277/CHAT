@@ -68,10 +68,12 @@ class SendMessageTextFiled extends StatelessWidget {
   final bool isFirstMessage;
   final TextEditingController messageController;
   final ScrollController scrollController;
+  final ValueNotifier showAnimatedContainer;
   final String friendID;
   const SendMessageTextFiled(
       {Key? key,required this.messageController, required this.cubit,
-        required this.friendID, required this.isFirstMessage, required this.scrollController, }) : super(key: key);
+        required this.friendID, required this.isFirstMessage,
+        required this.scrollController, required this.showAnimatedContainer, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +94,6 @@ class SendMessageTextFiled extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
                 fontSize: 13.sp,
               ),
-              onTap: (){
-                scrollDown(scrollController);
-              },
               decoration: InputDecoration(
                 hintText: "type your message...",
                 hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -154,10 +153,20 @@ class SendMessageTextFiled extends StatelessWidget {
                       ],
                     );
                     } else {
-                      return IconButton(
-                        onPressed: (){},
-                        icon: Icon(IconBroken.Arrow___Up_Circle,size: 20.sp,color: MyColors.blue,)
-                    );
+                      return ValueListenableBuilder(
+                        valueListenable: showAnimatedContainer,
+                        builder: (BuildContext context, value, Widget? child) {
+                          return IconButton(
+                              onPressed: (){
+                                showAnimatedContainer.value =! showAnimatedContainer.value;
+                              },
+                              icon: Icon(
+                                !showAnimatedContainer.value?
+                                IconBroken.Arrow___Up_Circle:IconBroken.Arrow___Down_Circle
+                                ,size: 20.sp,color: MyColors.blue,)
+                          );
+                      },
+                      );
                     }
                   },
                 ),

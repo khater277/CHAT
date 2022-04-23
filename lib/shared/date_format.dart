@@ -110,6 +110,37 @@ class DateFormatter {
     return finalDate;
   }
 
+  String messageDate(String date){
+
+    String? finalDate;
+    DateTime messageDate = DateTime.parse(date);
+    DateTime nowDate = DateTime.now();
+
+
+    DateTime messageDayDate = DateTime(messageDate.year,messageDate.month,messageDate.day);
+    DateTime todayDate = DateTime(nowDate.year,nowDate.month,nowDate.day);
+    DateTime yesterdayDayDate = todayDate.subtract(const Duration(days: 1));
+
+
+    String? month= messageDate.month.toString().length==1?
+    "0${messageDate.month.toString()}":messageDate.month.toString();
+    String? hour= messageDate.hour.toString().length==1?
+    "0${messageDate.hour.toString()}":messageDate.hour.toString();
+    String x="";
+    if(hour.startsWith('0')||hour=="10"||hour=="11"){
+      x=languageFun(ar: 'ص',en: "AM");
+    }else{
+      x=languageFun(ar: 'م',en: "PM");
+    }
+    String today = "Today";
+    String yesterday = "Yesterday";
+    String completeDate = "${messageDate.day} ${cal[month]} ${messageDate.year}";
+    finalDate = messageDayDate==todayDate?today:
+    messageDayDate==yesterdayDayDate?yesterday:completeDate;
+
+    return finalDate;
+  }
+
   String checkYear(String date){
     return (dateFormat(DateTime.now().toString())!['year']!)==
         dateFormat(date)!['year']?"":

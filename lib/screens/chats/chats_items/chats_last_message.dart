@@ -1,5 +1,6 @@
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/shared/colors.dart';
+import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -12,6 +13,15 @@ class ChatsLastMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        if(lastMessage.senderID==uId)
+          Text(
+            "you : ",
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                fontSize: 10.5.sp,
+                color: MyColors.grey
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
         Expanded(
           child: lastMessage.isVideo==true?
           const VideoMessage()

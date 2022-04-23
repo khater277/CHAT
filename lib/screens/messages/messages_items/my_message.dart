@@ -1,7 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/date_format.dart';
-import 'package:chat/shared/default_widgets.dart';
-import 'package:chat/styles/icons_broken.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
@@ -11,37 +10,65 @@ import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../models/MessageModel.dart';
+import '../../../shared/default_widgets.dart';
 
-class MyMessage extends StatelessWidget {
+class MyMessage extends StatefulWidget {
   final MessageModel messageModel;
-  const MyMessage({Key? key, required this.messageModel}) : super(key: key);
+  final int index;
+  const MyMessage({Key? key, required this.messageModel, required this.index}) : super(key: key);
+
+  @override
+  State<MyMessage> createState() => _MyMessageState();
+}
+
+class _MyMessageState extends State<MyMessage> {
+
+  ValueNotifier valueNotifier = ValueNotifier<bool>(false);
+  bool showDate = false;
 
   @override
   Widget build(BuildContext context) {
-    return ChatBubble(
-      clipper: ChatBubbleClipper3(type: BubbleType.sendBubble),
-      alignment: Alignment.topRight,
-      elevation: 0,
-      margin: EdgeInsets.only(top: 2.h),
-      backGroundColor: MyColors.blue.withOpacity(0.5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          messageModel.message!.isEmpty?
-          messageModel.isImage==true?
-          MyImageMessage(media: messageModel.media!)
-          :MyVideoMessage(media: messageModel.media!):
-          MyTextMessage(message: messageModel.message!),
-          SizedBox(height: messageModel.message!=""?0.5.h:1.h,),
-          Text(
-            DateFormatter().messageTimeFormat(messageModel.date!),
-            style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                fontSize: 9.sp,
-              color: MyColors.grey.withOpacity(0.8)
+    return ValueListenableBuilder(
+      valueListenable: valueNotifier,
+      builder: (BuildContext context, value, Widget? child) {
+        return GestureDetector(
+          onTap: (){
+            valueNotifier.value = !valueNotifier.value;
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 1.w),
+              child: ChatBubble(
+                clipper: ChatBubbleClipper3(type: BubbleType.sendBubble),
+                alignment: Alignment.topRight,
+                elevation: 0,
+                margin: EdgeInsets.only(top: 2.h),
+                backGroundColor: MyColors.blue.withOpacity(0.5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    widget.messageModel.message!.isEmpty?
+                    widget.messageModel.isImage==true?
+                    MyImageMessage(media: widget.messageModel.media!)
+                        :MyVideoMessage(media: widget.messageModel.media!):
+                    MyTextMessage(message: widget.messageModel.message!),
+                    SizedBox(height: widget.messageModel.message!=""?0.5.h:1.h,),
+                    if(valueNotifier.value)
+                      Text(
+                        DateFormatter().messageTimeFormat(widget.messageModel.date!),
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            fontSize: 9.sp,
+                            color: MyColors.grey.withOpacity(0.8)
+                        ),
+                      )
+                  ],
+                ),
+              ),
             ),
-          )
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -66,27 +93,30 @@ class MyTextMessage extends StatelessWidget {
   }
 }
 
-
 class MyImageMessage extends StatelessWidget {
   final String media;
   const MyImageMessage({Key? key, required this.media}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.5,
-      height: MediaQuery.of(context).size.height * 0.4,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(5.sp),
-        child: Image.network(
-          media,
-          fit: BoxFit.cover,
+    double width = MediaQuery.of(context).size.width * 0.5;
+    double height = MediaQuery.of(context).size.height * 0.4;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5.sp),
+      child: SizedBox(
+        width: width,height: height,
+        child: CachedNetworkImage(
+            imageUrl: media,
+            placeholder:(context,s)=> LoadingImage(width: width, height: height),
+            fit: BoxFit.cover,
+            errorWidget:(context,s,d)=>ErrorImage(
+                width: width,
+                height: height)
         ),
       ),
     );
   }
 }
-
 
 class MyVideoMessage extends StatefulWidget {
   final String media;

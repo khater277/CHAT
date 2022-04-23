@@ -1,5 +1,6 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
+import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
 import 'package:chat/screens/send_media_message/send_media_screen.dart';
 import 'package:chat/shared/colors.dart';
@@ -30,13 +31,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   ValueNotifier valueNotifier = ValueNotifier<bool?>(null);
-  bool? isEnd;
+  ValueNotifier showAnimatedContainer = ValueNotifier<bool?>(false);
 
 
   @override
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
+    valueNotifier.dispose();
     super.dispose();
   }
 
@@ -107,7 +109,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       MessageModel messageModel = MessageModel.fromJson(element.data());
                       messages.add(messageModel);
                     }
-                    Future.delayed(const Duration(milliseconds: 300)).then((value){
+                      Future.delayed(const Duration(milliseconds: 300)).then((value){
                       scrollDown(_scrollController);
                     });
                     hasData = true;
@@ -117,19 +119,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     children: [
                       Expanded(
                         child: Stack(
-                          alignment: AlignmentDirectional.bottomEnd,
                           children: [
                             ValueListenableBuilder(
                               valueListenable: valueNotifier,
                               builder: (BuildContext context, value, Widget? child) {
                                 return NotificationListener(
                                   onNotification: (notification) {
-                                    if (notification is ScrollUpdateNotification) {
+                                    if (notification is ScrollEndNotification) {
                                       if(_scrollController.position.maxScrollExtent
                                           ==_scrollController.position.pixels){
-                                        valueNotifier.value=true;
+                                        valueNotifier.value = true;
                                       }else{
-                                        valueNotifier.value=false;
+                                        valueNotifier.value = false;
                                       }
                                     }
                                     return true;
@@ -141,7 +142,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                       itemBuilder:(context,index)=>
                                           Column(
                                             children: [
-                                              MessageBuilder(message: messages[index]),
+                                              MessageBuilder(
+                                                message: messages[index],
+                                                previousMessage: index!=0?
+                                                messages[index-1]:messages[index],
+                                                index: index,),
                                               if(messages.length-1==index)
                                                 SizedBox(height: 2.h,)
                                             ],
@@ -154,16 +159,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             ValueListenableBuilder(
                               valueListenable: valueNotifier,
                               builder: (BuildContext context, value, Widget? child) {
-                                return value!=true?
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 2.5.w,vertical: 1.5.h),
-                                  child: SizedBox(
-                                    width: 27.sp,height: 27.sp,
-                                    child: FloatingActionButton(
-                                      onPressed: (){scrollDown(_scrollController);},
-                                      shape: const CircleBorder(),
-                                      backgroundColor: MyColors.lightBlack,
-                                      child: Icon(IconBroken.Arrow___Down_2,size: 13.sp,color: MyColors.blue,),
+                                return value!=true && _scrollController.position.pixels!=0.0?
+                                Align(
+                                  alignment: AlignmentDirectional.bottomEnd,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 2.5.w,vertical: 1.5.h),
+                                    child: SizedBox(
+                                      width: 27.sp,height: 27.sp,
+                                      child: FloatingActionButton(
+                                        onPressed: (){scrollDown(_scrollController);},
+                                        shape: const CircleBorder(),
+                                        backgroundColor: MyColors.lightBlack,
+                                        child: Icon(IconBroken.Arrow___Down_2,size: 13.sp,color: MyColors.blue,),
+                                      ),
                                     ),
                                   ),
                                 )
@@ -171,12 +179,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 const DefaultNullWidget();
                               },
                             ),
+                            AnimatedControllerBuilder(
+                              cubit: cubit,
+                                showAnimatedContainer: showAnimatedContainer,
+                              messageController: _messageController,
+                            )
                           ],
                         ),
                       ),
                       SendMessageTextFiled(
                           messageController: _messageController,
                         scrollController: _scrollController,
+                        showAnimatedContainer: showAnimatedContainer,
                         isFirstMessage: messages.isEmpty,
                         cubit: cubit,
                         friendID: widget.user.uId!,
