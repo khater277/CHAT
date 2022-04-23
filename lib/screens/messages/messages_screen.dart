@@ -67,139 +67,149 @@ class _MessagesScreenState extends State<MessagesScreen> {
       builder: (context,state){
         AppCubit cubit = AppCubit.get(context);
         return SafeArea(
-            child: Scaffold(
-              appBar: AppBar(
-                toolbarHeight: 10.h,
-                backgroundColor: MyColors.darkBlack,
-                centerTitle: true,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20.sp),
-                      bottomRight: Radius.circular(20.sp),
-                    )
-                ),
-                title: Text(
-                  "${widget.user.name}",
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      fontSize: 14.sp
-                  ),
-                ),
-                leading: const DefaultBackButton(),
-                actions: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    child: IconButton(
-                        onPressed: (){
-                          //cubit.getContacts();
-                        },
-                        icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
-                    ),
-                  )
-                ],
-              ),
-              body: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('users')
-                  .doc(uId).collection('chats').doc(widget.user.uId)
-                    .collection('messages').orderBy('date').snapshots(),
-                builder: (context, snapshot) {
-                  bool hasData = false;
-                  List<MessageModel> messages = [];
-                  if(snapshot.hasData){
-                    for (var element in snapshot.data!.docs) {
-                      MessageModel messageModel = MessageModel.fromJson(element.data());
-                      messages.add(messageModel);
-                    }
-                      Future.delayed(const Duration(milliseconds: 300)).then((value){
-                      scrollDown(_scrollController);
-                    });
-                    hasData = true;
-                  }
-                  return messages.isNotEmpty || hasData?
-                    Column(
-                    children: [
-                      Expanded(
-                        child: Stack(
-                          children: [
-                            ValueListenableBuilder(
-                              valueListenable: valueNotifier,
-                              builder: (BuildContext context, value, Widget? child) {
-                                return NotificationListener(
-                                  onNotification: (notification) {
-                                    if (notification is ScrollEndNotification) {
-                                      if(_scrollController.position.maxScrollExtent
-                                          ==_scrollController.position.pixels){
-                                        valueNotifier.value = true;
-                                      }else{
-                                        valueNotifier.value = false;
-                                      }
-                                    }
-                                    return true;
-                                  },
-                                  child: ListView.builder(
-                                      physics: const BouncingScrollPhysics(),
-                                      controller: _scrollController,
-                                      shrinkWrap: true,
-                                      itemBuilder:(context,index)=>
-                                          Column(
-                                            children: [
-                                              MessageBuilder(
-                                                message: messages[index],
-                                                previousMessage: index!=0?
-                                                messages[index-1]:messages[index],
-                                                index: index,),
-                                              if(messages.length-1==index)
-                                                SizedBox(height: 2.h,)
-                                            ],
-                                          ),
-                                      itemCount: messages.length
-                                  ),
-                                );
-                              },
-                            ),
-                            ValueListenableBuilder(
-                              valueListenable: valueNotifier,
-                              builder: (BuildContext context, value, Widget? child) {
-                                return value!=true && _scrollController.position.pixels!=0.0?
-                                Align(
-                                  alignment: AlignmentDirectional.bottomEnd,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 2.5.w,vertical: 1.5.h),
-                                    child: SizedBox(
-                                      width: 27.sp,height: 27.sp,
-                                      child: FloatingActionButton(
-                                        onPressed: (){scrollDown(_scrollController);},
-                                        shape: const CircleBorder(),
-                                        backgroundColor: MyColors.lightBlack,
-                                        child: Icon(IconBroken.Arrow___Down_2,size: 13.sp,color: MyColors.blue,),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                :
-                                const DefaultNullWidget();
-                              },
-                            ),
-                            AnimatedControllerBuilder(
-                              cubit: cubit,
-                                showAnimatedContainer: showAnimatedContainer,
-                              messageController: _messageController,
+            child: ValueListenableBuilder(
+              valueListenable: showAnimatedContainer,
+              builder: (BuildContext context, value, Widget? child) {
+                return GestureDetector(
+                  onTap: (){
+                    showAnimatedContainer.value = false;
+                  },
+                  child: Scaffold(
+                      appBar: AppBar(
+                        toolbarHeight: 10.h,
+                        backgroundColor: MyColors.darkBlack,
+                        centerTitle: true,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20.sp),
+                              bottomRight: Radius.circular(20.sp),
                             )
-                          ],
                         ),
+                        title: Text(
+                          "${widget.user.name}",
+                          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                              fontSize: 14.sp
+                          ),
+                        ),
+                        leading: const DefaultBackButton(),
+                        actions: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 3.w),
+                            child: IconButton(
+                                onPressed: (){
+                                  //cubit.getContacts();
+                                },
+                                icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
+                            ),
+                          )
+                        ],
                       ),
-                      SendMessageTextFiled(
-                          messageController: _messageController,
-                        scrollController: _scrollController,
-                        showAnimatedContainer: showAnimatedContainer,
-                        isFirstMessage: messages.isEmpty,
-                        cubit: cubit,
-                        friendID: widget.user.uId!,
+                      body: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection('users')
+                              .doc(uId).collection('chats').doc(widget.user.uId)
+                              .collection('messages').orderBy('date').snapshots(),
+                          builder: (context, snapshot) {
+                            bool hasData = false;
+                            List<MessageModel> messages = [];
+                            if(snapshot.hasData){
+                              for (var element in snapshot.data!.docs) {
+                                MessageModel messageModel = MessageModel.fromJson(element.data());
+                                messages.add(messageModel);
+                              }
+                              Future.delayed(const Duration(milliseconds: 300)).then((value){
+                                scrollDown(_scrollController);
+                              });
+                              hasData = true;
+                            }
+                            return messages.isNotEmpty || hasData?
+                            Column(
+                              children: [
+                                Expanded(
+                                  child: Stack(
+                                    children: [
+                                      ValueListenableBuilder(
+                                        valueListenable: valueNotifier,
+                                        builder: (BuildContext context, value, Widget? child) {
+                                          return NotificationListener(
+                                            onNotification: (notification) {
+                                              if (notification is ScrollEndNotification) {
+                                                if(_scrollController.position.maxScrollExtent
+                                                    ==_scrollController.position.pixels){
+                                                  valueNotifier.value = true;
+                                                }else{
+                                                  valueNotifier.value = false;
+                                                }
+                                              }
+                                              return true;
+                                            },
+                                            child: ListView.builder(
+                                                physics: const BouncingScrollPhysics(),
+                                                controller: _scrollController,
+                                                shrinkWrap: true,
+                                                itemBuilder:(context,index)=>
+                                                    Column(
+                                                      children: [
+                                                        MessageBuilder(
+                                                          message: messages[index],
+                                                          previousMessage: index!=0?
+                                                          messages[index-1]:messages[index],
+                                                          index: index,),
+                                                        if(messages.length-1==index)
+                                                          SizedBox(height: 2.h,)
+                                                      ],
+                                                    ),
+                                                itemCount: messages.length
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      ValueListenableBuilder(
+                                        valueListenable: valueNotifier,
+                                        builder: (BuildContext context, value, Widget? child) {
+                                          return value!=true && _scrollController.position.pixels!=0.0?
+                                          Align(
+                                            alignment: AlignmentDirectional.bottomEnd,
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(horizontal: 2.5.w,vertical: 1.5.h),
+                                              child: SizedBox(
+                                                width: 27.sp,height: 27.sp,
+                                                child: FloatingActionButton(
+                                                  onPressed: (){scrollDown(_scrollController);},
+                                                  shape: const CircleBorder(),
+                                                  backgroundColor: MyColors.lightBlack,
+                                                  child: Icon(IconBroken.Arrow___Down_2,size: 13.sp,color: MyColors.blue,),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                              :
+                                          const DefaultNullWidget();
+                                        },
+                                      ),
+                                      AnimatedControllerBuilder(
+                                        cubit: cubit,
+                                        showAnimatedContainer: showAnimatedContainer,
+                                        messageController: _messageController,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                SendMessageTextFiled(
+                                  messageController: _messageController,
+                                  scrollController: _scrollController,
+                                  showAnimatedContainer: showAnimatedContainer,
+                                  isFirstMessage: messages.isEmpty,
+                                  cubit: cubit,
+                                  friendID: widget.user.uId!,
+                                )
+                              ],
+                            )
+                                :const DefaultProgressIndicator(icon: IconBroken.Message);
+                          }
                       )
-                    ],
-                  )
-                      :const DefaultProgressIndicator(icon: IconBroken.Message);
-                }
-              )
+                  ),
+                );
+              },
             )
         );
       },

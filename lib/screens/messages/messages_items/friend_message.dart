@@ -31,40 +31,45 @@ class _FriendMessageState extends State<FriendMessage> {
     return ValueListenableBuilder(
       valueListenable: valueNotifier,
       builder: (BuildContext context, value, Widget? child) {
-        return GestureDetector(
-          onTap: (){
-            valueNotifier.value = !valueNotifier.value;
-          },
-          child: Container(
-            color: Colors.transparent,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.w),
-              child: ChatBubble(
-                clipper: ChatBubbleClipper3(type: BubbleType.receiverBubble),
-                alignment: Alignment.topLeft,
-                elevation: 0,
-                margin: EdgeInsets.only(top: 2.h),
-                backGroundColor: MyColors.lightBlack,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    widget.messageModel.message!.isEmpty?
-                    widget.messageModel.isImage==true?
-                    FriendImageMessage(media: widget.messageModel.media!)
-                        :FriendVideoMessage(media: widget.messageModel.media!):
-                    FriendTextMessage(message: widget.messageModel.message!),
-                    SizedBox(height: widget.messageModel.message!=""?0.5.h:1.h,),
-                    if(valueNotifier.value)
-                      Text(
-                        DateFormatter().messageTimeFormat(widget.messageModel.date!),
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            fontSize: 9.sp,
-                            color: MyColors.grey.withOpacity(0.8)
-                        ),
-                      )
-                  ],
-                ),
-              ),
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 1.w),
+          child: ChatBubble(
+            clipper: ChatBubbleClipper3(type: BubbleType.receiverBubble),
+            alignment: Alignment.topLeft,
+            elevation: 0,
+            margin: EdgeInsets.only(top: 2.h),
+            backGroundColor: MyColors.lightBlack,
+            child: ValueListenableBuilder(
+              valueListenable: valueNotifier,
+              builder: (BuildContext context, value, Widget? child) {
+                return GestureDetector(
+                  onTap: (){
+                    valueNotifier.value = !valueNotifier.value;
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        widget.messageModel.message!.isEmpty?
+                        widget.messageModel.isImage==true?
+                        FriendImageMessage(media: widget.messageModel.media!)
+                            :FriendVideoMessage(media: widget.messageModel.media!):
+                        FriendTextMessage(message: widget.messageModel.message!),
+                        SizedBox(height: widget.messageModel.message!=""?0.5.h:1.h,),
+                        if(valueNotifier.value)
+                          Text(
+                            DateFormatter().messageTimeFormat(widget.messageModel.date!),
+                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                                fontSize: 9.sp,
+                                color: MyColors.grey.withOpacity(0.8)
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         );

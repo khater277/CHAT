@@ -28,7 +28,11 @@ class MessageBuilder extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.sp)
             ),
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 0.8.h,horizontal: 3.w),
+              padding: EdgeInsets.only(
+                top: 0.8.h,
+                right: 3.w,
+                left: 3.w
+              ),
               child: Text(
                 DateFormatter().messageDate(message.date!),
                 style: Theme.of(context).textTheme.bodyText2!.copyWith(

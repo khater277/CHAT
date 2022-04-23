@@ -28,23 +28,23 @@ class _MyMessageState extends State<MyMessage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: valueNotifier,
-      builder: (BuildContext context, value, Widget? child) {
-        return GestureDetector(
-          onTap: (){
-            valueNotifier.value = !valueNotifier.value;
-          },
-          child: Container(
-            color: Colors.transparent,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.w),
-              child: ChatBubble(
-                clipper: ChatBubbleClipper3(type: BubbleType.sendBubble),
-                alignment: Alignment.topRight,
-                elevation: 0,
-                margin: EdgeInsets.only(top: 2.h),
-                backGroundColor: MyColors.blue.withOpacity(0.5),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 1.w),
+      child: ChatBubble(
+        clipper: ChatBubbleClipper3(type: BubbleType.sendBubble),
+        alignment: Alignment.topRight,
+        elevation: 0,
+        margin: EdgeInsets.only(top: 2.h),
+        backGroundColor: MyColors.blue.withOpacity(0.5),
+        child: ValueListenableBuilder(
+          valueListenable: valueNotifier,
+          builder: (BuildContext context, value, Widget? child) {
+            return GestureDetector(
+              onTap: (){
+                valueNotifier.value = !valueNotifier.value;
+              },
+              child: Container(
+                color: Colors.transparent,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -65,10 +65,10 @@ class _MyMessageState extends State<MyMessage> {
                   ],
                 ),
               ),
-            ),
-          ),
-        );
-      },
+            );
+          },
+        ),
+      ),
     );
   }
 }
