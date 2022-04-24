@@ -1,5 +1,6 @@
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../cubit/app/app_cubit.dart';
@@ -32,7 +33,12 @@ class DeleteMessage extends StatelessWidget {
               lastMessageModel: lastMessageModel,
               friendID: friendID,
             ),
-            DeleteMessageForEveryone(cubit: cubit,),
+            DeleteMessageForEveryone(
+              cubit: cubit,
+              messageID: messageID,
+              lastMessageModel: lastMessageModel,
+              friendID: friendID,
+            ),
           ],
         ),
       ),
@@ -72,6 +78,7 @@ class DeleteMessageForMe extends StatelessWidget {
                 messageID: messageID,
                 lastMessageModel: lastMessageModel
             );
+            Get.back();
           },
           icon: Icon(IconBroken.Delete,color: Colors.red,size: 16.sp,),
         )
@@ -82,7 +89,11 @@ class DeleteMessageForMe extends StatelessWidget {
 
 class DeleteMessageForEveryone extends StatelessWidget {
   final AppCubit cubit;
-  const DeleteMessageForEveryone({Key? key, required this.cubit}) : super(key: key);
+  final String friendID;
+  final String messageID;
+  final LastMessageModel? lastMessageModel;
+  const DeleteMessageForEveryone({Key? key, required this.cubit, required this.friendID,
+    required this.messageID,required this.lastMessageModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +113,13 @@ class DeleteMessageForEveryone extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {  },
+          onPressed: () {
+            cubit.deleteMessageForEveryone(
+                friendID: friendID,
+                messageID: messageID,
+                lastMessageModel: lastMessageModel);
+            Get.back();
+          },
           icon: Icon(IconBroken.Delete,color: Colors.red,size: 16.sp,),
         )
       ],

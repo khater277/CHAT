@@ -22,7 +22,7 @@ class MyMessage extends StatefulWidget {
   final String friendID;
   final String messageID;
   final LastMessageModel? lastMessageModel;
-  const MyMessage({Key? key, required this.cubit,required this.messageModel, required this.index,
+  const MyMessage({Key? key, required this.cubit, required this.messageModel, required this.index,
     required this.friendID, required this.messageID, required this.lastMessageModel}) : super(key: key);
 
   @override
@@ -65,9 +65,7 @@ class _MyMessageState extends State<MyMessage> {
                   },
                 );
               },
-              child: Container(
-                color: Colors.transparent,
-                child: Column(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     widget.messageModel.message!.isEmpty?
@@ -85,13 +83,30 @@ class _MyMessageState extends State<MyMessage> {
                         ),
                       )
                   ],
-                ),
-              ),
+                )
             );
           },
         ),
       ),
     );
+  }
+}
+
+class DeleteMessageLoader extends StatelessWidget {
+  const DeleteMessageLoader({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.transparent,
+        width: 20.sp,height: 20.sp,
+        child: Padding(
+          padding: EdgeInsets.all(2.sp),
+          child: CircularProgressIndicator(
+            strokeWidth: 1.sp,
+            color: MyColors.white,
+          ),
+        ));
   }
 }
 
@@ -157,7 +172,7 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
     setState(() {
-      print(_controller!.value.aspectRatio);
+      debugPrint(_controller!.value.aspectRatio.toString());
       _chewieController = ChewieController(
         videoPlayerController: _controller!,
         aspectRatio: _controller!.value.aspectRatio,

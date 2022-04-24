@@ -290,7 +290,7 @@ class AppCubit extends Cubit<AppStates>{
         emit(AppSelectMessageVideoState());
       }
     }else{
-      print("NOT SELECTED");
+      debugPrint("NOT SELECTED");
       emit(AppErrorState());
     }
   }
@@ -311,7 +311,7 @@ class AppCubit extends Cubit<AppStates>{
           mediaSource: mediaSource,
           file: value,
         );
-        print("MEDIA SENT");
+        debugPrint("MEDIA SENT");
         emit(AppSendMediaMessageState());
       }).catchError((error){
         printError("sendMediaMessage", error.toString());
@@ -335,7 +335,11 @@ class AppCubit extends Cubit<AppStates>{
         .delete()
         .then((value){
           if(lastMessageModel!=null){
-            updateLastMessageInDelete(friendID, lastMessageModel);
+            updateLastMessageInDelete(
+                friendID: friendID,
+                lastMessageModel: lastMessageModel,
+                isForEveryone: false,
+            );
           }else {
             emit(AppDeleteMessageState());
           }
@@ -345,25 +349,76 @@ class AppCubit extends Cubit<AppStates>{
         });
   }
 
-  void updateLastMessageInDelete(String friendID, LastMessageModel? lastMessageModel) {
+
+  void deleteMessageForEveryone({
+    required String friendID,
+    required String messageID,
+    required LastMessageModel? lastMessageModel,
+  }){
+    emit(AppDeleteMessageLoadingState());
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId)
+        .collection('chats')
+        .doc(friendID)
+        .collection('messages')
+        .doc(messageID)
+        .delete()
+        .then((value){
+          FirebaseFirestore.instance.collection('users')
+              .doc(friendID)
+              .collection('chats')
+              .doc(uId)
+              .collection('messages')
+              .doc(messageID)
+              .delete()
+              .then((value){
+            if(lastMessageModel!=null){
+              updateLastMessageInDelete(
+                friendID: friendID,
+                lastMessageModel: lastMessageModel,
+                isForEveryone: true,
+              );
+            }else {
+              emit(AppDeleteMessageState());
+            }
+          }).catchError((error){
+            printError("deleteMessageForMe", error.toString());
+            emit(AppErrorState());
+          });
+    }).catchError((error){
+      printError("deleteMessageForMe", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  void updateLastMessageInDelete({
+    required String friendID,
+    required LastMessageModel? lastMessageModel,
+    required bool isForEveryone,
+}) {
     FirebaseFirestore.instance.collection('users')
     .doc(uId)
     .collection('chats')
     .doc(friendID)
-    .set(lastMessageModel!.toJson())
+    .update(lastMessageModel!.toJson())
     .then((value){
-      FirebaseFirestore.instance.collection('users')
-      .doc(friendID)
-      .collection('chats')
-      .doc(uId)
-      .set(lastMessageModel.toJson())
-      .then((value){
-        print("aaaaaaaaaaaaaa77777777777777aaaaaaaaaaa");
+      if(isForEveryone){
+        FirebaseFirestore.instance.collection('users')
+            .doc(friendID)
+            .collection('chats')
+            .doc(uId)
+            .update(lastMessageModel.toJson())
+            .then((value){
+          debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
+          emit(AppDeleteMessageState());
+        }).catchError((error){
+          printError("deleteMessage", error.toString());
+          emit(AppErrorState());
+        });
+      }else{
+        debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
         emit(AppDeleteMessageState());
-      }).catchError((error){
-        printError("deleteMessage", error.toString());
-        emit(AppErrorState());
-      });
+      }
     }).catchError((error){
       printError("deleteMessage", error.toString());
       emit(AppErrorState());
