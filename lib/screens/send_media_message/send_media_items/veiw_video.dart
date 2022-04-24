@@ -22,7 +22,7 @@ class _ViewVideoState extends State<ViewVideo> {
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
     setState(() {
-      print(_controller!.value.aspectRatio);
+      debugPrint(_controller!.value.aspectRatio.toString());
       _chewieController = ChewieController(
         videoPlayerController: _controller!,
         aspectRatio: _controller!.value.aspectRatio,

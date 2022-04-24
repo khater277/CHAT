@@ -11,7 +11,6 @@ import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -116,13 +115,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                       ],
                                     );
                                   },
-                                  separatorBuilder: (context,index)=>GestureDetector(
-                                    onTap: (){
-                                      print(index);
-                                    },
-                                    child: Divider(
-                                      color: MyColors.grey.withOpacity(0.08),
-                                    ),
+                                  separatorBuilder: (context,index)=>Divider(
+                                    color: MyColors.grey.withOpacity(0.08),
                                   ),
                                   itemCount: chats.length
                               ),
