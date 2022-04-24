@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat/screens/messages/messages_items/delete_message.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/date_format.dart';
 import 'package:chewie/chewie.dart';
@@ -9,13 +10,20 @@ import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
 import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../cubit/app/app_cubit.dart';
+import '../../../models/LastMessageModel.dart';
 import '../../../models/MessageModel.dart';
 import '../../../shared/default_widgets.dart';
 
 class MyMessage extends StatefulWidget {
+  final AppCubit cubit;
   final MessageModel messageModel;
   final int index;
-  const MyMessage({Key? key, required this.messageModel, required this.index}) : super(key: key);
+  final String friendID;
+  final String messageID;
+  final LastMessageModel? lastMessageModel;
+  const MyMessage({Key? key, required this.cubit,required this.messageModel, required this.index,
+    required this.friendID, required this.messageID, required this.lastMessageModel}) : super(key: key);
 
   @override
   State<MyMessage> createState() => _MyMessageState();
@@ -42,6 +50,20 @@ class _MyMessageState extends State<MyMessage> {
             return GestureDetector(
               onTap: (){
                 valueNotifier.value = !valueNotifier.value;
+              },
+              onLongPress: (){
+                showModalBottomSheet(
+                    context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (BuildContext context) {
+                      return DeleteMessage(
+                          cubit: widget.cubit,
+                          friendID: widget.friendID,
+                          messageID: widget.messageID,
+                          lastMessageModel: widget.lastMessageModel
+                      );
+                  },
+                );
               },
               child: Container(
                 color: Colors.transparent,

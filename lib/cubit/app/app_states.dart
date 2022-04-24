@@ -32,3 +32,6 @@ class AppSelectMessageVideoState extends AppStates{}
 
 class AppSendMediaMessageLoadingState extends AppStates{}
 class AppSendMediaMessageState extends AppStates{}
+
+class AppDeleteMessageLoadingState extends AppStates{}
+class AppDeleteMessageState extends AppStates{}

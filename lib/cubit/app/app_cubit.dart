@@ -110,7 +110,7 @@ class AppCubit extends Cubit<AppStates>{
     String? message,
     String? file,
   }){
-    emit(AppLoadingState());
+    //emit(AppLoadingState());
     ///message model which will be stored in my firestore
     MessageModel myMessageModel = MessageModel(
       senderID: uId,
@@ -317,6 +317,56 @@ class AppCubit extends Cubit<AppStates>{
         printError("sendMediaMessage", error.toString());
         emit(AppErrorState());
       });
+    });
+  }
+
+  void deleteMessageForMe({
+    required String friendID,
+    required String messageID,
+    required LastMessageModel? lastMessageModel,
+  }){
+    emit(AppDeleteMessageLoadingState());
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId)
+        .collection('chats')
+        .doc(friendID)
+        .collection('messages')
+        .doc(messageID)
+        .delete()
+        .then((value){
+          if(lastMessageModel!=null){
+            updateLastMessageInDelete(friendID, lastMessageModel);
+          }else {
+            emit(AppDeleteMessageState());
+          }
+        }).catchError((error){
+          printError("deleteMessageForMe", error.toString());
+          emit(AppErrorState());
+        });
+  }
+
+  void updateLastMessageInDelete(String friendID, LastMessageModel? lastMessageModel) {
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId)
+    .collection('chats')
+    .doc(friendID)
+    .set(lastMessageModel!.toJson())
+    .then((value){
+      FirebaseFirestore.instance.collection('users')
+      .doc(friendID)
+      .collection('chats')
+      .doc(uId)
+      .set(lastMessageModel.toJson())
+      .then((value){
+        print("aaaaaaaaaaaaaa77777777777777aaaaaaaaaaa");
+        emit(AppDeleteMessageState());
+      }).catchError((error){
+        printError("deleteMessage", error.toString());
+        emit(AppErrorState());
+      });
+    }).catchError((error){
+      printError("deleteMessage", error.toString());
+      emit(AppErrorState());
     });
   }
 }

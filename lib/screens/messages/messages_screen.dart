@@ -1,5 +1,6 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
+import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
 import 'package:chat/screens/send_media_message/send_media_screen.dart';
@@ -32,6 +33,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final ScrollController _scrollController = ScrollController();
   ValueNotifier valueNotifier = ValueNotifier<bool?>(null);
   ValueNotifier showAnimatedContainer = ValueNotifier<bool?>(false);
+  ValueNotifier canScroll = ValueNotifier<bool>(true);
 
 
   @override
@@ -39,6 +41,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
     _messageController.dispose();
     _scrollController.dispose();
     valueNotifier.dispose();
+    showAnimatedContainer.dispose();
+    canScroll.dispose();
     super.dispose();
   }
 
@@ -111,15 +115,20 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           builder: (context, snapshot) {
                             bool hasData = false;
                             List<MessageModel> messages = [];
+                            List<String> messagesID = [];
                             if(snapshot.hasData){
                               for (var element in snapshot.data!.docs) {
                                 MessageModel messageModel = MessageModel.fromJson(element.data());
+                                messagesID.add(element.id);
                                 messages.add(messageModel);
                               }
-                              Future.delayed(const Duration(milliseconds: 300)).then((value){
+                              if(canScroll.value) {
+                                Future.delayed(const Duration(milliseconds: 300)).then((value){
                                 scrollDown(_scrollController);
                               });
+                              }
                               hasData = true;
+                              canScroll.value=false;
                             }
                             return messages.isNotEmpty || hasData?
                             Column(
@@ -146,18 +155,36 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                 physics: const BouncingScrollPhysics(),
                                                 controller: _scrollController,
                                                 shrinkWrap: true,
-                                                itemBuilder:(context,index)=>
-                                                    Column(
-                                                      children: [
-                                                        MessageBuilder(
-                                                          message: messages[index],
-                                                          previousMessage: index!=0?
-                                                          messages[index-1]:messages[index],
-                                                          index: index,),
-                                                        if(messages.length-1==index)
-                                                          SizedBox(height: 2.h,)
-                                                      ],
-                                                    ),
+                                                itemBuilder:(context,index){
+                                                  LastMessageModel? lastMessageModel = index!=0 && index==messages.length-1?
+                                                  LastMessageModel(
+                                                    senderID: messages[index-1].senderID,
+                                                    receiverID: messages[index-1].receiverID,
+                                                    message: messages[index-1].message,
+                                                    media: messages[index-1].media,
+                                                    isImage: messages[index-1].isImage,
+                                                    isVideo: messages[index-1].isVideo,
+                                                    isDoc: messages[index-1].isDoc,
+                                                    isRead: true,
+                                                    date: messages[index-1].date,
+                                                  ):null;
+                                                 return Column(
+                                                   children: [
+                                                     MessageBuilder(
+                                                       cubit: cubit,
+                                                       message: messages[index],
+                                                       previousMessage: index!=0?
+                                                       messages[index-1]:messages[index],
+                                                       index: index,
+                                                       lastMessageModel: lastMessageModel,
+                                                       messageID: messagesID[index],
+                                                       friendID: widget.user.uId!,
+                                                     ),
+                                                     if(messages.length-1==index)
+                                                       SizedBox(height: 2.h,)
+                                                   ],
+                                                 );
+                                                },
                                                 itemCount: messages.length
                                             ),
                                           );
