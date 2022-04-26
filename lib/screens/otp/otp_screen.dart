@@ -18,7 +18,7 @@ class OtpScreen extends StatelessWidget {
     return BlocConsumer<LoginCubit,LoginStates>(
       listener: (context,state){
         if(state is LoginSubmitOtpState){
-          LoginCubit.get(context).checkUser(phoneNumber);
+          LoginCubit.get(context).checkUser(phoneNumber,context);
         }
         if(state is LoginErrorState){
           showSnackBar(

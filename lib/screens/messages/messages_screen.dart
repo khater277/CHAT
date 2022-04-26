@@ -3,6 +3,7 @@ import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
+import 'package:chat/screens/messages/messages_items/send_file_message.dart';
 import 'package:chat/screens/send_media_message/send_media_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
@@ -17,6 +18,7 @@ import 'package:sizer/sizer.dart';
 import '../../models/MessageModel.dart';
 import '../../models/UserModel.dart';
 import 'messages_items/message_filed.dart';
+import 'messages_items/scroll_down_floating_button.dart';
 
 class MessagesScreen extends StatefulWidget {
   final UserModel user;
@@ -48,89 +50,110 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit,AppStates>(
-      listener: (context,state){
-        if(state is AppSelectMessageImageState){
-          Get.to(()=>SendMediaScreen(
-            mediaSource: MediaSource.image,
-              file: AppCubit.get(context).file!,
-              receiverID: widget.user.uId!,
-            isFirstMessage: widget.isFirstMessage,
-          )
-          );
-        }else if(state is AppSelectMessageVideoState){
-          Get.to(()=>SendMediaScreen(
-              mediaSource: MediaSource.video,
-              file: AppCubit.get(context).file!,
-              receiverID: widget.user.uId!,
-            isFirstMessage: widget.isFirstMessage,
-          )
-          );
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('users')
+          .doc(uId).collection('chats').doc(widget.user.uId)
+          .collection('messages').orderBy('date').snapshots(),
+      builder: (context, snapshot) {
+        bool hasData = false;
+        List<MessageModel> messages = [];
+        List<String> messagesID = [];
+        if(snapshot.hasData){
+          for (var element in snapshot.data!.docs) {
+            MessageModel messageModel = MessageModel.fromJson(element.data());
+            messagesID.add(element.id);
+            messages.add(messageModel);
+          }
+          if(canScroll.value) {
+            Future.delayed(const Duration(milliseconds: 300)).then((value){
+              scrollDown(_scrollController);
+            });
+          }
+          hasData = true;
+          canScroll.value=false;
         }
-      },
-      builder: (context,state){
-        AppCubit cubit = AppCubit.get(context);
-        return SafeArea(
-            child: ValueListenableBuilder(
-              valueListenable: showAnimatedContainer,
-              builder: (BuildContext context, value, Widget? child) {
-                return GestureDetector(
-                  onTap: (){
-                    showAnimatedContainer.value = false;
+        return BlocConsumer<AppCubit,AppStates>(
+          listener: (context,state){
+            if(state is AppSendMediaMessageState || state is AppSendMessageState){
+              Future.delayed(const Duration(milliseconds: 300)).then((value){
+                scrollDown(_scrollController);
+              });
+            }
+            if(state is AppDeleteMessageState && messages.isEmpty){
+              AppCubit.get(context).deleteChat(chatID: widget.user.uId!);
+              Get.back();
+            }
+            // if(state is AppSelectMessageImageState){
+            //   Get.to(()=>SendMediaScreen(
+            //     mediaSource: MediaSource.image,
+            //       file: AppCubit.get(context).file!,
+            //       receiverID: widget.user.uId!,
+            //     isFirstMessage: widget.isFirstMessage,
+            //   )
+            //   );
+            // }else if(state is AppSelectMessageVideoState){
+            //   Get.to(()=>SendMediaScreen(
+            //       mediaSource: MediaSource.video,
+            //       file: AppCubit.get(context).file!,
+            //       receiverID: widget.user.uId!,
+            //     isFirstMessage: widget.isFirstMessage,
+            //   )
+            //   );
+            // }
+          },
+          builder: (context,state){
+            AppCubit cubit = AppCubit.get(context);
+            return SafeArea(
+                child: WillPopScope(
+                  onWillPop: () async{
+                    cubit.cancelSelectFile();
+                    return true;
                   },
-                  child: Scaffold(
-                      appBar: AppBar(
-                        toolbarHeight: 10.h,
-                        backgroundColor: MyColors.darkBlack,
-                        centerTitle: true,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20.sp),
-                              bottomRight: Radius.circular(20.sp),
-                            )
-                        ),
-                        title: Text(
-                          "${widget.user.name}",
-                          style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                              fontSize: 14.sp
-                          ),
-                        ),
-                        leading: const DefaultBackButton(),
-                        actions: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 3.w),
-                            child: IconButton(
+                  child: ValueListenableBuilder(
+                    valueListenable: showAnimatedContainer,
+                    builder: (BuildContext context, value, Widget? child) {
+                      return GestureDetector(
+                        onTap: (){
+                          showAnimatedContainer.value = false;
+                        },
+                        child: Scaffold(
+                            appBar: AppBar(
+                              toolbarHeight: 10.h,
+                              backgroundColor: MyColors.darkBlack,
+                              centerTitle: true,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(20.sp),
+                                    bottomRight: Radius.circular(20.sp),
+                                  )
+                              ),
+                              title: Text(
+                                "${widget.user.name}",
+                                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                                    fontSize: 14.sp
+                                ),
+                              ),
+                              leading: IconButton(
                                 onPressed: (){
-                                  //cubit.getContacts();
-                                },
-                                icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
+                                  Get.back();
+                                  cubit.cancelSelectFile();
+                                  },
+                                icon: Icon(
+                                  languageFun(ar: IconBroken.Arrow___Right_2, en: IconBroken.Arrow___Left_2),
+                                  size: 15.sp,
+                                ),
+                              ),
+                              actions: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 3.w),
+                                  child: IconButton(
+                                      onPressed: (){},
+                                      icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                      body: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection('users')
-                              .doc(uId).collection('chats').doc(widget.user.uId)
-                              .collection('messages').orderBy('date').snapshots(),
-                          builder: (context, snapshot) {
-                            bool hasData = false;
-                            List<MessageModel> messages = [];
-                            List<String> messagesID = [];
-                            if(snapshot.hasData){
-                              for (var element in snapshot.data!.docs) {
-                                MessageModel messageModel = MessageModel.fromJson(element.data());
-                                messagesID.add(element.id);
-                                messages.add(messageModel);
-                              }
-                              if(canScroll.value) {
-                                Future.delayed(const Duration(milliseconds: 300)).then((value){
-                                scrollDown(_scrollController);
-                              });
-                              }
-                              hasData = true;
-                              canScroll.value=false;
-                            }
-                            return messages.isNotEmpty || hasData?
+                            body: messages.isNotEmpty || hasData?
                             Column(
                               children: [
                                 Expanded(
@@ -168,51 +191,51 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                     isRead: true,
                                                     date: messages[index-1].date,
                                                   ):null;
-                                                 return Column(
-                                                   children: [
-                                                     MessageBuilder(
-                                                       cubit: cubit,
-                                                       message: messages[index],
-                                                       previousMessage: index!=0?
-                                                       messages[index-1]:messages[index],
-                                                       index: index,
-                                                       lastMessageModel: lastMessageModel,
-                                                       messageID: messagesID[index],
-                                                       friendID: widget.user.uId!,
-                                                     ),
-                                                     if(messages.length-1==index)
-                                                       SizedBox(height: 2.h,)
-                                                   ],
-                                                 );
+                                                  return Column(
+                                                    children: [
+                                                      MessageBuilder(
+                                                        cubit: cubit,
+                                                        message: messages[index],
+                                                        previousMessage: index!=0?
+                                                        messages[index-1]:messages[index],
+                                                        index: index,
+                                                        lastMessageModel: lastMessageModel,
+                                                        messageID: messagesID[index],
+                                                        friendID: widget.user.uId!,
+                                                      ),
+                                                      if(messages.length-1==index)
+                                                        SizedBox(height: 2.h,)
+                                                    ],
+                                                  );
                                                 },
                                                 itemCount: messages.length
                                             ),
                                           );
                                         },
                                       ),
-                                      ValueListenableBuilder(
-                                        valueListenable: valueNotifier,
-                                        builder: (BuildContext context, value, Widget? child) {
-                                          return value!=true && _scrollController.position.pixels!=0.0?
-                                          Align(
-                                            alignment: AlignmentDirectional.bottomEnd,
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(horizontal: 2.5.w,vertical: 1.5.h),
-                                              child: SizedBox(
-                                                width: 27.sp,height: 27.sp,
-                                                child: FloatingActionButton(
-                                                  onPressed: (){scrollDown(_scrollController);},
-                                                  shape: const CircleBorder(),
-                                                  backgroundColor: MyColors.lightBlack,
-                                                  child: Icon(IconBroken.Arrow___Down_2,size: 13.sp,color: MyColors.blue,),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                              :
-                                          const DefaultNullWidget();
-                                        },
+                                      ScrollDownFloatingButton(
+                                          valueNotifier: valueNotifier,
+                                          scrollController: _scrollController
                                       ),
+                                       if(state is AppSelectMessageImageState || cubit.isImage)
+                                         SendMediaScreen(
+                                           cubit: cubit,
+                                           state: state,
+                                           mediaSource: MediaSource.image,
+                                           file: AppCubit.get(context).file!,
+                                           receiverID: widget.user.uId!,
+                                           isFirstMessage: widget.isFirstMessage,
+                                         ),
+                                      if(state is AppSelectMessageVideoState || cubit.isVideo)
+                                        SendMediaScreen(
+                                          cubit: cubit,
+                                          state: state,
+                                          mediaSource: MediaSource.video,
+                                          file: AppCubit.get(context).file!,
+                                          receiverID: widget.user.uId!,
+                                          isFirstMessage: widget.isFirstMessage,
+                                        ),
+                                      SendFileMessage(cubit: cubit,state: state),
                                       AnimatedControllerBuilder(
                                         cubit: cubit,
                                         showAnimatedContainer: showAnimatedContainer,
@@ -227,19 +250,21 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   showAnimatedContainer: showAnimatedContainer,
                                   isFirstMessage: messages.isEmpty,
                                   cubit: cubit,
+                                  state: state,
                                   friendID: widget.user.uId!,
                                 )
                               ],
                             )
-                                :const DefaultProgressIndicator(icon: IconBroken.Message);
-                          }
-                      )
+                                :const DefaultProgressIndicator(icon: IconBroken.Message)
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            )
+                )
+            );
+          },
         );
-      },
+      }
     );
   }
 }

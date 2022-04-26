@@ -13,6 +13,7 @@ import 'package:video_player/video_player.dart';
 import '../../../models/LastMessageModel.dart';
 import '../../../models/MessageModel.dart';
 import '../../../shared/default_widgets.dart';
+import '../../../styles/icons_broken.dart';
 import 'delete_message.dart';
 
 class FriendMessage extends StatefulWidget {
@@ -63,7 +64,8 @@ class _FriendMessageState extends State<FriendMessage> {
                             cubit: widget.cubit,
                             friendID: widget.friendID,
                             messageID: widget.messageID,
-                            lastMessageModel: widget.lastMessageModel
+                            lastMessageModel: widget.lastMessageModel,
+                            messageModel: widget.messageModel
                         );
                       },
                     );
@@ -73,10 +75,12 @@ class _FriendMessageState extends State<FriendMessage> {
                     child:  Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        widget.messageModel.message!.isEmpty?
                         widget.messageModel.isImage==true?
                         FriendImageMessage(media: widget.messageModel.media!)
-                            :FriendVideoMessage(media: widget.messageModel.media!):
+                            :widget.messageModel.isVideo==true?
+                        FriendVideoMessage(media: widget.messageModel.media!)
+                            :widget.messageModel.isDoc==true?
+                        FriendFileMessage(message: widget.messageModel.message!):
                         FriendTextMessage(message: widget.messageModel.message!),
                         SizedBox(height: widget.messageModel.message!=""?0.5.h:1.h,),
                         if(valueNotifier.value)
@@ -207,6 +211,31 @@ class _FriendVideoMessageState extends State<FriendVideoMessage> {
                 : const CircularProgressIndicator(color: Colors.white,),
           );
         },),
+    );
+  }
+}
+
+class FriendFileMessage extends StatelessWidget {
+  final String message;
+  const FriendFileMessage({Key? key, required this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(IconBroken.Document,color: MyColors.grey,size: 18.sp,),
+        SizedBox(width: 2.w,),
+        Flexible(
+          child: Text(
+            message,
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                fontSize: 12.sp
+            ),
+            //overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

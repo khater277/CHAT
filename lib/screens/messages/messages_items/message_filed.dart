@@ -5,6 +5,7 @@ import 'package:chat/shared/default_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../cubit/app/app_states.dart';
 import '../../../styles/icons_broken.dart';
 
 
@@ -12,20 +13,23 @@ import '../../../styles/icons_broken.dart';
 
 class SendMessageButton extends StatelessWidget {
   final AppCubit cubit;
+  final AppStates state;
   final bool isFirstMessage;
   final TextEditingController messageController;
   final ScrollController scrollController;
   final String friendID;
   const SendMessageButton({Key? key, required this.messageController,
-    required this.cubit, required this.friendID, required this.isFirstMessage, required this.scrollController,}) : super(key: key);
+    required this.cubit, required this.state, required this.friendID, required this.isFirstMessage, required this.scrollController,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: messageController,
       builder: (context, value, child) {
+        bool sendCondition = value.text.isNotEmpty || state is AppSelectFileState
+            || state is AppSelectMessageImageState || state is AppSelectMessageVideoState;
         return GestureDetector(
-          onTap: value.text.isNotEmpty ? () {
+          onTap: sendCondition? () {
             int endCnt=0;
             if(value.text.endsWith(" ")){
               for(int i=value.text.length-1;i>=0;i--){
@@ -36,22 +40,44 @@ class SendMessageButton extends StatelessWidget {
                 }
               }
             }
-            scrollDown(scrollController);
-            cubit.sendMessage(
-                friendID: friendID,
-                isFirstMessage: isFirstMessage,
-                message: messageController.text.substring(0,messageController.text.length-endCnt)
-            );
+            //scrollDown(scrollController);
+            if(state is AppSelectFileState) {
+              cubit.sendMediaMessage(
+                  friendID: friendID,
+                  mediaSource: MediaSource.doc,
+                  isFirstMessage: isFirstMessage,
+                  message: cubit.docName
+              );
+            }else if(state is AppSelectMessageImageState){
+              cubit.sendMediaMessage(
+                  friendID: friendID,
+                  mediaSource: MediaSource.image,
+                  isFirstMessage: isFirstMessage,
+              );
+            }else if(state is AppSelectMessageVideoState){
+              cubit.sendMediaMessage(
+                  friendID: friendID,
+                  mediaSource: MediaSource.video,
+                  isFirstMessage: isFirstMessage,
+              );
+            }else{
+              cubit.sendMessage(
+                  friendID: friendID,
+                  isFirstMessage: isFirstMessage,
+                  message: messageController.text.substring(
+                      0,messageController.text.length-endCnt)
+              );
+            }
             messageController.clear();
           } : null,
           child: Padding(
             padding: const EdgeInsets.all(7.0),
             child: CircleAvatar(
                 radius: 18.sp,
-                backgroundColor: value.text.isNotEmpty?
+                backgroundColor: sendCondition?
                 MyColors.blue.withOpacity(0.8):Colors.grey.withOpacity(0.4),
                 child: Icon(IconBroken.Send,size: 17.sp,
-                  color: value.text.isNotEmpty?Colors.white:Colors.grey,
+                  color: sendCondition?Colors.white:Colors.grey,
                 )
             ),
           ),
@@ -65,6 +91,7 @@ class SendMessageButton extends StatelessWidget {
 // ignore: must_be_immutable
 class SendMessageTextFiled extends StatelessWidget {
   final AppCubit cubit;
+  final AppStates state;
   final bool isFirstMessage;
   final TextEditingController messageController;
   final ScrollController scrollController;
@@ -73,7 +100,7 @@ class SendMessageTextFiled extends StatelessWidget {
   const SendMessageTextFiled(
       {Key? key,required this.messageController, required this.cubit,
         required this.friendID, required this.isFirstMessage,
-        required this.scrollController, required this.showAnimatedContainer, }) : super(key: key);
+        required this.scrollController, required this.showAnimatedContainer, required this.state, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +114,7 @@ class SendMessageTextFiled extends StatelessWidget {
               left: languageFun(ar: 0.0, en: 2.0.w),
             ),
             child: TextField(
+              enabled: state is! AppSelectFileState || state is! AppSendMediaMessageLoadingState,
               inputFormatters: [NoLeadingSpaceFormatter()],
               cursorColor: MyColors.grey.withOpacity(0.7),
               controller: messageController,
@@ -95,7 +123,8 @@ class SendMessageTextFiled extends StatelessWidget {
                 fontSize: 13.sp,
               ),
               decoration: InputDecoration(
-                hintText: "type your message...",
+                hintText: state is! AppSelectFileState?
+                "type your message...":"Send ${cubit.docName}",
                 hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
                     fontSize: 11.sp,
                     color: MyColors.grey.withOpacity(0.6)
@@ -104,54 +133,7 @@ class SendMessageTextFiled extends StatelessWidget {
                   valueListenable: messageController,
                   builder: (BuildContext context, value, Widget? child) {
                     if (value.text.isEmpty) {
-                      return Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 1.w),
-                          child: GestureDetector(
-                            onTap: (){
-                              cubit.selectMessageImage(mediaSource: MediaSource.image);
-                              },
-                            child: Icon(
-                              IconBroken.Image,size: 18.sp,
-                              color: MyColors.blue.withOpacity(0.8),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 1.w),
-                          child: GestureDetector(
-                            onTap: (){
-                              cubit.selectMessageImage(mediaSource: MediaSource.video);
-                              },
-                            child: Icon(
-                              IconBroken.Video,size: 18.sp,
-                              color: MyColors.blue.withOpacity(0.8),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 1.w),
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                left: languageFun(ar: 2.w, en: 0.0.w),
-                                right: languageFun(ar: 0.0.w, en: 2.w)
-                            ),
-                            child: GestureDetector(
-                              onTap: (){
-                                //cubit.selectMessageImage();
-                              },
-                              child: Icon(
-                                IconBroken.Folder,size: 18.sp,
-                                color: MyColors.blue.withOpacity(0.8),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
+                      return SendMediaRow(cubit: cubit,state: state,);
                     } else {
                       return ValueListenableBuilder(
                         valueListenable: showAnimatedContainer,
@@ -182,12 +164,17 @@ class SendMessageTextFiled extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.sp),
                     borderSide: const BorderSide(color: MyColors.lightBlack)
                 ),
+                disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.sp),
+                    borderSide: const BorderSide(color: MyColors.lightBlack)
+                ),
               ),
             ),
           ),
         ),
         SendMessageButton(
           cubit: cubit,
+            state: state,
             messageController: messageController,
           scrollController: scrollController,
           isFirstMessage: isFirstMessage,
@@ -198,3 +185,60 @@ class SendMessageTextFiled extends StatelessWidget {
   }
 }
 
+class SendMediaRow extends StatelessWidget {
+  final AppCubit cubit;
+  final AppStates state;
+  const SendMediaRow({Key? key, required this.cubit, required this.state}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 1.w),
+          child: GestureDetector(
+            onTap: state is! AppSendMediaMessageLoadingState?(){
+              cubit.selectMessageImage(mediaSource: MediaSource.image);
+            }:null,
+            child: Icon(
+              IconBroken.Image,size: 18.sp,
+              color: MyColors.blue.withOpacity(0.8),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 1.w),
+          child: GestureDetector(
+            onTap: state is! AppSendMediaMessageLoadingState? (){
+              cubit.selectMessageImage(mediaSource: MediaSource.video);
+            }:null,
+            child: Icon(
+              IconBroken.Video,size: 18.sp,
+              color: MyColors.blue.withOpacity(0.8),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 1.w),
+          child: Padding(
+            padding: EdgeInsets.only(
+                left: languageFun(ar: 2.w, en: 0.0.w),
+                right: languageFun(ar: 0.0.w, en: 2.w)
+            ),
+            child: GestureDetector(
+              onTap: state is! AppSendMediaMessageLoadingState? (){
+                cubit.selectFile();
+              }:null,
+              child: Icon(
+                IconBroken.Folder,size: 18.sp,
+                color: MyColors.blue.withOpacity(0.8),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

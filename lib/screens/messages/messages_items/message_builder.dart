@@ -9,6 +9,7 @@ import 'package:sizer/sizer.dart';
 import '../../../cubit/app/app_cubit.dart';
 import '../../../models/LastMessageModel.dart';
 import '../../../shared/constants.dart';
+import '../../../styles/icons_broken.dart';
 
 class MessageBuilder extends StatelessWidget {
   final AppCubit cubit;
@@ -48,13 +49,22 @@ class MessageBuilder extends StatelessWidget {
           ),
         ),
         if (message.senderID==uId)
-          MyMessage(
-            messageModel: message,
-            index: index,
-            cubit: cubit,
-            messageID: messageID,
-            lastMessageModel: lastMessageModel,
-            friendID: friendID,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if(message.media!="")Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                child: Icon(IconBroken.Download,size: 16.sp,color: Colors.grey,),
+              ),
+              MyMessage(
+                messageModel: message,
+                index: index,
+                cubit: cubit,
+                messageID: messageID,
+                lastMessageModel: lastMessageModel,
+                friendID: friendID,
+              ),
+            ],
           )
         else FriendMessage(
           messageModel: message,

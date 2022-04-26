@@ -150,11 +150,6 @@ class LoginCubit extends Cubit<LoginStates>{
     return user;
   }
 
-  void test(context){
-    AppCubit.get(context).getChats();
-  }
-
-
   ImagePicker picker = ImagePicker();
   File? image;
   Future<void> selectProfileImage()async{
@@ -192,7 +187,11 @@ class LoginCubit extends Cubit<LoginStates>{
     });
   }
 
-  void checkUser(String phoneNumber){
+  void test(context){
+    AppCubit.get(context).getContacts();
+  }
+
+  void checkUser(String phoneNumber,context){
     emit(LoginLoadingState());
     FirebaseFirestore.instance.collection('users')
         .get()
@@ -211,6 +210,7 @@ class LoginCubit extends Cubit<LoginStates>{
       }
       print("=================> $exist");
       if(exist){
+        test(context);
         Get.offAll(()=> const HomeScreen());
       }else{
         Get.offAll(()=> SetImageScreen(phone: phoneNumber,));

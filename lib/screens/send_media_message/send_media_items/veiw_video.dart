@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 
 class ViewVideo extends StatefulWidget {
@@ -51,13 +52,17 @@ class _ViewVideoState extends State<ViewVideo> {
     return FutureBuilder(
       future: _future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-      return Center(
+      return SizedBox(
+        height: 25.h,
+        //width: MediaQuery.of(context).size.width,
         child: _controller!.value.isInitialized
             ?
-        AspectRatio(
-          aspectRatio: _controller!.value.aspectRatio,
-          child: Chewie(
-            controller: _chewieController!,
+        Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10.sp),
+            child: Chewie(
+              controller: _chewieController!,
+            ),
           ),
         )
             : const CircularProgressIndicator(),

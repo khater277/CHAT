@@ -3,6 +3,7 @@ import 'package:chat/screens/messages/messages_items/delete_message.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/date_format.dart';
 import 'package:chewie/chewie.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
@@ -14,6 +15,7 @@ import '../../../cubit/app/app_cubit.dart';
 import '../../../models/LastMessageModel.dart';
 import '../../../models/MessageModel.dart';
 import '../../../shared/default_widgets.dart';
+import '../../../styles/icons_broken.dart';
 
 class MyMessage extends StatefulWidget {
   final AppCubit cubit;
@@ -60,7 +62,8 @@ class _MyMessageState extends State<MyMessage> {
                           cubit: widget.cubit,
                           friendID: widget.friendID,
                           messageID: widget.messageID,
-                          lastMessageModel: widget.lastMessageModel
+                          lastMessageModel: widget.lastMessageModel,
+                        messageModel: widget.messageModel,
                       );
                   },
                 );
@@ -68,10 +71,12 @@ class _MyMessageState extends State<MyMessage> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    widget.messageModel.message!.isEmpty?
                     widget.messageModel.isImage==true?
                     MyImageMessage(media: widget.messageModel.media!)
-                        :MyVideoMessage(media: widget.messageModel.media!):
+                        :widget.messageModel.isVideo==true?
+                    MyVideoMessage(media: widget.messageModel.media!)
+                        :widget.messageModel.isDoc==true?
+                    MyFileMessage(message: widget.messageModel.message!):
                     MyTextMessage(message: widget.messageModel.message!),
                     SizedBox(height: widget.messageModel.message!=""?0.5.h:1.h,),
                     if(valueNotifier.value)
@@ -217,6 +222,31 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
                 : const CircularProgressIndicator(color: Colors.white,),
           );
         },),
+    );
+  }
+}
+
+class MyFileMessage extends StatelessWidget {
+  final String message;
+  const MyFileMessage({Key? key, required this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(IconBroken.Document,color: MyColors.grey,size: 18.sp,),
+        SizedBox(width: 2.w,),
+        Flexible(
+          child: Text(
+            message,
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                fontSize: 12.sp
+            ),
+            //overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

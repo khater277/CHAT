@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class ViewImage extends StatelessWidget {
   final File file;
@@ -10,7 +10,11 @@ class ViewImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: Image.file(file)
+        child: Image.file(
+            file,
+          width: double.infinity,
+          height: 25.h,
+        )
     );
   }
 }

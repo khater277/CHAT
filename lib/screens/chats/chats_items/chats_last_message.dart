@@ -29,7 +29,7 @@ class ChatsLastMessage extends StatelessWidget {
               lastMessage.isImage==true?
                   const ImageMessage()
                   :
-          TextMessage(message: lastMessage.message!),
+          TextMessage(message: lastMessage.message!,isDoc: lastMessage.isDoc!,),
         ),
         if(lastMessage.isRead==false)
         Padding(
@@ -46,17 +46,29 @@ class ChatsLastMessage extends StatelessWidget {
 
 class TextMessage extends StatelessWidget {
   final String message;
-  const TextMessage({Key? key, required this.message}) : super(key: key);
+  final bool isDoc;
+  const TextMessage({Key? key, required this.message, required this.isDoc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      message,
-      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-          fontSize: 10.5.sp,
-          color: MyColors.grey
-      ),
-      overflow: TextOverflow.ellipsis,
+    return Row(
+      children: [
+        if(isDoc)
+        Row(
+          children: [
+            Icon(IconBroken.Document,size: 15.sp,color: MyColors.blue,),
+            SizedBox(width: 1.w),
+          ],
+        ),
+        Text(
+          message,
+          style: Theme.of(context).textTheme.bodyText2!.copyWith(
+              fontSize: 10.5.sp,
+              color: MyColors.grey
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

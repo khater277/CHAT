@@ -117,6 +117,25 @@ class DefaultProgressIndicator extends StatelessWidget {
   }
 }
 
+class DefaultUploadIndicator extends StatelessWidget {
+  final double percentage;
+  const DefaultUploadIndicator({Key? key, required this.percentage}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 20.sp, height: 20.sp,
+      child: CircularProgressIndicator(
+        value: percentage==0.0?null:percentage,
+        color: MyColors.blue,
+        strokeWidth: 2.sp,
+        backgroundColor: Colors.grey.withOpacity(0.7),
+      ),
+    );
+  }
+}
+
+
 class DefaultLinerIndicator extends StatelessWidget {
   const DefaultLinerIndicator({Key? key}) : super(key: key);
 

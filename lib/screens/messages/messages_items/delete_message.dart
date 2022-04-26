@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../cubit/app/app_cubit.dart';
 import '../../../models/LastMessageModel.dart';
+import '../../../models/MessageModel.dart';
 import '../../../shared/colors.dart';
 
 class DeleteMessage extends StatelessWidget {
@@ -12,8 +13,9 @@ class DeleteMessage extends StatelessWidget {
   final String friendID;
   final String messageID;
   final LastMessageModel? lastMessageModel;
+  final MessageModel messageModel;
   const DeleteMessage({Key? key, required this.cubit, required this.friendID,
-    required this.messageID,required this.lastMessageModel}) : super(key: key);
+    required this.messageID,required this.lastMessageModel, required this.messageModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class DeleteMessage extends StatelessWidget {
               messageID: messageID,
               lastMessageModel: lastMessageModel,
               friendID: friendID,
+              messageModel: messageModel,
             ),
           ],
         ),
@@ -92,8 +95,9 @@ class DeleteMessageForEveryone extends StatelessWidget {
   final String friendID;
   final String messageID;
   final LastMessageModel? lastMessageModel;
+  final MessageModel messageModel;
   const DeleteMessageForEveryone({Key? key, required this.cubit, required this.friendID,
-    required this.messageID,required this.lastMessageModel}) : super(key: key);
+    required this.messageID,required this.lastMessageModel, required this.messageModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +121,8 @@ class DeleteMessageForEveryone extends StatelessWidget {
             cubit.deleteMessageForEveryone(
                 friendID: friendID,
                 messageID: messageID,
-                lastMessageModel: lastMessageModel);
+                lastMessageModel: lastMessageModel,
+            messageModel: messageModel);
             Get.back();
           },
           icon: Icon(IconBroken.Delete,color: Colors.red,size: 16.sp,),

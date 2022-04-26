@@ -7,6 +7,7 @@ import 'package:chat/screens/add_story/add_story_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -273,6 +274,9 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
+  bool isImage = false;
+  bool isVideo = false;
+  bool isDoc = false;
   ImagePicker picker = ImagePicker();
   File? file;
   Future<void> selectMessageImage({required MediaSource mediaSource})async{
@@ -285,8 +289,10 @@ class AppCubit extends Cubit<AppStates>{
     if(pickedFile!=null){
       file = File(pickedFile.path);
       if(mediaSource==MediaSource.image){
+        isImage = true;
         emit(AppSelectMessageImageState());
       }else{
+        isVideo = true;
         emit(AppSelectMessageVideoState());
       }
     }else{
@@ -295,28 +301,78 @@ class AppCubit extends Cubit<AppStates>{
     }
   }
 
+  String? docName;
+  void selectFile() async{
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+      allowedExtensions: ['doc','docx','pdf','ppt','pptx','txt',
+        'html','htm','odt','ods','xls','xlsx',]
+    );
+    if (result != null) {
+      isDoc = true;
+      file = File(result.files.single.path!);
+      docName = Uri.file(file!.path).pathSegments.last;
+      emit(AppSelectFileState());
+    } else {
+      debugPrint("NOT SELECTED");
+      emit(AppErrorState());
+    }
+  }
+
+  void cancelSelectFile(){
+    isImage = false;
+    isVideo = false;
+    isDoc = false;
+    file = null;
+    emit(AppCancelSelectFileState());
+  }
+
+
+  double? percentage;
   void sendMediaMessage({
   required String friendID,
   required MediaSource mediaSource,
-  bool? isFirstMessage,
+  required bool isFirstMessage,
+  String? message,
 }){
-    emit(AppSendMediaMessageLoadingState());
     FirebaseStorage.instance.ref("media/${Uri.file(file!.path).pathSegments.last}")
     .putFile(file!)
-    .then((p0){
-      p0.ref.getDownloadURL().then((value){
-        sendMessage(
-            friendID: friendID,
-          isFirstMessage: isFirstMessage!,
-          mediaSource: mediaSource,
-          file: value,
-        );
-        debugPrint("MEDIA SENT");
-        emit(AppSendMediaMessageState());
-      }).catchError((error){
-        printError("sendMediaMessage", error.toString());
-        emit(AppErrorState());
-      });
+    .snapshotEvents
+    .listen((taskSnapshot) {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          percentage = taskSnapshot.bytesTransferred/taskSnapshot.totalBytes;
+          emit(AppSendMediaMessageLoadingState());
+          break;
+        case TaskState.paused:
+          break;
+        case TaskState.success:
+          taskSnapshot.ref.getDownloadURL().then((value){
+            sendMessage(
+                friendID: friendID,
+                isFirstMessage: isFirstMessage,
+                mediaSource: mediaSource,
+                file: value,
+                message: message
+            );
+            percentage = 0;
+            isImage = false;
+            isVideo = false;
+            isDoc = false;
+            debugPrint("MEDIA SENT");
+            emit(AppSendMediaMessageState());
+          }).catchError((error){
+            printError("sendMediaMessage", error.toString());
+            emit(AppErrorState());
+          });
+          break;
+        case TaskState.canceled:
+          break;
+        case TaskState.error:
+          printError("sendMediaMessage", TaskState.error.toString());
+          emit(AppErrorState());
+          break;
+      }
     });
   }
 
@@ -352,6 +408,7 @@ class AppCubit extends Cubit<AppStates>{
 
   void deleteMessageForEveryone({
     required String friendID,
+    required MessageModel messageModel,
     required String messageID,
     required LastMessageModel? lastMessageModel,
   }){
@@ -372,15 +429,23 @@ class AppCubit extends Cubit<AppStates>{
               .doc(messageID)
               .delete()
               .then((value){
-            if(lastMessageModel!=null){
-              updateLastMessageInDelete(
-                friendID: friendID,
-                lastMessageModel: lastMessageModel,
-                isForEveryone: true,
-              );
-            }else {
-              emit(AppDeleteMessageState());
-            }
+                if(messageModel.isImage!||messageModel.isVideo!||messageModel.isDoc!){
+                  deleteMediaMessage(
+                      media: messageModel.media!,
+                    lastMessageModel: lastMessageModel,
+                    friendID: friendID
+                  );
+                }else{
+                  if(lastMessageModel!=null){
+                    updateLastMessageInDelete(
+                      friendID: friendID,
+                      lastMessageModel: lastMessageModel,
+                      isForEveryone: true,
+                    );
+                  }else {
+                    emit(AppDeleteMessageState());
+                  }
+                }
           }).catchError((error){
             printError("deleteMessageForMe", error.toString());
             emit(AppErrorState());
@@ -409,8 +474,8 @@ class AppCubit extends Cubit<AppStates>{
             .doc(uId)
             .update(lastMessageModel.toJson())
             .then((value){
-          debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
-          emit(AppDeleteMessageState());
+              debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
+              emit(AppDeleteMessageState());
         }).catchError((error){
           printError("deleteMessage", error.toString());
           emit(AppErrorState());
@@ -424,4 +489,33 @@ class AppCubit extends Cubit<AppStates>{
       emit(AppErrorState());
     });
   }
+
+
+  void deleteMediaMessage({
+    required String friendID,
+    required String media,
+    required LastMessageModel? lastMessageModel,
+  }){
+    String mediaName = media.substring(media.indexOf("image_picker"),media.indexOf('?'));
+    FirebaseStorage.instance.ref('media/$mediaName')
+        .delete()
+        .then((value){
+      if(lastMessageModel!=null){
+        updateLastMessageInDelete(
+          friendID: friendID,
+          lastMessageModel: lastMessageModel,
+          isForEveryone: true,
+        );
+      }else {
+        debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
+        emit(AppDeleteMessageState());
+      }
+    }).catchError((error){
+      printError("deleteMessageForMe", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+
+
 }
