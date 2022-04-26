@@ -54,6 +54,9 @@ class AppCubit extends Cubit<AppStates>{
   void getContacts(){
     if(contactsPermission!){
       emit(AppLoadingState());
+      // contacts = [];
+      // usersID = [];
+      // users = [];
       ContactsService.getContacts().then((contactList){
         for (var element in contactList) {
           FirebaseFirestore.instance.collection('users')

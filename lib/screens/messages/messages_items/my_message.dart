@@ -191,7 +191,7 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.media);
+    _controller = VideoPlayerController.network(widget.media,isCached: true);
     _future = initVideoPlayer();
   }
 
@@ -211,7 +211,7 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
         future: _future,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           return Center(
-            child: _controller!.value.isInitialized
+            child: _controller!.value.initialized
                 ?
             FittedBox(
               fit: BoxFit.cover,

@@ -21,6 +21,7 @@ class _ViewVideoState extends State<ViewVideo> {
   Future<void>? _future;
 
   Future<void> initVideoPlayer() async {
+
     await _controller!.initialize();
     setState(() {
       debugPrint(_controller!.value.aspectRatio.toString());
@@ -55,7 +56,7 @@ class _ViewVideoState extends State<ViewVideo> {
       return SizedBox(
         height: 25.h,
         //width: MediaQuery.of(context).size.width,
-        child: _controller!.value.isInitialized
+        child: _controller!.value.initialized
             ?
         Center(
           child: ClipRRect(
