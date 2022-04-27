@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -436,7 +437,9 @@ class AppCubit extends Cubit<AppStates>{
                   deleteMediaMessage(
                       media: messageModel.media!,
                     lastMessageModel: lastMessageModel,
-                    friendID: friendID
+                    friendID: friendID,
+                    messageID: messageID,
+                    isVideo: messageModel.isVideo!
                   );
                 }else{
                   if(lastMessageModel!=null){
@@ -498,11 +501,16 @@ class AppCubit extends Cubit<AppStates>{
     required String friendID,
     required String media,
     required LastMessageModel? lastMessageModel,
+    required bool isVideo,
+    required String messageID,
   }){
     String mediaName = media.substring(media.indexOf("image_picker"),media.indexOf('?'));
     FirebaseStorage.instance.ref('media/$mediaName')
         .delete()
         .then((value){
+          if(isVideo == true){
+            DefaultCacheManager().removeFile(messageID);
+          }
       if(lastMessageModel!=null){
         updateLastMessageInDelete(
           friendID: friendID,
@@ -518,7 +526,5 @@ class AppCubit extends Cubit<AppStates>{
       emit(AppErrorState());
     });
   }
-
-
 
 }

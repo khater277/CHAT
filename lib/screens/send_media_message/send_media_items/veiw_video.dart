@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -21,7 +20,6 @@ class _ViewVideoState extends State<ViewVideo> {
   Future<void>? _future;
 
   Future<void> initVideoPlayer() async {
-
     await _controller!.initialize();
     setState(() {
       debugPrint(_controller!.value.aspectRatio.toString());
@@ -53,21 +51,21 @@ class _ViewVideoState extends State<ViewVideo> {
     return FutureBuilder(
       future: _future,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-      return SizedBox(
-        height: 25.h,
-        //width: MediaQuery.of(context).size.width,
-        child: _controller!.value.initialized
-            ?
-        Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10.sp),
-            child: Chewie(
-              controller: _chewieController!,
-            ),
+        return SizedBox(
+          height: 25.h,
+          child: _controller!.value.isInitialized
+              ?
+          Chewie(
+            controller: _chewieController!,
+          )
+              :
+          Center(
+              child: SizedBox(
+                width: 25.sp,height: 25.sp,
+                  child: CircularProgressIndicator(strokeWidth: 2.5.sp,)
+              )
           ),
-        )
-            : const CircularProgressIndicator(),
-      );
-    },);
+        );
+      },);
   }
 }

@@ -200,7 +200,7 @@ class _FriendVideoMessageState extends State<FriendVideoMessage> {
         future: _future,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           return Center(
-            child: _controller!.value.initialized
+            child: _controller!.value.isInitialized
                 ?
             FittedBox(
               fit: BoxFit.cover,

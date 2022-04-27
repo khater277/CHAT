@@ -3,8 +3,8 @@ import 'package:chat/screens/messages/messages_items/delete_message.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/date_format.dart';
 import 'package:chewie/chewie.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
@@ -74,7 +74,10 @@ class _MyMessageState extends State<MyMessage> {
                     widget.messageModel.isImage==true?
                     MyImageMessage(media: widget.messageModel.media!)
                         :widget.messageModel.isVideo==true?
-                    MyVideoMessage(media: widget.messageModel.media!)
+                    MyVideoMessage(
+                      cubit: widget.cubit,
+                        media: widget.messageModel.media!,
+                    messageID: widget.messageID,)
                         :widget.messageModel.isDoc==true?
                     MyFileMessage(message: widget.messageModel.message!):
                     MyTextMessage(message: widget.messageModel.message!),
@@ -161,8 +164,10 @@ class MyImageMessage extends StatelessWidget {
 }
 
 class MyVideoMessage extends StatefulWidget {
+  final AppCubit cubit;
   final String media;
-  const MyVideoMessage({Key? key, required this.media}) : super(key: key);
+  final String messageID;
+  const MyVideoMessage({Key? key, required this.cubit,required this.media, required this.messageID}) : super(key: key);
 
   @override
   State<MyVideoMessage> createState() => _MyVideoMessageState();
@@ -188,11 +193,28 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
     });
   }
 
+  void checkVideoStatus() {
+    DefaultCacheManager().getFileFromCache(widget.messageID)
+        .then((value){
+      _controller = VideoPlayerController.file(value!.file);
+      _future = initVideoPlayer();
+      debugPrint("FILE FOUNDED");
+    }).catchError((error){
+      _controller = VideoPlayerController.network(widget.media);
+      _future = initVideoPlayer();
+      DefaultCacheManager().downloadFile(widget.media,key: widget.messageID)
+          .then((value){
+        debugPrint("FILE DOWNLOADED");
+      }).catchError((error){
+        debugPrint(error.toString());
+      });
+    });
+  }
+  
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.media,isCached: true);
-    _future = initVideoPlayer();
+    checkVideoStatus();
   }
 
   @override
@@ -205,23 +227,34 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.4,
+      width: MediaQuery.of(context).size.width * 0.42,
       height: MediaQuery.of(context).size.height * 0.4,
-      child: FutureBuilder(
+      child: _future!=null?
+      FutureBuilder(
         future: _future,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           return Center(
-            child: _controller!.value.initialized
+            child: _controller!.value.isInitialized
                 ?
             FittedBox(
               fit: BoxFit.cover,
-              child: Chewie(
-                controller: _chewieController!,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.sp),
+                child: Chewie(
+                  controller: _chewieController!,
+                ),
               ),
             )
                 : const CircularProgressIndicator(color: Colors.white,),
           );
-        },),
+        },)
+      :
+      const Center(
+          child: FittedBox(
+              fit: BoxFit.cover,
+              child: CircularProgressIndicator(color: Colors.white,)
+          )
+      ),
     );
   }
 }
