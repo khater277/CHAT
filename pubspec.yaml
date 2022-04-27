@@ -50,11 +50,6 @@ dependencies:
   transparent_image: ^2.0.0
   file_picker: ^4.5.1
   flutter_cache_manager: ^3.3.0
-#  video_player:
-#    git:
-#      url: https://github.com/mavericksunny/plugins.git
-#      ref: caching
-#      path: packages/video_player/video_player
 
 
   #firebase
@@ -68,19 +63,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
-
-#dependency_overrides:
-#  video_player:
-#    git:
-#      url: https://github.com/mavericksunny/plugins.git
-#      ref: caching
-#      path: packages/video_player/video_player
-
-#  video_player:
-#    git:
-#      url: https://github.com/999eagle/plugins.git
-#      ref: feature/caching
-#      path: packages/video_player
 
 dev_dependencies:
   flutter_test:
