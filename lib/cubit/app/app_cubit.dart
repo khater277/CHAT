@@ -16,6 +16,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../screens/calls/calls_screen.dart';
 import '../../shared/constants.dart';
 import 'app_states.dart';
@@ -110,9 +111,9 @@ class AppCubit extends Cubit<AppStates>{
 
   void sendMessage({
     required String friendID,
+    required String message,
     bool? isFirstMessage,
     MediaSource? mediaSource,
-    String? message,
     String? file,
   }){
     //emit(AppLoadingState());
@@ -120,7 +121,7 @@ class AppCubit extends Cubit<AppStates>{
     MessageModel myMessageModel = MessageModel(
       senderID: uId,
       receiverID: friendID,
-      message: message??"",
+      message: message,
       media: file??"",
       isImage: mediaSource==MediaSource.image,
       isVideo: mediaSource==MediaSource.video,
@@ -315,6 +316,7 @@ class AppCubit extends Cubit<AppStates>{
     if (result != null) {
       isDoc = true;
       file = File(result.files.single.path!);
+      print(file!.path);
       docName = Uri.file(file!.path).pathSegments.last;
       emit(AppSelectFileState());
     } else {
@@ -337,8 +339,10 @@ class AppCubit extends Cubit<AppStates>{
   required String friendID,
   required MediaSource mediaSource,
   required bool isFirstMessage,
-  String? message,
-}){
+})async{
+    final Directory? directory = await getExternalStorageDirectory();
+    print(file!.path);
+    file!.copySync("${directory!.path}/${Uri.file(file!.path).pathSegments.last}");
     FirebaseStorage.instance.ref("media/${Uri.file(file!.path).pathSegments.last}")
     .putFile(file!)
     .snapshotEvents
@@ -357,13 +361,13 @@ class AppCubit extends Cubit<AppStates>{
                 isFirstMessage: isFirstMessage,
                 mediaSource: mediaSource,
                 file: value,
-                message: message
+                message: Uri.file(file!.path).pathSegments.last
             );
             percentage = 0;
             isImage = false;
             isVideo = false;
             isDoc = false;
-            debugPrint("MEDIA SENT");
+            debugPrint("MEDIA SENT ${file!.path}");
             emit(AppSendMediaMessageState());
           }).catchError((error){
             printError("sendMediaMessage", error.toString());
@@ -525,6 +529,12 @@ class AppCubit extends Cubit<AppStates>{
       printError("deleteMessageForMe", error.toString());
       emit(AppErrorState());
     });
+  }
+
+  Future<Directory?>? future;
+  void test(){
+     future = getExternalStorageDirectory();
+     emit(AppTestState());
   }
 
 }

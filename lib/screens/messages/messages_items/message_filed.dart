@@ -46,7 +46,6 @@ class SendMessageButton extends StatelessWidget {
                   friendID: friendID,
                   mediaSource: MediaSource.doc,
                   isFirstMessage: isFirstMessage,
-                  message: cubit.docName
               );
             }else if(state is AppSelectMessageImageState){
               cubit.sendMediaMessage(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
@@ -13,6 +15,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../models/MessageModel.dart';
@@ -83,23 +87,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
               AppCubit.get(context).deleteChat(chatID: widget.user.uId!);
               Get.back();
             }
-            // if(state is AppSelectMessageImageState){
-            //   Get.to(()=>SendMediaScreen(
-            //     mediaSource: MediaSource.image,
-            //       file: AppCubit.get(context).file!,
-            //       receiverID: widget.user.uId!,
-            //     isFirstMessage: widget.isFirstMessage,
-            //   )
-            //   );
-            // }else if(state is AppSelectMessageVideoState){
-            //   Get.to(()=>SendMediaScreen(
-            //       mediaSource: MediaSource.video,
-            //       file: AppCubit.get(context).file!,
-            //       receiverID: widget.user.uId!,
-            //     isFirstMessage: widget.isFirstMessage,
-            //   )
-            //   );
-            // }
           },
           builder: (context,state){
             AppCubit cubit = AppCubit.get(context);
@@ -147,7 +134,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 3.w),
                                   child: IconButton(
-                                      onPressed: (){},
+                                      onPressed: ()async{
+                                        await Permission.storage.request();
+                                      },
                                       icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
                                   ),
                                 )

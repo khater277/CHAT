@@ -39,3 +39,5 @@ class AppDeleteMessageState extends AppStates{}
 class AppSelectFileState extends AppStates{}
 
 class AppCancelSelectFileState extends AppStates{}
+
+class AppTestState extends AppStates{}

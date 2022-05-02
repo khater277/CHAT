@@ -17,6 +17,8 @@ import 'cubit/app/bloc_observer.dart';
 import 'firebase_options.dart';
 import 'translation/translations.dart';
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();

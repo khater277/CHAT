@@ -50,7 +50,9 @@ dependencies:
   transparent_image: ^2.0.0
   file_picker: ^4.5.1
   flutter_cache_manager: ^3.3.0
-
+  path_provider: ^2.0.9
+  gallery_saver: ^2.3.2
+  open_file: ^3.2.1
 
   #firebase
   firebase_core: ^1.13.1
