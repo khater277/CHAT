@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/screens/add_new_story/add_new_story_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../cubit/app/app_cubit.dart';
 import '../../../shared/colors.dart';
 import '../../../styles/icons_broken.dart';
 
@@ -88,42 +90,49 @@ class AddMyStoryProfileImage extends StatelessWidget {
 
 class MyStory extends StatelessWidget {
   final String image;
-
   const MyStory({Key? key, required this.image}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        AddMyStoryProfileImage(image: image),
-        SizedBox(
-          width: 4.w,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: (){
+        AppCubit.get(context).pickStoryImage();
+      },
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
           children: [
-            Text(
-              "My story",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(fontSize: 13.sp),
-              overflow: TextOverflow.ellipsis,
-            ),
+            AddMyStoryProfileImage(image: image),
             SizedBox(
-              height: 0.5.h,
+              width: 4.w,
             ),
-            Text(
-              "tab to add stories update",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(fontSize: 11.5.sp, color: MyColors.grey),
-              overflow: TextOverflow.ellipsis,
-            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "My story",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(fontSize: 13.sp),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: 0.5.h,
+                ),
+                Text(
+                  "tab to add stories update",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText2!
+                      .copyWith(fontSize: 11.5.sp, color: MyColors.grey),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            )
           ],
-        )
-      ],
+        ),
+      ),
     );
   }
 }

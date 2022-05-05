@@ -1,12 +1,13 @@
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/screens/add_new_story/add_new_story_screen.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
 import 'package:chat/screens/story/story_items/story_date.dart';
 import 'package:chat/screens/story/story_items/story_profile_image.dart';
-import 'package:chat/shared/default_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../cubit/app/app_states.dart';
@@ -20,7 +21,11 @@ class StoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
-      listener: (context,state){},
+      listener: (context,state){
+        if(state is AppPickStoryImageState){
+          Get.to(()=> const AddNewStoryScreen());
+        }
+      },
       builder: (context,state){
         AppCubit cubit = AppCubit.get(context);
         return Scaffold(
@@ -44,7 +49,12 @@ class StoryScreen extends StatelessWidget {
                           builder: (context, snapshot) {
                             if(snapshot.hasData) {
                                UserModel myData = UserModel.fromJson(snapshot.data!.data());
-                              return MyStory(image: "${myData.image}",);
+                               cubit.userModel = myData;
+                              return Column(
+                                children: [
+                                  MyStory(image: "${myData.image}",),
+                                ],
+                              );
                             }else{
                              return SizedBox(
                                width: 12.w,

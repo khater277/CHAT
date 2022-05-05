@@ -300,6 +300,7 @@ class DefaultTextFormFiled extends StatelessWidget{
   final String? validateText;
   final double rounded;
   final List<TextInputFormatter> formatters;
+  Color? fillColor;
   String? label;
   bool? autoFocus;
   Widget? prefix;
@@ -323,6 +324,7 @@ class DefaultTextFormFiled extends StatelessWidget{
     required this.border,
     required this.textSize,
     required this.formatters,
+    this.fillColor,
     this.label,
     this.autoFocus,
     this.isPassword,
@@ -362,7 +364,9 @@ class DefaultTextFormFiled extends StatelessWidget{
       keyboardType: inputType,
       obscureText: isPassword==null?false:isPassword!,
       decoration: InputDecoration(
-        hintText: hint!,
+        filled: fillColor==null?false:true,
+        fillColor: fillColor,
+        hintText: hint,
         hintStyle: TextStyle(
           color: hintColor,
         ),

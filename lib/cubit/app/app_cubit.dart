@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat/models/LastMessageModel.dart';
+import 'package:chat/models/LastStoryModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/story/story_screen.dart';
@@ -13,6 +14,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -650,6 +652,125 @@ class AppCubit extends Cubit<AppStates>{
       emit(AppUpdateNameState());
     }).catchError((error){
       printError("updateName", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  File? storyImage;
+
+  Future<void> pickStoryImage()async{
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if(pickedFile!=null){
+      storyImage = File(pickedFile.path);
+      emit(AppPickStoryImageState());
+    }else{
+      debugPrint("NOT SELECTED");
+      emit(AppErrorState());
+    }
+  }
+  
+  void sendTextLastStory({
+  required String phone,
+  required String text,
+}){
+    emit(AppSendLastStoryLoadingState());
+    LastStoryModel lastStoryModel = LastStoryModel(
+      phone: phone,
+      date: DateTime.now().toString(),
+      text: text,
+      media: "",
+      isImage: false,
+      isVideo: false
+    );
+    FirebaseFirestore.instance.collection('stories')
+    .doc(uId)
+    .set(lastStoryModel.toJson())
+    .then((value){
+      emit(AppSendLastStoryState());
+    }).catchError((error){
+      printError("sendLastStory", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+
+  UserModel? userModel;
+
+  double? storyImagePercentage;
+  void uploadMediaLastStory({
+    required String phone,
+    required MediaSource mediaSource,
+    String? text,
+  }){
+    emit(AppSendLastStoryLoadingState());
+    FirebaseStorage.instance.
+    ref("stories/$uId/${Uri.file(storyImage!.path).pathSegments.last}")
+    .putFile(storyImage!)
+        .snapshotEvents
+        .listen((taskSnapshot) {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          storyImagePercentage = taskSnapshot.bytesTransferred/taskSnapshot.totalBytes;
+          emit(AppSendLastStoryLoadingState());
+          break;
+        case TaskState.paused:
+          break;
+        case TaskState.success:
+          taskSnapshot.ref.getDownloadURL().then((value){
+            storyImagePercentage = null;
+            storyImage = null;
+            debugPrint("MEDIA SENT");
+            sendLastStory(
+                phone: phone,
+                text: text,
+                media: value,
+                mediaSource: mediaSource
+            );
+            // emit(AppSendLastStoryState());
+          }).catchError((error){
+            printError("uploadMediaLastStory", error.toString());
+            emit(AppErrorState());
+          });
+          break;
+        case TaskState.canceled:
+          break;
+        case TaskState.error:
+          storyImagePercentage = null;
+          storyImage = null;
+          printError("uploadMediaLastStory", TaskState.error.toString());
+          emit(AppErrorState());
+          break;
+      }
+    });
+  }
+
+  void cleanStoryFile(){
+    // emit(AppCleanStoryFileLoadingState());
+    storyImage = null;
+    // emit(AppCleanStoryFileState());
+  }
+
+  void sendLastStory({
+    required String phone,
+    String? text,
+    String? media,
+    MediaSource? mediaSource,
+}){
+    LastStoryModel lastStoryModel = LastStoryModel(
+        phone: phone,
+        date: DateTime.now().toString(),
+        text: text??"",
+        media: media??"",
+        isImage: mediaSource!=null?mediaSource==MediaSource.image:false,
+        isVideo: mediaSource!=null?mediaSource==MediaSource.video:false
+    );
+    FirebaseFirestore.instance.collection('stories')
+        .doc(uId)
+        .set(lastStoryModel.toJson())
+        .then((value){
+      emit(AppSendLastStoryState());
+    }).catchError((error){
+      printError("sendLastStory", error.toString());
       emit(AppErrorState());
     });
   }
