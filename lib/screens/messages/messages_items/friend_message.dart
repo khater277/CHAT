@@ -19,6 +19,7 @@ import '../../../models/LastMessageModel.dart';
 import '../../../models/MessageModel.dart';
 import '../../../shared/default_widgets.dart';
 import '../../../styles/icons_broken.dart';
+import 'delete_message.dart';
 
 class FriendMessage extends StatefulWidget {
   final AppCubit cubit;
@@ -41,44 +42,56 @@ class _FriendMessageState extends State<FriendMessage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: valueNotifier,
-      builder: (BuildContext context, value, Widget? child) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 1.w),
-          child: ChatBubble(
-            clipper: ChatBubbleClipper3(type: BubbleType.receiverBubble),
-            alignment: Alignment.topLeft,
-            elevation: 0,
-            backGroundColor: MyColors.lightBlack,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                widget.messageModel.isImage==true?
-                FriendImageMessage(
-                  media: widget.messageModel.media!,
-                  date: widget.messageModel.date!,)
-                    :widget.messageModel.isVideo==true?
-                FriendVideoMessage(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 1.w),
+      child: ChatBubble(
+        clipper: ChatBubbleClipper3(type: BubbleType.receiverBubble),
+        alignment: Alignment.topLeft,
+        elevation: 0,
+        backGroundColor: MyColors.lightBlack,
+        child: GestureDetector(
+          onLongPress: (){
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (BuildContext context) {
+                return DeleteMessage(
                   cubit: widget.cubit,
-                  media: widget.messageModel.media!,
+                  friendID: widget.friendID,
                   messageID: widget.messageID,
-                  date: widget.messageModel.date!,)
-                    :widget.messageModel.isDoc==true?
-                FriendFileMessage(message: widget.messageModel.message!):
-                FriendTextMessage(message: widget.messageModel.message!),
-                if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
-                  Row(
-                    children: [
-                      SizedBox(width: 2.w,),
-                      MessageDate(date: widget.messageModel.date!)
-                    ],
-                  ),
-              ],
-            ),
+                  lastMessageModel: widget.lastMessageModel,
+                  messageModel: widget.messageModel,
+                );
+              },
+            );
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              widget.messageModel.isImage==true?
+              FriendImageMessage(
+                media: widget.messageModel.media!,
+                date: widget.messageModel.date!,)
+                  :widget.messageModel.isVideo==true?
+              FriendVideoMessage(
+                cubit: widget.cubit,
+                media: widget.messageModel.media!,
+                messageID: widget.messageID,
+                date: widget.messageModel.date!,)
+                  :widget.messageModel.isDoc==true?
+              FriendFileMessage(message: widget.messageModel.message!):
+              FriendTextMessage(message: widget.messageModel.message!),
+              if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
+                Row(
+                  children: [
+                    SizedBox(width: 2.w,),
+                    MessageDate(date: widget.messageModel.date!)
+                  ],
+                ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

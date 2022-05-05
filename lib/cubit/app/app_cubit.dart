@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/UserModel.dart';
-import 'package:chat/screens/add_story/add_story_screen.dart';
+import 'package:chat/screens/story/story_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,7 +40,7 @@ class AppCubit extends Cubit<AppStates>{
 
   List<Widget> screens = [
     const ChatsScreen(),
-    const AddStoryScreen(),
+    const StoryScreen(),
     const CallsScreen(),
     const ContactsScreen()
   ];
@@ -49,6 +49,27 @@ class AppCubit extends Cubit<AppStates>{
     navBarIndex = index;
     emit(AppChangeNavBarState());
   }
+
+  // UserModel? userModel;
+  // void getUserData(){
+  //   emit(AppLoadingState());
+  //   if(uId!=null) {
+  //     FirebaseFirestore.instance.collection('users')
+  //         .doc(uId)
+  //         .get()
+  //         .then((value){
+  //       userModel = UserModel.fromJson(value.data());
+  //       print(userModel!.name);
+  //       getContacts();
+  //       //emit(AppGetUserDataState());
+  //     }).catchError((error){
+  //       printError("getUserData", error.toString());
+  //       emit(AppErrorState());
+  //     });
+  //   }else{
+  //     emit(AppGetUserDataState());
+  //   }
+  // }
 
   List<Contact> contacts = [];
   List<String> usersID = [];
@@ -67,10 +88,12 @@ class AppCubit extends Cubit<AppStates>{
             if(element.phones!.isNotEmpty){
               for (var e in value.docs) {
                 UserModel user = UserModel.fromJson(e.data());
-                //debugPrint("==========> ${element.phones!}");
+                // print(user.name);
                 if(element.phones![0].value!.length>=11){
                   if((phoneFormat(phoneNumber: element.phones![0].value!)==
                       phoneFormat(phoneNumber: user.phone!))){
+                    // print(user.name);
+                    // print(element.displayName);
                     usersID.add(e.id);
                     users.add(UserModel(
                         name: element.displayName,
@@ -108,6 +131,7 @@ class AppCubit extends Cubit<AppStates>{
       emit(AppErrorState());
     });
   }
+
 
   void sendMessage({
     required String friendID,
@@ -171,7 +195,8 @@ class AppCubit extends Cubit<AppStates>{
     String? file,
     MediaSource? mediaSource,
   }){
-    LastMessageModel lastMessageModel = LastMessageModel(
+    ///set data of my last message
+    LastMessageModel myLastMessageModel = LastMessageModel(
       senderID: uId,
       receiverID: friendID,
       message: message??"",
@@ -182,17 +207,30 @@ class AppCubit extends Cubit<AppStates>{
       date: DateTime.now().toString(),
       isRead: true
     );
+    ///set data of my friend last message
+    LastMessageModel friendLastMessageModel = LastMessageModel(
+        senderID: uId,
+        receiverID: friendID,
+        message: message??"",
+        media: file??"",
+        isImage: mediaSource==MediaSource.image,
+        isVideo: mediaSource==MediaSource.video,
+        isDoc: mediaSource==MediaSource.doc,
+        date: DateTime.now().toString(),
+        isRead: false
+    );
+
     FirebaseFirestore.instance.collection('users')
     .doc(uId)
     .collection('chats')
     .doc(friendID)
-    .set(lastMessageModel.toJson())
+    .set(myLastMessageModel.toJson())
     .then((value){
       FirebaseFirestore.instance.collection('users')
           .doc(friendID)
           .collection('chats')
           .doc(uId)
-          .set(lastMessageModel.toJson())
+          .set(friendLastMessageModel.toJson())
           .then((value){
            emit(AppSendLastMessageState());
       }).catchError((error){
@@ -226,7 +264,7 @@ class AppCubit extends Cubit<AppStates>{
           String? name;
           bool isContact = usersID.contains(userModel.uId);
           name = isContact?users.firstWhere((element) =>
-          element.uId==userModel.uId).name!:userModel.name!;
+          element.uId==userModel.uId).name!:userModel.phone!;
           UserModel finalUserModel = UserModel(
               name: name,
               uId: userModel.uId,
@@ -537,4 +575,82 @@ class AppCubit extends Cubit<AppStates>{
      emit(AppTestState());
   }
 
+  File? profileImage;
+  double? profileImagePercentage;
+  Future<void> pickProfileImage()async{
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if(pickedFile!=null){
+      profileImage = File(pickedFile.path);
+      emit(AppPickProfileImageState());
+    }else{
+      debugPrint("NOT SELECTED");
+      emit(AppErrorState());
+    }
+  }
+
+  void removeProfileImage(){
+    profileImage = null;
+    emit(AppPickProfileImageState());
+  }
+
+  void updateProfileImage(){
+    FirebaseStorage.instance.ref("profile_image/${Uri.file(profileImage!.path).pathSegments.last}")
+        .putFile(profileImage!)
+        .snapshotEvents
+        .listen((taskSnapshot) {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          profileImagePercentage = taskSnapshot.bytesTransferred/taskSnapshot.totalBytes;
+          emit(AppUpdateProfileImageLoadingState());
+          break;
+        case TaskState.paused:
+          break;
+        case TaskState.success:
+          taskSnapshot.ref.getDownloadURL().then((value){
+            profileImagePercentage = null;
+            profileImage = null;
+            setProfileImage(image: value);
+          }).catchError((error){
+            printError("updateProfileImage", error.toString());
+            emit(AppErrorState());
+          });
+          break;
+        case TaskState.canceled:
+          break;
+        case TaskState.error:
+          profileImagePercentage = null;
+          profileImage = null;
+          printError("updateProfileImage", TaskState.error.toString());
+          emit(AppErrorState());
+          break;
+      }
+    });
+  }
+
+  void setProfileImage({required String image}){
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId!)
+        .update({"image":image})
+        .then((value){
+          debugPrint("PROFILE IMAGE SENT");
+          emit(AppUpdateProfileImageState());
+        }).catchError((error){
+          printError("updateProfileImage", error.toString());
+          emit(AppErrorState());
+        });
+  }
+
+  void updateName({required String name}){
+    emit(AppUpdateNameLoadingState());
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId)
+    .update({"name":name})
+    .then((value){
+      print("NAME UPDATED");
+      emit(AppUpdateNameState());
+    }).catchError((error){
+      printError("updateName", error.toString());
+      emit(AppErrorState());
+    });
+  }
 }

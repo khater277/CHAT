@@ -12,6 +12,8 @@ class AppChangeNavBarState extends AppStates{}
 
 class AppGetContactsState extends AppStates{}
 
+class AppGetUserDataState extends AppStates{}
+
 class AppAddNewContactState extends AppStates{}
 
 class AppSendLastMessageState extends AppStates{}
@@ -41,3 +43,11 @@ class AppSelectFileState extends AppStates{}
 class AppCancelSelectFileState extends AppStates{}
 
 class AppTestState extends AppStates{}
+
+class AppPickProfileImageState extends AppStates{}
+
+class AppUpdateProfileImageLoadingState extends AppStates{}
+class AppUpdateProfileImageState extends AppStates{}
+
+class AppUpdateNameLoadingState extends AppStates{}
+class AppUpdateNameState extends AppStates{}

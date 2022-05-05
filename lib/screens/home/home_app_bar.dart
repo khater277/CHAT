@@ -1,7 +1,9 @@
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/screens/profile/profile_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class HomeAppBar extends StatelessWidget {
@@ -20,7 +22,9 @@ class HomeAppBar extends StatelessWidget {
             Padding(
               padding:  EdgeInsets.symmetric(horizontal: 2.w),
               child: IconButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    Get.to(()=>const ProfileScreen());
+                  },
                   icon: Icon(IconBroken.Edit_Square,size: 18.sp,color: MyColors.grey,)
               ),
             ),
@@ -40,7 +44,7 @@ class HomeAppBar extends StatelessWidget {
               padding:  EdgeInsets.symmetric(horizontal: 2.w),
               child: IconButton(
                   onPressed: (){
-                    AppCubit.get(context).deleteChat(chatID: "B4y2fbSV32Xj50eqRy01mlJzjmD3");
+                    //AppCubit.get(context).deleteChat(chatID: "B4y2fbSV32Xj50eqRy01mlJzjmD3");
                   },
                   icon: Icon(IconBroken.Search,size: 18.sp,color: MyColors.grey,)
               ),

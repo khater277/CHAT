@@ -52,6 +52,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
     super.dispose();
   }
 
+  void readMessages() {
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId)
+        .collection('chats')
+        .doc(widget.user.uId!)
+        .update({"isRead":true})
+        .then((value){
+      print("UPDATED");
+    }).catchError((error){
+      print(error.toString());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -68,6 +81,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             messagesID.add(element.id);
             messages.add(messageModel);
           }
+          readMessages();
           if(canScroll.value) {
             Future.delayed(const Duration(milliseconds: 300)).then((value){
               scrollDown(_scrollController);

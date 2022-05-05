@@ -77,16 +77,31 @@ class MessageBuilder extends StatelessWidget {
                   lastMessageModel: lastMessageModel,
                   friendID: friendID,
                 ),
+
               ],
             ),
           )
-        else FriendMessage(
-          messageModel: message,
-          index: index,
-          cubit: cubit,
-          messageID: messageID,
-          lastMessageModel: lastMessageModel,
-          friendID: friendID,
+        else Padding(
+          padding: EdgeInsets.only(top: 1.5.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              FriendMessage(
+                messageModel: message,
+                index: index,
+                cubit: cubit,
+                messageID: messageID,
+                lastMessageModel: lastMessageModel,
+                friendID: friendID,
+              ),
+              if(message.isDoc==true||message.isImage==true||message.isVideo==true)
+                DownloadButton(
+                  message: message,
+                  //downloadFileIndicator: downloadFileIndicator,
+                ),
+            ],
+          ),
         ),
       ],
     );
