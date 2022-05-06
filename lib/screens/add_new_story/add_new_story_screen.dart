@@ -73,12 +73,13 @@ class _AddNewStoryScreenState extends State<AddNewStoryScreen> {
                             shape: BoxShape.circle
                           ),
                           child: IconButton(
-                            onPressed: (){
+                            onPressed:state is! AppSendLastStoryLoadingState? (){
                                 cubit.uploadMediaLastStory(
                                     phone: AppCubit.get(context).userModel!.phone!,
                                     text: _controller.text,
                                     mediaSource: MediaSource.image);
-                            },
+                                _controller.clear();
+                            }:null,
                             icon: const Icon(IconBroken.Send,color: MyColors.white,),
                           ),
                         )
@@ -112,10 +113,11 @@ class StoryImage extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      child: Image.file(
+      child: cubit.storyImage!=null?
+      Image.file(
         cubit.storyImage!,
         fit: BoxFit.cover,
-      ),
+      ):null,
     );
   }
 }

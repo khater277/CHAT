@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chat/models/LastMessageModel.dart';
-import 'package:chat/models/LastStoryModel.dart';
+import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/story/story_screen.dart';
@@ -33,6 +33,7 @@ class AppCubit extends Cubit<AppStates>{
     FirebaseAuth.instance.signOut().then((value){
       otp=null;
       uId=null;
+      userModel = null;
       GetStorage().remove('uId');
       emit(AppLogoutState());
     }).catchError((error){
@@ -52,36 +53,12 @@ class AppCubit extends Cubit<AppStates>{
     emit(AppChangeNavBarState());
   }
 
-  // UserModel? userModel;
-  // void getUserData(){
-  //   emit(AppLoadingState());
-  //   if(uId!=null) {
-  //     FirebaseFirestore.instance.collection('users')
-  //         .doc(uId)
-  //         .get()
-  //         .then((value){
-  //       userModel = UserModel.fromJson(value.data());
-  //       print(userModel!.name);
-  //       getContacts();
-  //       //emit(AppGetUserDataState());
-  //     }).catchError((error){
-  //       printError("getUserData", error.toString());
-  //       emit(AppErrorState());
-  //     });
-  //   }else{
-  //     emit(AppGetUserDataState());
-  //   }
-  // }
-
   List<Contact> contacts = [];
   List<String> usersID = [];
   List<UserModel> users = [];
   void getContacts(){
     if(contactsPermission!){
       emit(AppLoadingState());
-      // contacts = [];
-      // usersID = [];
-      // users = [];
       ContactsService.getContacts().then((contactList){
         for (var element in contactList) {
           FirebaseFirestore.instance.collection('users')
@@ -635,7 +612,8 @@ class AppCubit extends Cubit<AppStates>{
         .update({"image":image})
         .then((value){
           debugPrint("PROFILE IMAGE SENT");
-          emit(AppUpdateProfileImageState());
+          getUserData();
+          // emit(AppUpdateProfileImageState());
         }).catchError((error){
           printError("updateProfileImage", error.toString());
           emit(AppErrorState());
@@ -674,13 +652,14 @@ class AppCubit extends Cubit<AppStates>{
   required String text,
 }){
     emit(AppSendLastStoryLoadingState());
-    LastStoryModel lastStoryModel = LastStoryModel(
+    StoryModel lastStoryModel = StoryModel(
       phone: phone,
       date: DateTime.now().toString(),
       text: text,
       media: "",
       isImage: false,
-      isVideo: false
+      isVideo: false,
+      isRead:false,
     );
     FirebaseFirestore.instance.collection('stories')
     .doc(uId)
@@ -695,6 +674,20 @@ class AppCubit extends Cubit<AppStates>{
 
 
   UserModel? userModel;
+  void getUserData({bool? isOpening}){
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId)
+        .get()
+        .then((value){
+          userModel = UserModel.fromJson(value.data());
+          if(isOpening!=true) {
+            emit(AppGetUserDataState());
+          }
+    }).catchError((error){
+      printError("getUserData", error.toString());
+      emit(AppErrorState());
+    });
+  }
 
   double? storyImagePercentage;
   void uploadMediaLastStory({
@@ -744,10 +737,18 @@ class AppCubit extends Cubit<AppStates>{
     });
   }
 
-  void cleanStoryFile(){
-    // emit(AppCleanStoryFileLoadingState());
-    storyImage = null;
-    // emit(AppCleanStoryFileState());
+  void sendStory({required StoryModel storyModel,}){
+    FirebaseFirestore.instance.collection("stories")
+        .doc(uId)
+        .collection("currentStories")
+        .add(storyModel.toJson())
+        .then((value){
+          debugPrint("STORY UPLOADED");
+          emit(AppSendLastStoryState());
+    }).catchError((error){
+      printError("sendLastStory", error.toString());
+      emit(AppErrorState());
+    });
   }
 
   void sendLastStory({
@@ -756,22 +757,25 @@ class AppCubit extends Cubit<AppStates>{
     String? media,
     MediaSource? mediaSource,
 }){
-    LastStoryModel lastStoryModel = LastStoryModel(
+    StoryModel storyModel = StoryModel(
         phone: phone,
         date: DateTime.now().toString(),
         text: text??"",
         media: media??"",
         isImage: mediaSource!=null?mediaSource==MediaSource.image:false,
-        isVideo: mediaSource!=null?mediaSource==MediaSource.video:false
+        isVideo: mediaSource!=null?mediaSource==MediaSource.video:false,
+        isRead:false,
     );
     FirebaseFirestore.instance.collection('stories')
         .doc(uId)
-        .set(lastStoryModel.toJson())
+        .set(storyModel.toJson())
         .then((value){
-      emit(AppSendLastStoryState());
+      sendStory(storyModel: storyModel);
     }).catchError((error){
       printError("sendLastStory", error.toString());
       emit(AppErrorState());
     });
   }
+
+
 }

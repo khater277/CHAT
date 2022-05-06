@@ -9,7 +9,7 @@ import '../../../shared/colors.dart';
 import '../../../styles/icons_broken.dart';
 
 class AddMyStoryProfileImage extends StatelessWidget {
-  final String image;
+  final String? image;
 
   const AddMyStoryProfileImage({Key? key, required this.image})
       : super(key: key);
@@ -62,8 +62,8 @@ class AddMyStoryProfileImage extends StatelessWidget {
               child: CircleAvatar(
                 radius: 21.sp,
                 backgroundColor: MyColors.blue.withOpacity(0.2),
-                backgroundImage:
-                    CachedNetworkImageProvider("${image}"),
+                backgroundImage: image==null?null:
+                    CachedNetworkImageProvider("$image"),
               ),
             ),
             Align(
@@ -89,7 +89,7 @@ class AddMyStoryProfileImage extends StatelessWidget {
 }
 
 class MyStory extends StatelessWidget {
-  final String image;
+  final String? image;
   const MyStory({Key? key, required this.image}) : super(key: key);
 
   @override

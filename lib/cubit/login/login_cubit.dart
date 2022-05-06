@@ -188,6 +188,7 @@ class LoginCubit extends Cubit<LoginStates>{
   }
 
   void test(context){
+    AppCubit.get(context).getUserData(isOpening: true);
     AppCubit.get(context).getContacts();
   }
 

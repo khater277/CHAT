@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/models/StoryModel.dart';
 import 'package:chat/screens/add_new_story/add_new_story_screen.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
 import 'package:chat/screens/story/story_items/story_date.dart';
 import 'package:chat/screens/story/story_items/story_profile_image.dart';
+import 'package:chat/shared/default_widgets.dart';
+import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,26 +48,35 @@ class StoryScreen extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        StreamBuilder<DocumentSnapshot>(
-                            stream: FirebaseFirestore.instance.collection('users')
-                                .doc(uId!).snapshots(),
+                        StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection("stories").doc(uId)
+                              .collection("currentStories").orderBy('date').snapshots(),
                           builder: (context, snapshot) {
-                            if(snapshot.hasData) {
-                               UserModel myData = UserModel.fromJson(snapshot.data!.data());
-                               cubit.userModel = myData;
+                            List<StoryModel> stories = [];
+                            if(snapshot.hasData){
+                              for (var element in snapshot.data!.docs) {
+                                StoryModel storyModel = StoryModel.fromJson(element.data());
+                                DateTime storyDate = DateTime.parse(storyModel.date!);
+                                DateTime validStoryDate = DateTime.parse(storyModel.date!)
+                                    .add(const Duration(seconds: 5));
+                                DateTime nowDate = DateTime.now();
+                                bool condition = nowDate.isBefore(validStoryDate);
+                                Timer(
+                                    Duration(seconds: validStoryDate.difference(storyDate).inSeconds)
+                                    ,(){deleteStory(element);});
+                                if(condition){
+                                  stories.add(storyModel);
+                                }
+                                else{deleteStory(element);}
+                              }
                               return Column(
                                 children: [
-                                  MyStory(image: "${myData.image}",),
+                                  Text("${stories.length}"),
+                                  MyStory(image:cubit.userModel==null?null:"${cubit.userModel!.image}",),
                                 ],
                               );
-                            }else{
-                             return SizedBox(
-                               width: 12.w,
-                               height: 6.h,
-                               child: CircularProgressIndicator(
-                                 strokeWidth: 2.sp,
-                               ),
-                             );
+                            }else {
+                              return const DefaultProgressIndicator(icon: IconBroken.Camera);
                             }
                           }
                         ),
@@ -125,5 +139,17 @@ class StoryScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  void deleteStory(QueryDocumentSnapshot<Object?> element) {
+    FirebaseFirestore.instance.collection("stories").doc(uId)
+            .collection("currentStories")
+            .doc(element.id)
+            .delete()
+            .then((value){
+          print("STORY DELETED");
+        }).catchError((error){
+          print("============>${error.toString()}");
+        });
   }
 }
