@@ -110,6 +110,28 @@ class DateFormatter {
     return finalDate;
   }
 
+
+  String storyDate(String date){
+
+    String? finalDate;
+    DateTime storyDate = DateTime.parse(date);
+    DateTime nowDate = DateTime.now();
+
+    int minutesDiff = nowDate.difference(storyDate).inMinutes;
+    if(minutesDiff>=60){
+      finalDate = "${(minutesDiff/60).floor()} ${(minutesDiff/60).floor()==1?"hour":"hours"} ago";
+    }else{
+      if(minutesDiff==0){
+        finalDate = "just now";
+      }else {
+        finalDate = "$minutesDiff ${minutesDiff==1?"minute":"minutes"} ago";
+      }
+    }
+
+    return finalDate;
+  }
+
+
   String messageDate(String date){
 
     String? finalDate;

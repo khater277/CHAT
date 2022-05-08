@@ -23,6 +23,18 @@ import '../../shared/constants.dart';
 class StoryScreen extends StatelessWidget {
   const StoryScreen({Key? key}) : super(key: key);
 
+  void deleteStory(QueryDocumentSnapshot<Object?> element) {
+    FirebaseFirestore.instance.collection("stories").doc(uId)
+        .collection("currentStories")
+        .doc(element.id)
+        .delete()
+        .then((value){
+      print("STORY DELETED");
+    }).catchError((error){
+      print("============>${error.toString()}");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
@@ -45,111 +57,100 @@ class StoryScreen extends StatelessWidget {
                       left: 5.w,
                       top: 1.h,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                    child: Stack(
                       children: [
-                        StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection("stories").doc(uId)
-                              .collection("currentStories").orderBy('date').snapshots(),
-                          builder: (context, snapshot) {
-                            List<StoryModel> stories = [];
-                            if(snapshot.hasData){
-                              for (var element in snapshot.data!.docs) {
-                                StoryModel storyModel = StoryModel.fromJson(element.data());
-                                DateTime storyDate = DateTime.parse(storyModel.date!);
-                                DateTime validStoryDate = DateTime.parse(storyModel.date!)
-                                    .add(const Duration(seconds: 5));
-                                DateTime nowDate = DateTime.now();
-                                bool condition = nowDate.isBefore(validStoryDate);
-                                Timer(
-                                    Duration(seconds: validStoryDate.difference(storyDate).inSeconds)
-                                    ,(){deleteStory(element);});
-                                if(condition){
-                                  stories.add(storyModel);
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance.collection("stories").doc(uId)
+                                  .collection("currentStories").orderBy('date').snapshots(),
+                              builder: (context, snapshot) {
+                                List<StoryModel> stories = [];
+                                if(snapshot.hasData){
+                                  for (var element in snapshot.data!.docs) {
+                                    StoryModel storyModel = StoryModel.fromJson(element.data());
+                                    DateTime validStoryDate = DateTime.parse(storyModel.date!)
+                                        .add(const Duration(days: 1));
+                                    DateTime nowDate = DateTime.now();
+                                    bool condition = nowDate.isBefore(validStoryDate);
+                                    if(condition){
+                                      stories.add(storyModel);
+                                    }
+                                    else{deleteStory(element);}
+                                  }
                                 }
-                                else{deleteStory(element);}
-                              }
-                              return Column(
-                                children: [
-                                  Text("${stories.length}"),
-                                  MyStory(image:cubit.userModel==null?null:"${cubit.userModel!.image}",),
-                                ],
-                              );
-                            }else {
-                              return const DefaultProgressIndicator(icon: IconBroken.Camera);
-                            }
-                          }
-                        ),
-                        SizedBox(height: 1.h,),
-                        Divider(color: MyColors.grey.withOpacity(0.5),),
-                        SizedBox(height: 1.h,),
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context,index){
                                 return Column(
                                   children: [
-                                    GestureDetector(
-                                      onTap: (){},
-                                      child: Container(
-                                        color: Theme.of(context).scaffoldBackgroundColor,
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(vertical: 1.5.h),
-                                          child: Row(
-                                            children: [
-                                              const StoryProfileImage(),
-                                              SizedBox(width: 4.w,),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Ahmed Khater",
-                                                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                                                          fontSize: 12.sp
-                                                      ),
-                                                      overflow: TextOverflow.ellipsis,
-                                                    ),
-                                                    SizedBox(height: 0.5.h,),
-                                                    const StoryDate()
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                    // Text("${stories.length}"),
+                                    MyStory(
+                                      image:cubit.userModel==null?null:"${cubit.userModel!.image}",
+                                      stories:stories,
                                     ),
-                                    // if(index==chats.length)
-                                    //   SizedBox(height: 2.h,)
                                   ],
                                 );
-                              },
-                              itemCount: 10
-                          ),
-                        )
+                              }
+                            ),
+                            SizedBox(height: 1.h,),
+                            Divider(color: MyColors.grey.withOpacity(0.5),),
+                            SizedBox(height: 1.h,),
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context,index){
+                                    return Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: (){},
+                                          child: Container(
+                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                                              child: Row(
+                                                children: [
+                                                  const StoryProfileImage(),
+                                                  SizedBox(width: 4.w,),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          "Ahmed Khater",
+                                                          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                                                              fontSize: 12.sp
+                                                          ),
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                        SizedBox(height: 0.5.h,),
+                                                        const StoryDate()
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // if(index==chats.length)
+                                        //   SizedBox(height: 2.h,)
+                                      ],
+                                    );
+                                  },
+                                  itemCount: 10
+                              ),
+                            )
+                          ],
+                        ),
                       ],
                     )
                 ),
-              )
+              ),
             ],
           ),
         );
       },
     );
-  }
-
-  void deleteStory(QueryDocumentSnapshot<Object?> element) {
-    FirebaseFirestore.instance.collection("stories").doc(uId)
-            .collection("currentStories")
-            .doc(element.id)
-            .delete()
-            .then((value){
-          print("STORY DELETED");
-        }).catchError((error){
-          print("============>${error.toString()}");
-        });
   }
 }

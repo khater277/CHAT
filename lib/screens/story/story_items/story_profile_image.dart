@@ -3,20 +3,12 @@ import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../models/UserModel.dart';
-import '../../../styles/icons_broken.dart';
 
 class StoryProfileImage extends StatelessWidget {
-  //final UserModel userModel;
   const StoryProfileImage({Key? key,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // if(userModel.image==""){
-    //   return SizedBox(
-    //       width: 13.w,height: 6.5.h,
-    //       child: Icon(IconBroken.Profile,color: MyColors.blue,size: 25.sp,));
-    // }else{
       return SizedBox(
         width: 14.2.w,height: 7.2.h,
         child: CircleAvatar(

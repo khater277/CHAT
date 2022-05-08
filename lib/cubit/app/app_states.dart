@@ -60,4 +60,6 @@ class AppSendLastStoryState extends AppStates{}
 class AppCleanStoryFileLoadingState extends AppStates{}
 class AppCleanStoryFileState extends AppStates{}
 
+class AppDeleteStoryState extends AppStates{}
+
 

@@ -9,7 +9,7 @@ ThemeData darkTheme=ThemeData(
         backgroundColor: Colors.white70,
         foregroundColor: Colors.black,
       elevation: 0,
-      shape: RoundedRectangleBorder(),
+      // shape: RoundedRectangleBorder(),
     ),
     iconTheme: const IconThemeData(
       color: Colors.white,
