@@ -53,7 +53,7 @@ dependencies:
   path_provider: ^2.0.9
   gallery_saver: ^2.3.2
   open_file: ^3.2.1
-
+  story_view: ^0.13.2
   #firebase
   firebase_core: ^1.13.1
   firebase_auth: ^3.3.11

@@ -62,4 +62,6 @@ class AppCleanStoryFileState extends AppStates{}
 
 class AppDeleteStoryState extends AppStates{}
 
+class AppChangeStoryIndexState extends AppStates{}
+
 

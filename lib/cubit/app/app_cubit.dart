@@ -824,4 +824,12 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppErrorState());
     });
   }
+
+  int storyCurrentIndex = 0;
+  bool closeStory = false;
+  void changeStoryIndex({required int index}){
+    storyCurrentIndex = index;
+    print(storyCurrentIndex);
+    emit(AppChangeStoryIndexState());
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
-import 'package:chat/screens/show_story/show_story_screen.dart';
 import 'package:chat/shared/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import '../../../models/StoryModel.dart';
 import '../../../shared/colors.dart';
 import '../../../styles/icons_broken.dart';
+import '../../story_view/story_view_screen.dart';
 
 class AddMyStoryProfileImage extends StatelessWidget {
   final String? image;
@@ -124,7 +124,7 @@ class MyStory extends StatelessWidget {
         if(stories.isEmpty) {
           AppCubit.get(context).pickStoryImage();
         }else{
-          Get.to(()=>ShowStoryScreen(stories: stories,));
+          Get.to(()=>StoryViewScreen(stories: stories,profileImage: image!,));
         }
       },
       child: Container(
