@@ -124,6 +124,7 @@ class MyStory extends StatelessWidget {
         if(stories.isEmpty) {
           AppCubit.get(context).pickStoryImage();
         }else{
+          AppCubit.get(context).zeroStoryIndex();
           Get.to(()=>StoryViewScreen(stories: stories,profileImage: image!,));
         }
       },
