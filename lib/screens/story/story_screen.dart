@@ -77,7 +77,10 @@ class StoryScreen extends StatelessWidget {
                                     if(condition){
                                       stories.add(storyModel);
                                     }
-                                    else{deleteStory(element);}
+                                    else{
+                                      cubit.deleteStory(id: element.id);
+                                      // deleteStory(element);
+                                    }
                                   }
                                 }
                                 return Column(
