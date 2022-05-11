@@ -1,6 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/add_new_story/add_new_story_screen.dart';
+import 'package:chat/screens/home/stories_fab.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
@@ -19,7 +20,10 @@ class HomeScreen extends StatelessWidget {
     return BlocConsumer<AppCubit,AppStates>(
       listener: (context,state){
         if(state is AppPickStoryImageState){
-          Get.to(const AddNewStoryScreen());
+          Get.to(const AddNewStoryScreen(mediaSource: MediaSource.image,));
+        }
+        if(state is AppPickStoryVideoState){
+          Get.to(const AddNewStoryScreen(mediaSource: MediaSource.video,));
         }
       },
       builder: (context,state){
@@ -29,21 +33,36 @@ class HomeScreen extends StatelessWidget {
           Scaffold(
             body: cubit.screens[cubit.navBarIndex],
             extendBody: true,
-            floatingActionButton:cubit.navBarIndex==1?SizedBox(
-              width: 38.sp,
-              height: 38.sp,
-              child: FloatingActionButton(
-                onPressed: (){
-                  cubit.pickStoryImage();
-                },
-                backgroundColor: Colors.grey.shade800,
-                child: Icon(
-                  Icons.add,
-                  color: MyColors.white,
-                  size: 16.sp,
+            floatingActionButton:cubit.navBarIndex==1?
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                StoriesFAB(
+                    onPressed: (){
+                    },
+                    icon: IconBroken.Edit,
+                  tag: "btn1",
                 ),
-              ),
-            ):null,
+                SizedBox(height: 1.h,),
+                StoriesFAB(
+                    onPressed: (){
+                      cubit.pickStoryImage();
+                    },
+                    icon: IconBroken.Image,
+                  tag: "btn2",
+                ),
+                SizedBox(height: 1.h,),
+                StoriesFAB(
+                    onPressed: (){
+                      cubit.pickStoryVideo();
+                    },
+                    icon: IconBroken.Video,
+                  tag: "btn3",
+                ),
+              ],
+            )
+                :
+            null,
 
             bottomNavigationBar: Padding(
               padding: EdgeInsets.only(bottom: 1.h),

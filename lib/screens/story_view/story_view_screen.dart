@@ -61,7 +61,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   onStoryShow: (s) {
                     int index = storyItems.indexOf(s);
                     cubit.changeStoryIndex(index: index,);
-                    print(s.duration);
+                    // print(s.duration);
                   },
                   onComplete: () {Get.back();},
                   onVerticalSwipeComplete: (direction) {

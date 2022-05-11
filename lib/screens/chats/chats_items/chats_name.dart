@@ -1,4 +1,3 @@
-import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';

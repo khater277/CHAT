@@ -2,24 +2,24 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chat/models/LastMessageModel.dart';
-import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/MessageModel.dart';
+import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
-import 'package:chat/screens/story/story_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
+import 'package:chat/screens/story/story_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../../screens/calls/calls_screen.dart';
 import '../../shared/constants.dart';
 import 'app_states.dart';
@@ -68,12 +68,12 @@ class AppCubit extends Cubit<AppStates> {
             if (element.phones!.isNotEmpty) {
               for (var e in value.docs) {
                 UserModel user = UserModel.fromJson(e.data());
-                // print(user.name);
+                // debugPrint(user.name);
                 if (element.phones![0].value!.length >= 11) {
                   if ((phoneFormat(phoneNumber: element.phones![0].value!) ==
                       phoneFormat(phoneNumber: user.phone!))) {
-                    // print(user.name);
-                    // print(element.displayName);
+                    // debugPrint(user.name);
+                    // debugPrint(element.displayName);
                     usersID.add(e.id);
                     users.add(UserModel(
                         name: element.displayName,
@@ -349,7 +349,7 @@ class AppCubit extends Cubit<AppStates> {
     if (result != null) {
       isDoc = true;
       file = File(result.files.single.path!);
-      print(file!.path);
+      debugPrint(file!.path);
       docName = Uri.file(file!.path).pathSegments.last;
       emit(AppSelectFileState());
     } else {
@@ -374,7 +374,7 @@ class AppCubit extends Cubit<AppStates> {
     required bool isFirstMessage,
   }) async {
     final Directory? directory = await getExternalStorageDirectory();
-    print(file!.path);
+    debugPrint(file!.path);
     file!.copySync(
         "${directory!.path}/${Uri.file(file!.path).pathSegments.last}");
     FirebaseStorage.instance
@@ -650,7 +650,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(uId)
         .update({"name": name}).then((value) {
-      print("NAME UPDATED");
+      debugPrint("NAME UPDATED");
       emit(AppUpdateNameState());
     }).catchError((error) {
       printError("updateName", error.toString());
@@ -658,19 +658,34 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  File? storyImage;
+  File? storyFile;
 
   Future<void> pickStoryImage() async {
+
     final pickedFile = await picker.pickImage(
         source: ImageSource.gallery);
     if (pickedFile != null) {
-      storyImage = File(pickedFile.path);
+      storyFile = File(pickedFile.path);
       emit(AppPickStoryImageState());
     } else {
       debugPrint("NOT SELECTED");
       emit(AppErrorState());
     }
   }
+
+  Future<void> pickStoryVideo() async {
+
+    final pickedFile = await picker.pickVideo(
+        source: ImageSource.gallery);
+    if (pickedFile != null) {
+      storyFile = File(pickedFile.path);
+      emit(AppPickStoryVideoState());
+    } else {
+      debugPrint("NOT SELECTED");
+      emit(AppErrorState());
+    }
+  }
+
 
 
   UserModel? userModel;
@@ -687,7 +702,7 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  double? storyImagePercentage;
+  double? storyFilePercentage;
 
   void uploadMediaLastStory({
     required String phone,
@@ -696,13 +711,13 @@ class AppCubit extends Cubit<AppStates> {
   }) {
     emit(AppSendLastStoryLoadingState());
     FirebaseStorage.instance
-        .ref("stories/$uId/${Uri.file(storyImage!.path).pathSegments.last}")
-        .putFile(storyImage!)
+        .ref("stories/$uId/${Uri.file(storyFile!.path).pathSegments.last}")
+        .putFile(storyFile!)
         .snapshotEvents
         .listen((taskSnapshot) {
       switch (taskSnapshot.state) {
         case TaskState.running:
-          storyImagePercentage =
+          storyFilePercentage =
               taskSnapshot.bytesTransferred / taskSnapshot.totalBytes;
           emit(AppSendLastStoryLoadingState());
           break;
@@ -710,8 +725,8 @@ class AppCubit extends Cubit<AppStates> {
           break;
         case TaskState.success:
           taskSnapshot.ref.getDownloadURL().then((value) {
-            storyImagePercentage = null;
-            storyImage = null;
+            storyFilePercentage = null;
+            storyFile = null;
             debugPrint("MEDIA SENT");
             sendLastStory(
                 phone: phone,
@@ -727,8 +742,8 @@ class AppCubit extends Cubit<AppStates> {
         case TaskState.canceled:
           break;
         case TaskState.error:
-          storyImagePercentage = null;
-          storyImage = null;
+          storyFilePercentage = null;
+          storyFile = null;
           printError("uploadMediaLastStory", TaskState.error.toString());
           emit(AppErrorState());
           break;
@@ -804,7 +819,7 @@ class AppCubit extends Cubit<AppStates> {
             String uri = Uri.parse(media).pathSegments.last;
             deleteStoryFromStorage(uri: uri);
           }else{
-            print("STORY DELETED");
+            debugPrint("STORY DELETED");
             emit(AppDeleteStoryState());
           }
     }).catchError((error){
@@ -817,7 +832,7 @@ class AppCubit extends Cubit<AppStates> {
     FirebaseStorage.instance.ref(uri)
         .delete()
         .then((value){
-      print("STORY DELETED");
+      debugPrint("STORY DELETED");
       emit(AppDeleteStoryState());
     }).catchError((error){
       printError("deleteStory", error.toString());
@@ -829,7 +844,7 @@ class AppCubit extends Cubit<AppStates> {
   bool closeStory = false;
   void changeStoryIndex({required int index}){
     storyCurrentIndex = index;
-    print(storyCurrentIndex);
+    debugPrint(storyCurrentIndex.toString());
     emit(AppChangeStoryIndexState());
   }
 

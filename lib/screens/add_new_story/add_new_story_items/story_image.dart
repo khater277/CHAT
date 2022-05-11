@@ -17,7 +17,7 @@ class _StoryImageState extends State<StoryImage> {
 
   @override
   void initState() {
-    decodeImageFromList(widget.cubit.storyImage!.readAsBytesSync())
+    decodeImageFromList(widget.cubit.storyFile!.readAsBytesSync())
         .then((value) {
       setState(() {
         width = value.width + 0.0;
@@ -35,9 +35,9 @@ class _StoryImageState extends State<StoryImage> {
       return SizedBox(
         width: deviceWidth,
         height: deviceHeight,
-        child: widget.cubit.storyImage != null
+        child: widget.cubit.storyFile != null
             ? Image.file(
-          widget.cubit.storyImage!,
+          widget.cubit.storyFile!,
           fit: width!>=deviceWidth?BoxFit.fitWidth:
           height!>=deviceHeight?BoxFit.fitHeight:null,
         )

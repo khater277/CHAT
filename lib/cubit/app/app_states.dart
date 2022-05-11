@@ -47,6 +47,7 @@ class AppTestState extends AppStates{}
 class AppPickProfileImageState extends AppStates{}
 
 class AppPickStoryImageState extends AppStates{}
+class AppPickStoryVideoState extends AppStates{}
 
 class AppUpdateProfileImageLoadingState extends AppStates{}
 class AppUpdateProfileImageState extends AppStates{}

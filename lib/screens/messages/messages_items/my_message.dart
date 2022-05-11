@@ -204,15 +204,17 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
 
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
-    setState(() {
-      debugPrint(_controller!.value.aspectRatio.toString());
-      _chewieController = ChewieController(
-        videoPlayerController: _controller!,
-        aspectRatio: _controller!.value.aspectRatio,
-        autoPlay: false,
-        looping: false,
-        materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
-      );
+    WidgetsBinding.instance!.addPostFrameCallback((_){
+      setState(() {
+        debugPrint(_controller!.value.aspectRatio.toString());
+        _chewieController = ChewieController(
+            videoPlayerController: _controller!,
+            aspectRatio: _controller!.value.aspectRatio,
+            autoPlay: false,
+            looping: false,
+            materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
+        );
+      });
     });
   }
 

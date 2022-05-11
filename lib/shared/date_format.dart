@@ -146,14 +146,8 @@ class DateFormatter {
 
     String? month= messageDate.month.toString().length==1?
     "0${messageDate.month.toString()}":messageDate.month.toString();
-    String? hour= messageDate.hour.toString().length==1?
-    "0${messageDate.hour.toString()}":messageDate.hour.toString();
-    String x="";
-    if(hour.startsWith('0')||hour=="10"||hour=="11"){
-      x=languageFun(ar: 'ص',en: "AM");
-    }else{
-      x=languageFun(ar: 'م',en: "PM");
-    }
+
+
     String today = "Today";
     String yesterday = "Yesterday";
     String completeDate = "${messageDate.day} ${cal[month]} ${messageDate.year}";

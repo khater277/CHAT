@@ -120,7 +120,6 @@ class _DownloadButtonState extends State<DownloadButton> {
   ValueNotifier downloadFileIndicator = ValueNotifier<double?>(0.0);
   bool isRunning = false;
 
-  Future<bool>? _future;
 
   @override
   void initState() {
@@ -130,7 +129,7 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   void _saveNetworkImage({required String url}) async {
     GallerySaver.saveImage(url).then((value) {
-      print('Image is saved $value');
+      debugPrint('Image is saved $value');
     });
   }
 

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
@@ -15,7 +13,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
@@ -59,9 +56,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
         .doc(widget.user.uId!)
         .update({"isRead":true})
         .then((value){
-      print("UPDATED");
+      debugPrint("UPDATED");
     }).catchError((error){
-      print(error.toString());
+      debugPrint(error.toString());
     });
   }
 

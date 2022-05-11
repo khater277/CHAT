@@ -10,7 +10,9 @@ class SendStoryButton extends StatelessWidget {
   final AppCubit cubit;
   final AppStates state;
   final TextEditingController controller;
-  const SendStoryButton({Key? key, required this.cubit, required this.state, required this.controller}) : super(key: key);
+  final MediaSource mediaSource;
+  const SendStoryButton({Key? key, required this.cubit, required this.state,
+    required this.controller, required this.mediaSource}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class SendStoryButton extends StatelessWidget {
           cubit.uploadMediaLastStory(
               phone: cubit.userModel!.phone!,
               text: controller.text,
-              mediaSource: MediaSource.image);
+              mediaSource: mediaSource);
           controller.clear();
         }
             : null,

@@ -1,4 +1,3 @@
-import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/screens/profile/profile_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';

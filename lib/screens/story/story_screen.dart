@@ -1,22 +1,15 @@
-import 'dart:async';
-
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/StoryModel.dart';
-import 'package:chat/screens/add_new_story/add_new_story_screen.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
 import 'package:chat/screens/story/story_items/story_date.dart';
 import 'package:chat/screens/story/story_items/story_profile_image.dart';
-import 'package:chat/shared/default_widgets.dart';
-import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../cubit/app/app_states.dart';
-import '../../models/UserModel.dart';
 import '../../shared/colors.dart';
 import '../../shared/constants.dart';
 
@@ -29,9 +22,9 @@ class StoryScreen extends StatelessWidget {
         .doc(element.id)
         .delete()
         .then((value){
-      print("STORY DELETED");
+      debugPrint("STORY DELETED");
     }).catchError((error){
-      print("============>${error.toString()}");
+      debugPrint("============>${error.toString()}");
     });
   }
 
@@ -39,9 +32,9 @@ class StoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
       listener: (context,state){
-        if(state is AppPickStoryImageState){
-          Get.to(()=> const AddNewStoryScreen());
-        }
+        // if(state is AppPickStoryImageState){
+        //   Get.to(()=> const AddNewStoryScreen());
+        // }
       },
       builder: (context,state){
         AppCubit cubit = AppCubit.get(context);

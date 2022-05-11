@@ -2,17 +2,20 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/add_new_story/add_new_story_items/add_caption.dart';
 import 'package:chat/screens/add_new_story/add_new_story_items/send_story_button.dart';
+import 'package:chat/screens/add_new_story/add_new_story_items/story_video.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../shared/constants.dart';
 import 'add_new_story_items/story_image.dart';
 
 class AddNewStoryScreen extends StatefulWidget {
+  final MediaSource mediaSource;
   const AddNewStoryScreen({
-    Key? key,
+    Key? key, required this.mediaSource,
   }) : super(key: key);
 
   @override
@@ -42,7 +45,10 @@ class _AddNewStoryScreenState extends State<AddNewStoryScreen> {
           child: Scaffold(
             body: Stack(
               children: [
-                StoryImage(cubit: cubit),
+                if(widget.mediaSource == MediaSource.image)
+                  StoryImage(cubit: cubit),
+                if(widget.mediaSource == MediaSource.video)
+                  StoryVideo(cubit: cubit,),
                 const CloseButton(),
                 Align(
                   alignment: AlignmentDirectional.bottomCenter,
@@ -55,7 +61,11 @@ class _AddNewStoryScreenState extends State<AddNewStoryScreen> {
                         SizedBox(
                           width: 2.w,
                         ),
-                        SendStoryButton(cubit: cubit, state: state, controller: _controller)
+                        SendStoryButton(
+                            cubit: cubit,
+                            state: state,
+                            controller: _controller,
+                        mediaSource: widget.mediaSource,)
                       ],
                     ),
                   ),
@@ -63,9 +73,9 @@ class _AddNewStoryScreenState extends State<AddNewStoryScreen> {
                 if (state is AppSendLastStoryLoadingState)
                   Center(
                       child: CircularProgressIndicator(
-                    value: cubit.storyImagePercentage == 0.0
+                    value: cubit.storyFilePercentage == 0.0
                         ? 0.05
-                        : cubit.storyImagePercentage,
+                        : cubit.storyFilePercentage,
                     color: MyColors.blue,
                     backgroundColor: MyColors.grey,
                   )),

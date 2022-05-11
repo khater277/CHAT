@@ -2,7 +2,6 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
