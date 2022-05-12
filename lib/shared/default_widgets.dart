@@ -310,6 +310,7 @@ class DefaultTextFormFiled extends StatelessWidget{
   Color? cursorColor;
   double? cursorHeight;
   bool? isPassword;
+  int? maxLines;
 
 
 
@@ -335,6 +336,7 @@ class DefaultTextFormFiled extends StatelessWidget{
     this.widthPadding,
     this.suffix,
     this.prefix,
+    this.maxLines,
   }
       ) : super(key: key);
 
@@ -345,6 +347,7 @@ class DefaultTextFormFiled extends StatelessWidget{
       autofocus: autoFocus??false,
       controller: controller,
       cursorColor: cursorColor,
+      maxLines: maxLines??1,
       validator: (value) {
         if (value!.isEmpty) {
           if(validateText!=null) {

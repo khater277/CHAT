@@ -44,7 +44,8 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
               ));
         }
       }else{
-        storyItems.add(StoryItem.text(title: widget.stories[cubit.storyCurrentIndex].text!, backgroundColor: Colors.red,));
+        storyItems.add(
+            StoryItem.text(title: widget.stories[i].text!, backgroundColor: Theme.of(context).scaffoldBackgroundColor,));
       }
     }
 

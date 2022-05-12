@@ -758,6 +758,7 @@ class AppCubit extends Cubit<AppStates> {
     String? media,
     MediaSource? mediaSource,
   }) {
+    emit(AppSendLastStoryLoadingState());
     StoryModel storyModel = StoryModel(
       phone: phone,
       date: DateTime.now().toString(),

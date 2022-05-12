@@ -1,8 +1,6 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
-import 'package:chat/screens/add_new_story/add_new_story_items/add_caption.dart';
-import 'package:chat/screens/add_new_story/add_new_story_items/send_story_button.dart';
-import 'package:chat/screens/add_new_story/add_new_story_items/story_video.dart';
+
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,19 +8,22 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../shared/constants.dart';
-import 'add_new_story_items/story_image.dart';
+import 'add_media_story_items/add_caption.dart';
+import 'add_media_story_items/send_story_button.dart';
+import 'add_media_story_items/story_image.dart';
+import 'add_media_story_items/story_video.dart';
 
-class AddNewStoryScreen extends StatefulWidget {
+class AddMediaStoryScreen extends StatefulWidget {
   final MediaSource mediaSource;
-  const AddNewStoryScreen({
+  const AddMediaStoryScreen({
     Key? key, required this.mediaSource,
   }) : super(key: key);
 
   @override
-  State<AddNewStoryScreen> createState() => _AddNewStoryScreenState();
+  State<AddMediaStoryScreen> createState() => _AddMediaStoryScreenState();
 }
 
-class _AddNewStoryScreenState extends State<AddNewStoryScreen> {
+class _AddMediaStoryScreenState extends State<AddMediaStoryScreen> {
   final TextEditingController _controller = TextEditingController();
 
   @override
