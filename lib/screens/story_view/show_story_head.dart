@@ -14,8 +14,9 @@ class ShowStoryHead extends StatelessWidget {
   final AppCubit cubit;
   final StoryModel story;
   final String profileImage;
+  final String name;
   const ShowStoryHead({Key? key, required this.cubit,required this.profileImage,
-    required this.story}) : super(key: key);
+    required this.story, required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class ShowStoryHead extends StatelessWidget {
           ),
           StoryHeadProfileImage(profileImage: profileImage),
           SizedBox(width: 2.w,),
-          ShowStoryNameAndDate(story: story)
+          ShowStoryNameAndDate(name: name,story: story)
         ],
       ),
     );
@@ -53,16 +54,18 @@ class StoryHeadProfileImage extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: CircleAvatar(
         radius: 19.sp,
-        backgroundColor: MyColors.blue.withOpacity(0.2),
-        backgroundImage: CachedNetworkImageProvider(profileImage),
+        backgroundColor: profileImage==""?MyColors.lightBlack:MyColors.blue.withOpacity(0.2),
+        backgroundImage: profileImage!=""?CachedNetworkImageProvider(profileImage):null,
+        child: profileImage==""?const Icon(IconBroken.Profile):null,
       ),
     );
   }
 }
 
 class ShowStoryNameAndDate extends StatelessWidget {
+  final String name;
   final StoryModel story;
-  const ShowStoryNameAndDate({Key? key, required this.story}) : super(key: key);
+  const ShowStoryNameAndDate({Key? key, required this.name, required this.story}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +73,7 @@ class ShowStoryNameAndDate extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "My story",
+          name,
           style: Theme.of(context)
               .textTheme
               .bodyText1!

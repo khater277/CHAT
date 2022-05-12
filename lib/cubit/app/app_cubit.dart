@@ -57,6 +57,7 @@ class AppCubit extends Cubit<AppStates> {
 
   List<Contact> contacts = [];
   List<String> usersID = [];
+  List<String> phones = [];
   List<UserModel> users = [];
 
   void getContacts() {
@@ -81,6 +82,7 @@ class AppCubit extends Cubit<AppStates> {
                         phone: user.phone,
                         image: user.image));
                     contacts.add(element);
+                    phones.add(user.phone!);
                   }
                 }
               }
@@ -224,6 +226,8 @@ class AppCubit extends Cubit<AppStates> {
     if (firstMessage != true) {
       emit(AppLoadingState());
     }
+    chatsID = [];
+    chats = [];
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -253,6 +257,7 @@ class AppCubit extends Cubit<AppStates> {
               phone: userModel.phone,
               image: userModel.image);
           chats.add(finalUserModel);
+          print("${v.size} == ${chats.length}");
           if (v.size == chats.length) {
             emit(AppGetChatsState());
           }
@@ -262,6 +267,7 @@ class AppCubit extends Cubit<AppStates> {
         });
       }
       debugPrint("GET CHATS");
+      // emit(AppGetChatsState());
     }).catchError((error) {
       printError("getChats", error.toString());
       emit(AppErrorState());

@@ -244,7 +244,7 @@ class NoItemsFounded extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
               child: Text(text,style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                color: Colors.grey.withOpacity(0.8),
+                color: Colors.grey.withOpacity(0.6),
                 fontSize: 14.sp,
                 height: 1.4,
                 letterSpacing: 0.8

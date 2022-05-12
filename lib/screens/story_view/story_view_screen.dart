@@ -12,7 +12,8 @@ import 'package:story_view/story_view.dart';
 class StoryViewScreen extends StatefulWidget {
   final List<StoryModel> stories;
   final String profileImage;
-  const StoryViewScreen({Key? key, required this.stories, required this.profileImage}) : super(key: key);
+  final String name;
+  const StoryViewScreen({Key? key, required this.stories, required this.profileImage, required this.name}) : super(key: key);
 
   @override
   State<StoryViewScreen> createState() => _StoryViewScreenState();
@@ -76,6 +77,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                 child: ShowStoryHead(
                     cubit: cubit,
                     profileImage: widget.profileImage,
+                    name: widget.name,
                     story: widget.stories[cubit.storyCurrentIndex]
                 ),
               ),

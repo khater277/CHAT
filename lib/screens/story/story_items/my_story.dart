@@ -125,7 +125,7 @@ class MyStory extends StatelessWidget {
           AppCubit.get(context).pickStoryImage();
         }else{
           AppCubit.get(context).zeroStoryIndex();
-          Get.to(()=>StoryViewScreen(stories: stories,profileImage: image!,));
+          Get.to(()=>StoryViewScreen(stories: stories,profileImage: image!,name: "My Story",));
         }
       },
       child: Container(

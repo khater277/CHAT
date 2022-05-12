@@ -189,7 +189,8 @@ class LoginCubit extends Cubit<LoginStates>{
 
   void test(context){
     AppCubit.get(context).getUserData(isOpening: true);
-    AppCubit.get(context).getContacts();
+    AppCubit.get(context).getChats();
+    // AppCubit.get(context).getContacts();
   }
 
   void checkUser(String phoneNumber,context){
@@ -209,7 +210,7 @@ class LoginCubit extends Cubit<LoginStates>{
           break;
         }
       }
-      print("=================> $exist");
+      print("=========checkUser========> $exist");
       if(exist){
         test(context);
         Get.offAll(()=> const HomeScreen());
