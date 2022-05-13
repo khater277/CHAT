@@ -4,22 +4,16 @@ import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/screens/story/story_items/contact_story.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
-import 'package:chat/screens/story/story_items/story_date.dart';
-import 'package:chat/screens/story/story_items/story_profile_image.dart';
-import 'package:chat/screens/story_view/story_view_screen.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../cubit/app/app_states.dart';
 import '../../shared/colors.dart';
 import '../../shared/constants.dart';
-import 'package:shimmer/shimmer.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({Key? key}) : super(key: key);

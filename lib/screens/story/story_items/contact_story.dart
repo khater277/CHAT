@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../cubit/app/app_cubit.dart';
-import '../../../shared/constants.dart';
 import '../../story_view/story_view_screen.dart';
 
 class ContactStory extends StatelessWidget {
@@ -25,9 +24,11 @@ class ContactStory extends StatelessWidget {
         .doc(userID).collection('currentStories').orderBy("date").snapshots(),
       builder: (context, snapshot) {
         List<StoryModel> stories = [];
+        List<String> storiesIDs = [];
         if(snapshot.hasData){
           for (var element in snapshot.data!.docs) {
             StoryModel storyModel = StoryModel.fromJson(element.data());
+            storiesIDs.add(element.id);
             stories.add(storyModel);
           }
         }
@@ -38,8 +39,8 @@ class ContactStory extends StatelessWidget {
                 stories: stories,
                 profileImage: image,
                 name: "My Story",
-                userID: uId!,
-                storyID: null,
+                userID: userID,
+                storiesIDs: storiesIDs,
               ));
           }:null,
           child: Container(

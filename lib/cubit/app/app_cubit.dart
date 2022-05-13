@@ -257,7 +257,7 @@ class AppCubit extends Cubit<AppStates> {
               phone: userModel.phone,
               image: userModel.image);
           chats.add(finalUserModel);
-          print("${v.size} == ${chats.length}");
+          debugPrint("${v.size} == ${chats.length}");
           if (v.size == chats.length) {
             emit(AppGetChatsState());
           }
@@ -867,19 +867,32 @@ class AppCubit extends Cubit<AppStates> {
   void viewStory({
   required String userID,
   required String storyID,
+  required List<String> viewers,
+  required bool isLast,
 }){
     FirebaseFirestore.instance.collection('stories')
         .doc(userID)
-        .collection("currentStories")
+        .collection('currentStories')
         .doc(storyID)
-        .collection('viewers')
-        .doc(uId)
-        .set({"read":true})
+        .update({'viewers':viewers})
         .then((value){
-      print("STORY VIEWED");
-      emit(AppViewStoryState());
+          if(isLast){
+            FirebaseFirestore.instance.collection('stories')
+                .doc(userID)
+                .update({'viewers':viewers})
+                .then((value){
+              debugPrint("ADDED TO VIEWERS LAST");
+              emit(AppViewStoryState());
+            }).catchError((error){
+              printError("viewStory", error.toString());
+              emit(AppErrorState());
+            });
+          }else{
+            debugPrint("ADDED TO VIEWERS");
+            emit(AppViewStoryState());
+          }
     }).catchError((error){
-      printError("deleteStory", error.toString());
+      printError("viewStory", error.toString());
       emit(AppErrorState());
     });
   }

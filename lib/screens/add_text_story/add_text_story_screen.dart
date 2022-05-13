@@ -2,7 +2,6 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/add_media_story/add_media_story_items/add_text.dart';
 import 'package:chat/screens/add_media_story/add_media_story_items/send_story_button.dart';
-import 'package:chat/screens/home/stories_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';

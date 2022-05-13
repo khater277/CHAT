@@ -134,7 +134,7 @@ class MyStory extends StatelessWidget {
             profileImage: image!,
             name: "My Story",
             userID: uId!,
-            storyID: null,
+            storiesIDs: null,
           ));
         }
       },
