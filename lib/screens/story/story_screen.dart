@@ -2,6 +2,7 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
+import 'package:chat/screens/story/story_items/contact_story.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
 import 'package:chat/screens/story/story_items/story_date.dart';
 import 'package:chat/screens/story/story_items/story_profile_image.dart';
@@ -71,8 +72,10 @@ class StoryScreen extends StatelessWidget {
                                 .snapshots(),
                             builder: (context, snapshot) {
                               List<StoryModel> stories = [];
+                              List<String> storiesIDs = [];
                               if (snapshot.hasData) {
                                 for (var element in snapshot.data!.docs) {
+                                  storiesIDs.add(element.id);
                                   StoryModel storyModel =
                                       StoryModel.fromJson(element.data());
                                   DateTime validStoryDate =
@@ -103,86 +106,44 @@ class StoryScreen extends StatelessWidget {
                             }),
                         SizedBox(height: 1.h,),
                         Divider(color: MyColors.grey.withOpacity(0.5),),
-                        SizedBox(height: 1.h,),
+                        SizedBox(height: 2.h,),
                         StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection("stories")
-                                .where("phone", whereIn: cubit.phones)
-                                .snapshots(),
+                            stream: FirebaseFirestore.instance.collection("stories")
+                                .where("phone", whereIn: cubit.phones).orderBy('date',descending: true).snapshots(),
                             builder: (context, snapshot) {
-                              List<StoryModel> contactsStories = [];
                               List<UserModel> contactsInfo = [];
-                              List<String> ids = [];
-                              if (snapshot.hasData) {
+                              List<StoryModel> contactsStories = [];
+                              if(snapshot.hasData){
                                 for (var element in snapshot.data!.docs) {
-                                  StoryModel storyModel = StoryModel.fromJson(element.data());
-                                  contactsStories.add(storyModel);
-                                  ids.add(element.id);
-                                  contactsInfo.add(cubit.users.firstWhere(
-                                      (user) => user.uId == element.id));
+                                  UserModel contactUser = cubit.users.firstWhere((user)=>
+                                  user.uId==element.id);
+                                  StoryModel contactStory = StoryModel.fromJson(element.data());
+                                  if(contactUser.uId!=uId){
+                                    contactsStories.add(contactStory);
+                                    contactsInfo.add(contactUser);
+                                  }
                                 }
-                                return contactsStories.isNotEmpty?
-                                  Flexible(
+                                return Flexible(
                                   fit: FlexFit.loose,
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              cubit.zeroStoryIndex();
-                                              Get.to(()=>StoryViewScreen(
-                                                  stories: contactsStories,
-                                                  profileImage: contactsInfo[index].image!,
-                                              name: contactsInfo[index].name!,));
-                                            },
-                                            child: Container(
-                                              color: Theme.of(context).scaffoldBackgroundColor,
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(vertical: 1.5.h),
-                                                child: Row(
-                                                  children: [
-                                                    StoryProfileImage(image: contactsInfo[index].image!,),
-                                                    SizedBox(width: 4.w,),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text("${contactsInfo[index].name}",
-                                                            style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                                                                fontSize: 12.sp),
-                                                            overflow: TextOverflow.ellipsis,
-                                                          ),
-                                                          SizedBox(height: 0.5.h,),
-                                                          StoryDate(storyDate: contactsStories[index].date!,)
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        itemCount: contactsStories.length))
-                                :
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.height/2,
-                                  child: NoItemsFounded(
-                                      text: "No stories yet",
-                                      widget: Icon(
-                                        IconBroken.Paper_Fail,
-                                        size: 100.sp,
-                                        color: Colors.grey.withOpacity(0.5),
-                                      )
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (BuildContext context, int index)=>ContactStory(
+                                      userID: contactsInfo[index].uId!,
+                                        name: contactsInfo[index].name!,
+                                        image: contactsInfo[index].image!,
+                                        storyDate: contactsStories[index].date!),
+                                    separatorBuilder: (BuildContext context, int index)=> SizedBox(height: 2.5.h,),
+                                    itemCount: contactsStories.length,
                                   ),
                                 );
-                              }
-                              return SizedBox(
-                                height: MediaQuery.of(context).size.height/2,
-                                child: const DefaultProgressIndicator(
-                                    icon: IconBroken.Camera),
+                                }
+                              else {
+                                return SizedBox(
+                                  height: MediaQuery.of(context).size.height/2,
+                                  child: const DefaultProgressIndicator(icon: IconBroken.Camera),
                               );
+                              }
                             })
                       ],
                     )),

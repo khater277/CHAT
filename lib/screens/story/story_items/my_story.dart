@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../models/StoryModel.dart';
 import '../../../shared/colors.dart';
+import '../../../shared/constants.dart';
 import '../../../styles/icons_broken.dart';
 import '../../story_view/story_view_screen.dart';
 
@@ -19,7 +20,7 @@ class AddMyStoryProfileImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (image == "") {
+    if (image == "" && stories.isEmpty) {
       return SizedBox(
           width: 13.w,
           height: 6.5.h,
@@ -32,6 +33,7 @@ class AddMyStoryProfileImage extends StatelessWidget {
                     color: MyColors.blue,
                     size: 30.sp,
                   )),
+              // if(stories.isEmpty)
               Align(
                 alignment: AlignmentDirectional.bottomEnd,
                 child: Padding(
@@ -66,9 +68,11 @@ class AddMyStoryProfileImage extends StatelessWidget {
           ),
           CircleAvatar(
             radius: 22.sp,
-            backgroundColor: MyColors.blue.withOpacity(0.2),
+            backgroundColor: image==""?MyColors.lightBlack:MyColors.blue.withOpacity(0.2),
             backgroundImage: image==null?null:
             CachedNetworkImageProvider("$image"),
+            child: image!=""?null:
+            const Icon(IconBroken.Profile),
           ),
         ],
       );
@@ -125,7 +129,13 @@ class MyStory extends StatelessWidget {
           AppCubit.get(context).pickStoryImage();
         }else{
           AppCubit.get(context).zeroStoryIndex();
-          Get.to(()=>StoryViewScreen(stories: stories,profileImage: image!,name: "My Story",));
+          Get.to(()=>StoryViewScreen(
+            stories: stories,
+            profileImage: image!,
+            name: "My Story",
+            userID: uId!,
+            storyID: null,
+          ));
         }
       },
       child: Container(

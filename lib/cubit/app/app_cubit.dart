@@ -773,6 +773,7 @@ class AppCubit extends Cubit<AppStates> {
       isImage: mediaSource != null ? mediaSource == MediaSource.image : false,
       isVideo: mediaSource != null ? mediaSource == MediaSource.video : false,
       isRead: false,
+      viewers: [],
     );
     FirebaseFirestore.instance
         .collection('stories')
@@ -795,23 +796,26 @@ class AppCubit extends Cubit<AppStates> {
         .collection("currentStories")
         .add(storyModel.toJson())
         .then((value) {
+
       DateTime storyDate = DateTime.parse(storyModel.date!);
       DateTime validStoryDate =
       DateTime.parse(storyModel.date!).add(const Duration(days: 1));
       debugPrint("STORY UPLOADED");
-      emit(AppSendLastStoryState());
       Timer(
           Duration(seconds: validStoryDate.difference(storyDate).inSeconds),
               () {deleteStory(
-                  id: value.id,
-                media: storyModel.media
-              );}
+              id: value.id,
+              media: storyModel.media
+          );}
       );
+      emit(AppSendLastStoryState());
     }).catchError((error) {
       printError("sendLastStory", error.toString());
       emit(AppErrorState());
     });
   }
+
+
 
   void deleteStory({
     required String id,
@@ -859,4 +863,25 @@ class AppCubit extends Cubit<AppStates> {
     storyCurrentIndex = 0;
     emit(AppChangeStoryIndexState());
   }
+
+  void viewStory({
+  required String userID,
+  required String storyID,
+}){
+    FirebaseFirestore.instance.collection('stories')
+        .doc(userID)
+        .collection("currentStories")
+        .doc(storyID)
+        .collection('viewers')
+        .doc(uId)
+        .set({"read":true})
+        .then((value){
+      print("STORY VIEWED");
+      emit(AppViewStoryState());
+    }).catchError((error){
+      printError("deleteStory", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
 }

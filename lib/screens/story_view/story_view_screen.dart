@@ -2,6 +2,8 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/screens/story_view/show_story_head.dart';
+import 'package:chat/shared/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -13,7 +15,10 @@ class StoryViewScreen extends StatefulWidget {
   final List<StoryModel> stories;
   final String profileImage;
   final String name;
-  const StoryViewScreen({Key? key, required this.stories, required this.profileImage, required this.name}) : super(key: key);
+  final String userID;
+  final String? storyID;
+  const StoryViewScreen({Key? key, required this.stories, required this.profileImage,
+    required this.name, required this.userID, required this.storyID}) : super(key: key);
 
   @override
   State<StoryViewScreen> createState() => _StoryViewScreenState();
@@ -62,11 +67,28 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   repeat: true, // should the stories be slid forever
                   onStoryShow: (s) {
                     int index = storyItems.indexOf(s);
+                    print(index);
+                    if(widget.storyID!=null){
+                      FirebaseFirestore.instance.collection('stories')
+                          .doc(widget.userID)
+                          .collection("currentStories")
+                          .doc(widget.storyID)
+                          .collection('viewers')
+                          .doc(uId)
+                          .set({"read":true})
+                          .then((value){
+                         print("STORY VIEWED");
+                      }).catchError((error){
+                        print(error.toString());
+                      });
+
+                    }
                     cubit.changeStoryIndex(index: index,);
                     // print(s.duration);
                   },
                   onComplete: () {Get.back();},
                   onVerticalSwipeComplete: (direction) {
+                    // print("asd");
                     if (direction == Direction.down) {
                       Navigator.pop(context);
                     }
