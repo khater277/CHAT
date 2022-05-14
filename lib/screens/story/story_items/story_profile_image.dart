@@ -7,7 +7,9 @@ import 'package:sizer/sizer.dart';
 
 class StoryProfileImage extends StatelessWidget {
   final String image;
-  const StoryProfileImage({Key? key, required this.image,}) : super(key: key);
+  final bool isViewed;
+
+  const StoryProfileImage({Key? key, required this.image, required this.isViewed,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class StoryProfileImage extends StatelessWidget {
         width: 14.2.w,height: 7.2.h,
         child: CircleAvatar(
           radius: 22.sp,
-          backgroundColor: MyColors.blue,
+          backgroundColor: isViewed?Colors.grey.withOpacity(0.7):MyColors.blue,
           child: CircleAvatar(
             radius: 20.sp,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,

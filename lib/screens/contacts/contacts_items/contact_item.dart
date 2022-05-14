@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
+import 'package:chat/shared/constants.dart';
+import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,63 +17,67 @@ class ContactItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return GestureDetector(
-      onTap: (){
-        Get.to(()=>MessagesScreen(
+    if(user.uId!=uId){
+      return GestureDetector(
+        onTap: (){
+          Get.to(()=>MessagesScreen(
             user: user,
-          isFirstMessage: true,
-        ));},
-      child: Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: Row(
-          children: [
-            if(user.image=="")
-            SizedBox(
-              width: 10.w,
-              child: Icon(
-                IconBroken.Profile,
-                size: 20.sp,
-                color: MyColors.blue,
-              ),
-            )
-            else
-              SizedBox(
-                width: 10.w,
-                child: CircleAvatar(
-                  radius: 15.sp,
-                  backgroundColor: MyColors.blue,
-                  backgroundImage: CachedNetworkImageProvider(
-                    "${user.image}"
+            isFirstMessage: true,
+          ));},
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Row(
+            children: [
+              if(user.image=="")
+                SizedBox(
+                  width: 10.w,
+                  child: Icon(
+                    IconBroken.Profile,
+                    size: 20.sp,
+                    color: MyColors.blue,
+                  ),
+                )
+              else
+                SizedBox(
+                  width: 10.w,
+                  child: CircleAvatar(
+                    radius: 15.sp,
+                    backgroundColor: MyColors.blue,
+                    backgroundImage: CachedNetworkImageProvider(
+                        "${user.image}"
+                    ),
                   ),
                 ),
-              ),
-            SizedBox(width: 3.w,),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+              SizedBox(width: 3.w,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       "${user.name}",
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                        fontSize: 13.sp
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontSize: 13.sp
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 0.5.h,),
-                  Text(
-                    "${user.phone}",
-                    style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                        fontSize: 10.sp,
-                      color: MyColors.grey
+                    SizedBox(height: 0.5.h,),
+                    Text(
+                      "${user.phone}",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontSize: 10.sp,
+                          color: MyColors.grey
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(width: 3.w,),
-            Icon(IconBroken.Arrow___Right_2,size: 12.sp,color: Colors.grey,)
-          ],
+              SizedBox(width: 3.w,),
+              Icon(IconBroken.Arrow___Right_2,size: 12.sp,color: Colors.grey,)
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }else{
+      return const DefaultNullWidget();
+    }
   }
 }

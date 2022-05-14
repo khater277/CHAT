@@ -35,9 +35,7 @@ class AppCubit extends Cubit<AppStates> {
       otp = null;
       uId = null;
       userModel = null;
-      myPhoneNumber = null;
       GetStorage().remove('uId');
-      GetStorage().remove('phoneNumber');
       emit(AppLogoutState());
     }).catchError((error) {
       emit(AppErrorState());
@@ -255,16 +253,6 @@ class AppCubit extends Cubit<AppStates> {
         .orderBy('date')
         .get()
         .then((v) {
-          if(myPhoneNumber!=null){
-            if(phones.contains(myPhoneNumber!)){
-              int index = phones.indexOf(myPhoneNumber!);
-              contacts.removeAt(index);
-              usersID.removeAt(index);
-              phones.removeAt(index);
-              users.removeAt(index);
-            }
-          }
-
       for (int i = 0; i < v.size; i++) {
         var element = v.docs[i];
         chatsID.add(element.id);
@@ -914,5 +902,28 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppErrorState());
     });
   }
+
+  // List<bool> likes = [];
+  // List<Color> colors = [];
+  // void getLikes({required String postID}){
+  //   FirebaseFirestore.instance.collection('posts')
+  //       .doc(postID)
+  //       .collection('likes')
+  //       .get()
+  //       .then((value) {
+  //      for (var element in value.docs) {
+  //        if(element.id==userModel!.uId){
+  //
+  //        }else{
+  //
+  //        }
+  //        // likes.add(element.id);
+  //        // if(likes.contains(userModel!.uId)){
+  //
+  //        }
+  //      }}).catchError((error){
+  //
+  //   });
+  // }
 
 }

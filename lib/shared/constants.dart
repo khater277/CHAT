@@ -55,7 +55,6 @@ String? uId;
 String? otp;
 String? lang;
 String? defaultLang;
-String? myPhoneNumber;
 bool? isDarkMode;
 bool? disableNotifications;
 

@@ -212,19 +212,11 @@ class LoginCubit extends Cubit<LoginStates>{
       }
       print("=========checkUser========> $exist");
       if(exist){
-        GetStorage().write("myPhoneNumber", "+2$phoneNumber")
-        .then((value){
-          myPhoneNumber = "+2$phoneNumber";
-          test(context);
-          Get.offAll(()=> const HomeScreen());
-        });
+        test(context);
+        Get.offAll(()=> const HomeScreen());
       }else{
-        GetStorage().write("myPhoneNumber", phoneNumber)
-            .then((value){
-          myPhoneNumber = "+2$phoneNumber";
-          test(context);
-          Get.offAll(()=> SetImageScreen(phone: "+2$phoneNumber",));
-        });
+        test(context);
+        Get.offAll(()=> SetImageScreen(phone: "+2$phoneNumber",));
       }
       emit(LoginCheckUserState());
     }).catchError((error){

@@ -2,11 +2,13 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
+import 'package:chat/screens/story/story_items/check_stories_text.dart';
 import 'package:chat/screens/story/story_items/contact_story.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -14,6 +16,7 @@ import 'package:sizer/sizer.dart';
 import '../../cubit/app/app_states.dart';
 import '../../shared/colors.dart';
 import '../../shared/constants.dart';
+import 'story_items/recent_or_viewed_story.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({Key? key}) : super(key: key);
@@ -103,13 +106,17 @@ class StoryScreen extends StatelessWidget {
                             }),
                         SizedBox(height: 1.h,),
                         Divider(color: MyColors.grey.withOpacity(0.5),),
-                        SizedBox(height: 2.h,),
+                        SizedBox(height: 1.h,),
                         StreamBuilder<QuerySnapshot>(
                             stream: FirebaseFirestore.instance.collection("stories")
                                 .where("phone", whereIn: cubit.phones).orderBy('date',descending: true).snapshots(),
                             builder: (context, snapshot) {
                               List<UserModel> contactsInfo = [];
+                              List<UserModel> viewedInfo = [];
+                              List<UserModel> recentInfo = [];
                               List<StoryModel> contactsStories = [];
+                              List<StoryModel> recentStories = [];
+                              List<StoryModel> viewedStories = [];
                               if(snapshot.hasData){
                                 for (var element in snapshot.data!.docs) {
                                   UserModel contactUser = cubit.users.firstWhere((user)=>
@@ -118,7 +125,19 @@ class StoryScreen extends StatelessWidget {
                                   // element.
                                   if(contactUser.uId!=uId){
                                     if (checkValidStory(storyModel: contactStory)
-                                        &&contactStory.canView!.contains(uId)) {
+                                        &&contactStory.canView!.contains(uId)
+                                    ) {
+                                      if(contactStory.viewers!.contains(uId)){
+                                        viewedStories.add(contactStory);
+                                        viewedInfo.add(contactUser);
+                                      }else{
+                                        recentStories.add(contactStory);
+                                        recentInfo.add(contactUser);
+                                      }
+                                      // viewedStories.add(contactStory);
+                                      // recentStories.add(contactStory);
+                                      // viewedInfo.add(contactUser);
+                                      // recentInfo.add(contactUser);
                                       contactsStories.add(contactStory);
                                       contactsInfo.add(contactUser);
                                     }
@@ -126,18 +145,23 @@ class StoryScreen extends StatelessWidget {
                                 }
                                 if(contactsStories.isNotEmpty) {
                                   return Flexible(
-                                  fit: FlexFit.loose,
-                                  child: ListView.separated(
-                                    shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    itemBuilder: (BuildContext context, int index)=>ContactStory(
-                                      userID: contactsInfo[index].uId!,
-                                        name: contactsInfo[index].name!,
-                                        image: contactsInfo[index].image!,
-                                        storyDate: contactsStories[index].date!),
-                                    separatorBuilder: (BuildContext context, int index)=> SizedBox(height: 2.5.h,),
-                                    itemCount: contactsStories.length,
-                                  ),
+                                    fit: FlexFit.loose,
+                                    child: Column(
+                                      children: [
+                                        if(recentStories.isNotEmpty)
+                                        RecentOrViewedStories(
+                                            storyList: recentStories,
+                                            infoList: recentInfo,
+                                          isViewed: false,
+                                        ),
+                                        if(viewedStories.isNotEmpty)
+                                          RecentOrViewedStories(
+                                              storyList: viewedStories,
+                                              infoList: viewedInfo,
+                                            isViewed: true,
+                                          ),
+                                      ],
+                                    ),
                                 );
                                 }else{
                                   return SizedBox(

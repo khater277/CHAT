@@ -30,8 +30,6 @@ void main() async {
   lang = GetStorage().read('lang')??(defaultLang=='ar'?'ar':'en');
   uId = GetStorage().read('uId')??"";
   contactsPermission = GetStorage().read('contactsPermission')??false;
-  myPhoneNumber = GetStorage().read('myPhoneNumber');
-  print("$myPhoneNumber");
   Widget? homeWidget;
   if(uId!.isNotEmpty){
     homeWidget=const HomeScreen();
@@ -79,7 +77,7 @@ class MyApp extends StatelessWidget {
               fallbackLocale: const Locale('en'),
               home: Sizer(
                 builder: (context, orientation, screenType) {
-                  return homeWidget;
+                  return const LoginScreen();
                 },
               ),
             );

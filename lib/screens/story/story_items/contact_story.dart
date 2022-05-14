@@ -15,8 +15,9 @@ class ContactStory extends StatelessWidget {
   final String image;
   final String storyDate;
   final String userID;
+  final bool isViewed;
   const ContactStory({Key? key, required this.image, required this.storyDate,
-    required this.name, required this.userID}) : super(key: key);
+    required this.name, required this.userID, required this.isViewed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,7 @@ class ContactStory extends StatelessWidget {
             color: Colors.transparent,
             child: Row(
               children: [
-                StoryProfileImage(image: image),
+                StoryProfileImage(image: image,isViewed: isViewed,),
                 SizedBox(
                   width: 4.w,
                 ),
