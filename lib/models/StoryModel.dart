@@ -7,7 +7,9 @@ class StoryModel {
     String? media,
     String? phone,
     String? text,
-    List<String>? viewers,}){
+    List<String>? viewers,
+    List<String>? canView,
+  }){
     _date = date;
     _isImage = isImage;
     _isRead = isRead;
@@ -16,6 +18,7 @@ class StoryModel {
     _phone = phone;
     _text = text;
     _viewers = viewers;
+    _canView = canView;
   }
 
   StoryModel.fromJson(dynamic json) {
@@ -27,6 +30,7 @@ class StoryModel {
     _phone = json['phone'];
     _text = json['text'];
     _viewers = json['viewers'] != null ? json['viewers'].cast<String>() : [];
+    _canView = json['canView'] != null ? json['canView'].cast<String>() : [];
   }
   String? _date;
   bool? _isImage;
@@ -36,6 +40,7 @@ class StoryModel {
   String? _phone;
   String? _text;
   List<String>? _viewers;
+  List<String>? _canView;
 
   String? get date => _date;
   bool? get isImage => _isImage;
@@ -45,6 +50,7 @@ class StoryModel {
   String? get phone => _phone;
   String? get text => _text;
   List<String>? get viewers => _viewers;
+  List<String>? get canView => _canView;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -56,6 +62,7 @@ class StoryModel {
     map['phone'] = _phone;
     map['text'] = _text;
     map['viewers'] = _viewers;
+    map['canView'] = _canView;
     return map;
   }
 

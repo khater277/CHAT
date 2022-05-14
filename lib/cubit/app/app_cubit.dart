@@ -35,7 +35,9 @@ class AppCubit extends Cubit<AppStates> {
       otp = null;
       uId = null;
       userModel = null;
+      myPhoneNumber = null;
       GetStorage().remove('uId');
+      GetStorage().remove('phoneNumber');
       emit(AppLogoutState());
     }).catchError((error) {
       emit(AppErrorState());
@@ -53,6 +55,23 @@ class AppCubit extends Cubit<AppStates> {
   void changeNavBar(int index) {
     navBarIndex = index;
     emit(AppChangeNavBarState());
+  }
+
+
+  UserModel? userModel;
+
+  void getUserData({bool? isOpening}) {
+    if(uId!=null) {
+      FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
+      userModel = UserModel.fromJson(value.data());
+      if (isOpening != true) {
+        emit(AppGetUserDataState());
+      }
+    }).catchError((error) {
+      printError("getUserData", error.toString());
+      emit(AppErrorState());
+    });
+    }
   }
 
   List<Contact> contacts = [];
@@ -73,6 +92,7 @@ class AppCubit extends Cubit<AppStates> {
                 if (element.phones![0].value!.length >= 11) {
                   if ((phoneFormat(phoneNumber: element.phones![0].value!) ==
                       phoneFormat(phoneNumber: user.phone!))) {
+                    // if(phoneNumber)
                     // debugPrint(user.name);
                     // debugPrint(element.displayName);
                     usersID.add(e.id);
@@ -235,6 +255,16 @@ class AppCubit extends Cubit<AppStates> {
         .orderBy('date')
         .get()
         .then((v) {
+          if(myPhoneNumber!=null){
+            if(phones.contains(myPhoneNumber!)){
+              int index = phones.indexOf(myPhoneNumber!);
+              contacts.removeAt(index);
+              usersID.removeAt(index);
+              phones.removeAt(index);
+              users.removeAt(index);
+            }
+          }
+
       for (int i = 0; i < v.size; i++) {
         var element = v.docs[i];
         chatsID.add(element.id);
@@ -693,21 +723,6 @@ class AppCubit extends Cubit<AppStates> {
   }
 
 
-
-  UserModel? userModel;
-
-  void getUserData({bool? isOpening}) {
-    FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
-      userModel = UserModel.fromJson(value.data());
-      if (isOpening != true) {
-        emit(AppGetUserDataState());
-      }
-    }).catchError((error) {
-      printError("getUserData", error.toString());
-      emit(AppErrorState());
-    });
-  }
-
   double? storyFilePercentage;
 
   void uploadMediaLastStory({
@@ -774,6 +789,7 @@ class AppCubit extends Cubit<AppStates> {
       isVideo: mediaSource != null ? mediaSource == MediaSource.video : false,
       isRead: false,
       viewers: [],
+      canView: usersID
     );
     FirebaseFirestore.instance
         .collection('stories')
@@ -804,7 +820,8 @@ class AppCubit extends Cubit<AppStates> {
       Timer(
           Duration(seconds: validStoryDate.difference(storyDate).inSeconds),
               () {deleteStory(
-              id: value.id,
+                userID: uId!,
+              storyID: value.id,
               media: storyModel.media
           );}
       );
@@ -818,12 +835,13 @@ class AppCubit extends Cubit<AppStates> {
 
 
   void deleteStory({
-    required String id,
-    String? media
+    required String userID,
+    required String storyID,
+    required String? media
   }){
-    FirebaseFirestore.instance.collection("stories").doc(uId)
+    FirebaseFirestore.instance.collection("stories").doc(userID)
         .collection("currentStories")
-        .doc(id)
+        .doc(storyID)
         .delete()
         .then((value){
           if(media!=null){

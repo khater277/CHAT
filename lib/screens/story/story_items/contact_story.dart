@@ -1,6 +1,7 @@
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/screens/story/story_items/story_date.dart';
 import 'package:chat/screens/story/story_items/story_profile_image.dart';
+import 'package:chat/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,8 +29,11 @@ class ContactStory extends StatelessWidget {
         if(snapshot.hasData){
           for (var element in snapshot.data!.docs) {
             StoryModel storyModel = StoryModel.fromJson(element.data());
-            storiesIDs.add(element.id);
-            stories.add(storyModel);
+            if (checkValidStory(storyModel: storyModel)
+                &&storyModel.canView!.contains(uId)) {
+              storiesIDs.add(element.id);
+              stories.add(storyModel);
+            }
           }
         }
         return GestureDetector(

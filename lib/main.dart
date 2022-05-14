@@ -30,6 +30,8 @@ void main() async {
   lang = GetStorage().read('lang')??(defaultLang=='ar'?'ar':'en');
   uId = GetStorage().read('uId')??"";
   contactsPermission = GetStorage().read('contactsPermission')??false;
+  myPhoneNumber = GetStorage().read('myPhoneNumber');
+  print("$myPhoneNumber");
   Widget? homeWidget;
   if(uId!.isNotEmpty){
     homeWidget=const HomeScreen();

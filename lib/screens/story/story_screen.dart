@@ -81,7 +81,10 @@ class StoryScreen extends StatelessWidget {
                                   if (condition) {
                                     stories.add(storyModel);
                                   } else {
-                                    cubit.deleteStory(id: element.id);
+                                    cubit.deleteStory(
+                                      userID: uId!,
+                                        storyID: element.id,
+                                    media: storyModel.media==""?null:storyModel.media);
                                     // deleteStory(element);
                                   }
                                 }
@@ -112,12 +115,17 @@ class StoryScreen extends StatelessWidget {
                                   UserModel contactUser = cubit.users.firstWhere((user)=>
                                   user.uId==element.id);
                                   StoryModel contactStory = StoryModel.fromJson(element.data());
+                                  // element.
                                   if(contactUser.uId!=uId){
-                                    contactsStories.add(contactStory);
-                                    contactsInfo.add(contactUser);
+                                    if (checkValidStory(storyModel: contactStory)
+                                        &&contactStory.canView!.contains(uId)) {
+                                      contactsStories.add(contactStory);
+                                      contactsInfo.add(contactUser);
+                                    }
                                   }
                                 }
-                                return Flexible(
+                                if(contactsStories.isNotEmpty) {
+                                  return Flexible(
                                   fit: FlexFit.loose,
                                   child: ListView.separated(
                                     shrinkWrap: true,
@@ -131,6 +139,19 @@ class StoryScreen extends StatelessWidget {
                                     itemCount: contactsStories.length,
                                   ),
                                 );
+                                }else{
+                                  return SizedBox(
+                                    height: MediaQuery.of(context).size.height/2,
+                                    child: NoItemsFounded(
+                                        text: "No stories yet",
+                                        widget: Icon(
+                                            IconBroken.Paper_Fail,
+                                          size: 100.sp,
+                                          color: Colors.grey.withOpacity(0.5),
+                                        )
+                                    ),
+                                  );
+                                }
                                 }
                               else {
                                 return SizedBox(

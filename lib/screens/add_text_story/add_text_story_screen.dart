@@ -48,7 +48,7 @@ class _AddTextStoryScreenState extends State<AddTextStoryScreen> {
             floatingActionButton: state is AppSendLastStoryLoadingState?
             SizedBox(
               width: 30.sp,height: 30.sp,
-              child: const CircularProgressIndicator(),
+              child: CircularProgressIndicator(strokeWidth: 2.sp,),
             )
               :
             SendStoryButton(

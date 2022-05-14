@@ -190,7 +190,7 @@ class LoginCubit extends Cubit<LoginStates>{
   void test(context){
     AppCubit.get(context).getUserData(isOpening: true);
     AppCubit.get(context).getChats();
-    // AppCubit.get(context).getContacts();
+    // AppCubit.get(context).getC123ontacts();
   }
 
   void checkUser(String phoneNumber,context){
@@ -212,10 +212,19 @@ class LoginCubit extends Cubit<LoginStates>{
       }
       print("=========checkUser========> $exist");
       if(exist){
-        test(context);
-        Get.offAll(()=> const HomeScreen());
+        GetStorage().write("myPhoneNumber", "+2$phoneNumber")
+        .then((value){
+          myPhoneNumber = "+2$phoneNumber";
+          test(context);
+          Get.offAll(()=> const HomeScreen());
+        });
       }else{
-        Get.offAll(()=> SetImageScreen(phone: phoneNumber,));
+        GetStorage().write("myPhoneNumber", phoneNumber)
+            .then((value){
+          myPhoneNumber = "+2$phoneNumber";
+          test(context);
+          Get.offAll(()=> SetImageScreen(phone: "+2$phoneNumber",));
+        });
       }
       emit(LoginCheckUserState());
     }).catchError((error){
