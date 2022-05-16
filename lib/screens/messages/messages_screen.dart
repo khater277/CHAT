@@ -246,7 +246,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 ),
                                 SendMessageTextFiled(
                                   messageController: _messageController,
-                                  scrollController: _scrollController,
                                   showAnimatedContainer: showAnimatedContainer,
                                   isFirstMessage: messages.isEmpty,
                                   cubit: cubit,

@@ -1,3 +1,4 @@
+
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
@@ -69,7 +70,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            //Text("${chats[0].name} ${lastMessages[0].message}"),
                             Flexible(
                               fit: FlexFit.loose,
                               child: ListView.separated(

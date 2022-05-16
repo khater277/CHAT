@@ -133,20 +133,31 @@ class AppCubit extends Cubit<AppStates> {
     required String friendID,
     required String message,
     bool? isFirstMessage,
+    bool? isStoryReply,
+    bool? isStoryVideoReply,
     MediaSource? mediaSource,
     String? file,
+    String? storyMedia,
+    String? storyDate,
   }) {
-    //emit(AppLoadingState());
+    if(isStoryReply==true) {
+      emit(AppSendStoryReplyLoadingState());
+    }
     ///message model which will be stored in my firestore
     MessageModel myMessageModel = MessageModel(
         senderID: uId,
         receiverID: friendID,
         message: message,
         media: file ?? "",
+        storyMedia: storyMedia??"",
+        isStoryReply: isStoryReply??false,
+        isStoryVideoReply:isStoryVideoReply??false,
         isImage: mediaSource == MediaSource.image,
         isVideo: mediaSource == MediaSource.video,
         isDoc: mediaSource == MediaSource.doc,
-        date: DateTime.now().toString());
+        date: DateTime.now().toString(),
+        storyDate: storyDate,
+    );
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -902,28 +913,5 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppErrorState());
     });
   }
-
-  // List<bool> likes = [];
-  // List<Color> colors = [];
-  // void getLikes({required String postID}){
-  //   FirebaseFirestore.instance.collection('posts')
-  //       .doc(postID)
-  //       .collection('likes')
-  //       .get()
-  //       .then((value) {
-  //      for (var element in value.docs) {
-  //        if(element.id==userModel!.uId){
-  //
-  //        }else{
-  //
-  //        }
-  //        // likes.add(element.id);
-  //        // if(likes.contains(userModel!.uId)){
-  //
-  //        }
-  //      }}).catchError((error){
-  //
-  //   });
-  // }
 
 }

@@ -30,7 +30,7 @@ class ContactStory extends StatelessWidget {
         if(snapshot.hasData){
           for (var element in snapshot.data!.docs) {
             StoryModel storyModel = StoryModel.fromJson(element.data());
-            if (checkValidStory(storyModel: storyModel)
+            if (checkValidStory(date: storyModel.date!)
                 &&storyModel.canView!.contains(uId)) {
               storiesIDs.add(element.id);
               stories.add(storyModel);
@@ -43,7 +43,7 @@ class ContactStory extends StatelessWidget {
               Get.to(()=>StoryViewScreen(
                 stories: stories,
                 profileImage: image,
-                name: "My Story",
+                name: name,
                 userID: userID,
                 storiesIDs: storiesIDs,
               ));

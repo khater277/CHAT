@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../shared/colors.dart';
-import '../../shared/constants.dart';
-import '../../shared/date_format.dart';
-import '../../styles/icons_broken.dart';
+import '../../../shared/colors.dart';
+import '../../../shared/constants.dart';
+import '../../../shared/date_format.dart';
+import '../../../styles/icons_broken.dart';
 
 class ShowStoryHead extends StatelessWidget {
   final AppCubit cubit;

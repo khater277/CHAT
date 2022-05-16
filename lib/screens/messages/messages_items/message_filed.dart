@@ -16,10 +16,9 @@ class SendMessageButton extends StatelessWidget {
   final AppStates state;
   final bool isFirstMessage;
   final TextEditingController messageController;
-  final ScrollController scrollController;
   final String friendID;
   const SendMessageButton({Key? key, required this.messageController,
-    required this.cubit, required this.state, required this.friendID, required this.isFirstMessage, required this.scrollController,}) : super(key: key);
+    required this.cubit, required this.state, required this.friendID, required this.isFirstMessage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -93,13 +92,12 @@ class SendMessageTextFiled extends StatelessWidget {
   final AppStates state;
   final bool isFirstMessage;
   final TextEditingController messageController;
-  final ScrollController scrollController;
   final ValueNotifier showAnimatedContainer;
   final String friendID;
   const SendMessageTextFiled(
       {Key? key,required this.messageController, required this.cubit,
         required this.friendID, required this.isFirstMessage,
-        required this.scrollController, required this.showAnimatedContainer, required this.state, }) : super(key: key);
+        required this.showAnimatedContainer, required this.state, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +173,6 @@ class SendMessageTextFiled extends StatelessWidget {
           cubit: cubit,
             state: state,
             messageController: messageController,
-          scrollController: scrollController,
           isFirstMessage: isFirstMessage,
           friendID: friendID,
         )

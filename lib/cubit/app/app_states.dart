@@ -67,4 +67,6 @@ class AppChangeStoryIndexState extends AppStates{}
 
 class AppViewStoryState extends AppStates{}
 
+class AppSendStoryReplyLoadingState extends AppStates{}
+
 

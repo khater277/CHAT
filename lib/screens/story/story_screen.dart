@@ -2,13 +2,10 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
-import 'package:chat/screens/story/story_items/check_stories_text.dart';
-import 'package:chat/screens/story/story_items/contact_story.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -124,7 +121,7 @@ class StoryScreen extends StatelessWidget {
                                   StoryModel contactStory = StoryModel.fromJson(element.data());
                                   // element.
                                   if(contactUser.uId!=uId){
-                                    if (checkValidStory(storyModel: contactStory)
+                                    if (checkValidStory(date: contactStory.date!)
                                         &&contactStory.canView!.contains(uId)
                                     ) {
                                       if(contactStory.viewers!.contains(uId)){

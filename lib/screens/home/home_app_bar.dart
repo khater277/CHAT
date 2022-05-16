@@ -43,6 +43,7 @@ class HomeAppBar extends StatelessWidget {
               padding:  EdgeInsets.symmetric(horizontal: 2.w),
               child: IconButton(
                   onPressed: (){
+
                     //AppCubit.get(context).deleteChat(chatID: "B4y2fbSV32Xj50eqRy01mlJzjmD3");
                   },
                   icon: Icon(IconBroken.Search,size: 18.sp,color: MyColors.grey,)

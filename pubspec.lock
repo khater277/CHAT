@@ -707,13 +707,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  shimmer:
-    dependency: "direct main"
-    description:
-      name: shimmer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   sizer:
     dependency: "direct main"
     description:
@@ -887,6 +880,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  video_thumbnail:
+    dependency: "direct main"
+    description:
+      name: video_thumbnail
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   wakelock:
     dependency: transitive
     description:

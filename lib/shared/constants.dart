@@ -1,12 +1,11 @@
 import 'dart:math';
 
-import 'package:chat/models/StoryModel.dart';
 import 'package:flutter/material.dart';
 
 
-bool checkValidStory({required StoryModel storyModel}){
+bool checkValidStory({required String date}){
   DateTime validStoryDate =
-  DateTime.parse(storyModel.date!).add(const Duration(days: 1));
+  DateTime.parse(date).add(const Duration(days: 1));
   DateTime nowDate = DateTime.now();
   bool condition = nowDate.isBefore(validStoryDate);
   return condition;

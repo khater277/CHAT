@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
               fallbackLocale: const Locale('en'),
               home: Sizer(
                 builder: (context, orientation, screenType) {
-                  return const LoginScreen();
+                  return homeWidget;
                 },
               ),
             );

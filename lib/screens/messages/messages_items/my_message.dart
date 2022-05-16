@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/screens/messages/messages_items/delete_message.dart';
+import 'package:chat/screens/messages/messages_items/story_reply_message.dart';
 import 'package:chat/shared/colors.dart';
+import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/date_format.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
@@ -63,29 +66,58 @@ class _MyMessageState extends State<MyMessage> {
                 },
               );
             },
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                widget.messageModel.isImage==true?
-                MyImageMessage(
-                  media: widget.messageModel.media!,
-                  date: widget.messageModel.date!,)
-                    :widget.messageModel.isVideo==true?
-                MyVideoMessage(
-                  cubit: widget.cubit,
-                  media: widget.messageModel.media!,
-                  messageID: widget.messageID,
-                  date: widget.messageModel.date!,)
-                    :widget.messageModel.isDoc==true?
-                MyFileMessage(message: widget.messageModel.message!):
-                MyTextMessage(message: widget.messageModel.message!),
-                if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
-                  Row(
+                if(widget.messageModel.isStoryReply==true)
+                  Column(
                     children: [
-                      SizedBox(width: 2.w,),
-                      MessageDate(date: widget.messageModel.date!)
+                      StoryReplyMessage(
+                        storyMedia: widget.messageModel.storyMedia!,
+                      isStoryVideoReply: widget.messageModel.isStoryVideoReply!,
+                      isValidDate: checkValidStory(date: widget.messageModel.storyDate!),
+                      ),
+                      SizedBox(height: 0.5.h,)
                     ],
                   ),
+                SizedBox(
+                  width: widget.messageModel.isStoryReply==true?50.w:null,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      widget.messageModel.isImage==true?
+                      MyImageMessage(
+                        media: widget.messageModel.media!,
+                        date: widget.messageModel.date!,)
+                          :widget.messageModel.isVideo==true?
+                      MyVideoMessage(
+                        cubit: widget.cubit,
+                        media: widget.messageModel.media!,
+                        messageID: widget.messageID,
+                        date: widget.messageModel.date!,)
+                          :widget.messageModel.isDoc==true?
+                      MyFileMessage(message: widget.messageModel.message!):
+                      MyTextMessage(message: widget.messageModel.message!,),
+                      if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
+                        widget.messageModel.isStoryReply==true?
+                        Expanded(
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 2.w),
+                              child: MessageDate(date: widget.messageModel.date!),
+                            ),
+                          ),
+                        )
+                      :
+                        Padding(
+                          padding: EdgeInsets.only(left: 2.w),
+                          child: MessageDate(date: widget.messageModel.date!),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             )
         ),
@@ -131,7 +163,7 @@ class DeleteMessageLoader extends StatelessWidget {
 
 class MyTextMessage extends StatelessWidget {
   final String message;
-  const MyTextMessage({Key? key, required this.message}) : super(key: key);
+  const MyTextMessage({Key? key, required this.message,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -201,10 +233,11 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
   ChewieController? _chewieController;
 
   Future<void>? _future;
+  bool done = false;
 
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
-    WidgetsBinding.instance!.addPostFrameCallback((_){
+    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
       setState(() {
         debugPrint(_controller!.value.aspectRatio.toString());
         _chewieController = ChewieController(
@@ -214,6 +247,7 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
             looping: false,
             materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
         );
+        done = true;
       });
     });
   }
@@ -261,8 +295,10 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
           FutureBuilder(
             future: _future,
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+
               return Center(
                 child: _controller!.value.isInitialized
+                    && done
                     ?
                 FittedBox(
                   fit: BoxFit.cover,
