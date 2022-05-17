@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/screens/messages/messages_items/story_reply_message.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/date_format.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
@@ -17,6 +19,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../models/LastMessageModel.dart';
 import '../../../models/MessageModel.dart';
+import '../../../shared/constants.dart';
 import '../../../shared/default_widgets.dart';
 import '../../../styles/icons_broken.dart';
 import 'delete_message.dart';
@@ -27,9 +30,10 @@ class FriendMessage extends StatefulWidget {
   final int index;
   final String friendID;
   final String messageID;
+  final String name;
   final LastMessageModel? lastMessageModel;
   const FriendMessage({Key? key, required this.cubit,required this.messageModel, required this.index,
-    required this.friendID, required this.messageID, required this.lastMessageModel}) : super(key: key);
+    required this.friendID, required this.messageID, required this.lastMessageModel, required this.name}) : super(key: key);
 
   @override
   State<FriendMessage> createState() => _FriendMessageState();
@@ -65,29 +69,66 @@ class _FriendMessageState extends State<FriendMessage> {
               },
             );
           },
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              widget.messageModel.isImage==true?
-              FriendImageMessage(
-                media: widget.messageModel.media!,
-                date: widget.messageModel.date!,)
-                  :widget.messageModel.isVideo==true?
-              FriendVideoMessage(
-                cubit: widget.cubit,
-                media: widget.messageModel.media!,
-                messageID: widget.messageID,
-                date: widget.messageModel.date!,)
-                  :widget.messageModel.isDoc==true?
-              FriendFileMessage(message: widget.messageModel.message!):
-              FriendTextMessage(message: widget.messageModel.message!),
-              if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
-                Row(
+              if(widget.messageModel.isStoryReply==true)
+                Column(
                   children: [
-                    SizedBox(width: 2.w,),
-                    MessageDate(date: widget.messageModel.date!)
+                    StoryReplyMessage(
+                      storyMedia: widget.messageModel.storyMedia!,
+                      name: widget.name,
+                      isStoryVideoReply: widget.messageModel.isStoryVideoReply!,
+                      isValidDate: checkValidStory(date: widget.messageModel.storyDate!),
+                      isMyMessage: widget.messageModel.senderID==uId,
+                    ),
+                    SizedBox(height: 0.5.h,)
                   ],
                 ),
+              SizedBox(
+                width: widget.messageModel.isStoryReply==true?50.w:null,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    widget.messageModel.isDeleted==true?
+                    DeletedMessage(
+                      date: widget.messageModel.date!,
+                      isMedia: widget.messageModel.isImage==true||
+                          widget.messageModel.isVideo==true,
+                    )
+                        :
+                    widget.messageModel.isImage==true?
+                    FriendImageMessage(
+                      media: widget.messageModel.media!,
+                      date: widget.messageModel.date!,)
+                        :widget.messageModel.isVideo==true?
+                    FriendVideoMessage(
+                      cubit: widget.cubit,
+                      media: widget.messageModel.media!,
+                      messageID: widget.messageID,
+                      date: widget.messageModel.date!,)
+                        :widget.messageModel.isDoc==true?
+                    FriendFileMessage(message: widget.messageModel.message!):
+                    FriendTextMessage(message: widget.messageModel.message!),
+                    if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
+                      widget.messageModel.isStoryReply==true?
+                      Expanded(
+                        child: Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 2.w),
+                            child: MessageDate(date: widget.messageModel.date!),
+                          ),
+                        ),
+                      )
+                          :
+                      Padding(
+                        padding: EdgeInsets.only(left: 2.w),
+                        child: MessageDate(date: widget.messageModel.date!),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -129,6 +170,40 @@ class DeleteMessageLoader extends StatelessWidget {
         ));
   }
 }
+
+class DeletedMessage extends StatelessWidget {
+  final String date;
+  final bool isMedia;
+  const DeletedMessage({Key? key, required this.date, required this.isMedia}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.7,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "this message was deleted",
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                fontSize: 11.5.sp,
+              color: Colors.grey.shade400,
+              fontStyle: FontStyle.italic
+            ),
+          ),
+          if(isMedia)
+          Padding(
+            padding: EdgeInsets.only(left: 2.w),
+            child: MessageDate(date: date),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 class FriendTextMessage extends StatelessWidget {
   final String message;
@@ -205,15 +280,17 @@ class _FriendVideoMessageState extends State<FriendVideoMessage> {
 
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
-    setState(() {
-      debugPrint(_controller!.value.aspectRatio.toString());
-      _chewieController = ChewieController(
-          videoPlayerController: _controller!,
-          aspectRatio: _controller!.value.aspectRatio,
-          autoPlay: false,
-          looping: false,
-          materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
-      );
+    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+      setState(() {
+        debugPrint(_controller!.value.aspectRatio.toString());
+        _chewieController = ChewieController(
+            videoPlayerController: _controller!,
+            aspectRatio: _controller!.value.aspectRatio,
+            autoPlay: false,
+            looping: false,
+            materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
+        );
+      });
     });
   }
 
@@ -243,8 +320,12 @@ class _FriendVideoMessageState extends State<FriendVideoMessage> {
 
   @override
   void dispose() {
-    _controller!.dispose();
-    _chewieController!.dispose();
+    if(_controller!=null) {
+      _controller!.dispose();
+    }
+    if(_chewieController!=null) {
+      _chewieController!.dispose();
+    }
     super.dispose();
   }
 

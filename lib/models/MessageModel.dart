@@ -10,6 +10,7 @@ class MessageModel {
       bool? isStoryVideoReply,
       bool? isVideo,
       bool? isDoc,
+      bool? isDeleted,
       String? date,
       String? storyDate,
   }){
@@ -23,6 +24,7 @@ class MessageModel {
     _isImage = isImage;
     _isVideo = isVideo;
     _isDoc = isDoc;
+    _isDeleted = isDeleted;
     _date = date;
     _storyDate = storyDate;
 }
@@ -38,6 +40,7 @@ class MessageModel {
     _isImage = json['isImage'];
     _isVideo = json['isVideo'];
     _isDoc = json['isDoc'];
+    _isDeleted = json['isDeleted'];
     _date = json['date'];
     _storyDate = json['storyDate'];
   }
@@ -51,6 +54,7 @@ class MessageModel {
   bool? _isImage;
   bool? _isVideo;
   bool? _isDoc;
+  bool? _isDeleted;
   String? _date;
   String? _storyDate;
 
@@ -64,6 +68,7 @@ class MessageModel {
   bool? get isImage => _isImage;
   bool? get isVideo => _isVideo;
   bool? get isDoc => _isDoc;
+  bool? get isDeleted => _isDeleted;
   String? get date => _date;
   String? get storyDate => _storyDate;
 
@@ -79,6 +84,7 @@ class MessageModel {
     map['isImage'] = isImage;
     map['isVideo'] = isVideo;
     map['isDoc'] = isDoc;
+    map['isDeleted'] = isDeleted;
     map['date'] = _date;
     map['storyDate'] = _storyDate;
     return map;

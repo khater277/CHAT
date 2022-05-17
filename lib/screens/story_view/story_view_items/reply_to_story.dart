@@ -17,12 +17,13 @@ class ReplyToStory extends StatefulWidget {
   final StoryController storyController;
   final String userID;
   final String name;
+  final String text;
   final String storyMedia;
   final String storyDate;
   final MediaSource? mediaSource;
   const ReplyToStory({Key? key, required this.storyController, required this.cubit,
     required this.state, required this.userID, required this.storyMedia,
-    required this.mediaSource, required this.name, required this.storyDate}) : super(key: key);
+    required this.mediaSource, required this.name, required this.storyDate, required this.text}) : super(key: key);
 
   @override
   State<ReplyToStory> createState() => _ReplyToStoryState();
@@ -71,7 +72,9 @@ class _ReplyToStoryState extends State<ReplyToStory> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if(widget.mediaSource==null)
-                                ReplyToTextStory(name: widget.name,)
+                                ReplyToTextStory(
+                                  name: widget.name,
+                                  text: widget.text,)
                               else if (widget.mediaSource==MediaSource.image)
                                 ReplyToMediaStory(
                                   name: widget.name,

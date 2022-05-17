@@ -1,3 +1,4 @@
+import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,6 +36,7 @@ class DeleteMessage extends StatelessWidget {
               lastMessageModel: lastMessageModel,
               friendID: friendID,
             ),
+            if(messageModel.isDeleted!=true && messageModel.senderID==uId)
             DeleteMessageForEveryone(
               cubit: cubit,
               messageID: messageID,

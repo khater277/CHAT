@@ -6,7 +6,8 @@ import '../../../styles/icons_broken.dart';
 
 class ReplyToTextStory extends StatelessWidget {
   final String name;
-  const ReplyToTextStory({Key? key, required this.name}) : super(key: key);
+  final String text;
+  const ReplyToTextStory({Key? key, required this.name, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,7 @@ class ReplyToTextStory extends StatelessWidget {
                 height: 1.h,
               ),
               Text(
-                "this is text story body",
+                text,
                 style: Theme.of(context)
                     .textTheme
                     .bodyText1!

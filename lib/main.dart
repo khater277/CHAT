@@ -78,6 +78,7 @@ class MyApp extends StatelessWidget {
               home: Sizer(
                 builder: (context, orientation, screenType) {
                   return homeWidget;
+                  // return LoginScreen();
                 },
               ),
             );

@@ -8,7 +8,8 @@ class LastMessageModel {
       bool? isImage,
       bool? isVideo,
       bool? isDoc,
-      String? date, 
+      bool? isDeleted,
+      String? date,
       bool? isRead,}){
     _senderID = senderID;
     _receiverID = receiverID;
@@ -17,6 +18,7 @@ class LastMessageModel {
     _isImage = isImage;
     _isVideo = isVideo;
     _isDoc = isDoc;
+    _isDeleted = isDeleted;
     _date = date;
     _isRead = isRead;
 }
@@ -29,6 +31,7 @@ class LastMessageModel {
     _isImage = json['isImage'];
     _isVideo = json['isVideo'];
     _isDoc = json['isDoc'];
+    _isDeleted = json['isDeleted'];
     _date = json['date'];
     _isRead = json['isRead'];
   }
@@ -39,6 +42,7 @@ class LastMessageModel {
   bool? _isImage;
   bool? _isVideo;
   bool? _isDoc;
+  bool? _isDeleted;
   String? _date;
   bool? _isRead;
 
@@ -49,6 +53,7 @@ class LastMessageModel {
   bool? get isImage => _isImage;
   bool? get isVideo => _isVideo;
   bool? get isDoc => _isDoc;
+  bool? get isDeleted => _isDeleted;
   String? get date => _date;
   bool? get isRead => _isRead;
 
@@ -61,6 +66,7 @@ class LastMessageModel {
     map['isImage'] = isImage;
     map['isVideo'] = isVideo;
     map['isDoc'] = isDoc;
+    map['isDeleted'] = isDeleted;
     map['date'] = _date;
     map['isRead'] = _isRead;
     return map;

@@ -94,6 +94,7 @@ class MessageBuilder extends StatelessWidget {
                 messageID: messageID,
                 lastMessageModel: lastMessageModel,
                 friendID: friendID,
+                name: cubit.users.firstWhere((element) => element.uId==friendID).name!,
               ),
               if(message.isDoc==true||message.isImage==true||message.isVideo==true)
                 DownloadButton(

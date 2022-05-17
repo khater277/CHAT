@@ -23,7 +23,10 @@ class ChatsLastMessage extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         Expanded(
-          child: lastMessage.isVideo==true?
+          child: lastMessage.isDeleted==true?
+          const DeletedMessage()
+          :
+          lastMessage.isVideo==true?
           const VideoMessage()
               :
               lastMessage.isImage==true?
@@ -43,6 +46,33 @@ class ChatsLastMessage extends StatelessWidget {
     );
   }
 }
+
+class DeletedMessage extends StatelessWidget {
+  const DeletedMessage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            "this message was deleted",
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                fontSize: 11.sp,
+                color: MyColors.grey,
+              fontStyle: FontStyle.italic
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        SizedBox(width: 1.w,),
+        Icon(IconBroken.Delete,color: Colors.red,size: 12.sp,),
+
+      ],
+    );
+  }
+}
+
 
 class TextMessage extends StatelessWidget {
   final String message;

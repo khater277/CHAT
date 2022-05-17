@@ -5,6 +5,7 @@ import 'package:chat/screens/story_view/story_view_items/show_story_head.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:story_view/story_view.dart';
 
@@ -62,7 +63,11 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
     int index = 0;
 
     return BlocConsumer<AppCubit,AppStates>(
-      listener: (context,state){},
+      listener: (context,state){
+        if(state is AppSendStoryReplyState){
+          Get.back();
+        }
+      },
       builder: (context,state){
         return Scaffold(
           body: Stack(
@@ -151,6 +156,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                       storyController: controller,
                     userID: widget.userID,
                     name: widget.name,
+                    text: widget.stories[index].text!,
                     storyMedia: widget.stories[index].media!,
                     storyDate: widget.stories[index].date!,
                     mediaSource: widget.stories[index].isImage==true?

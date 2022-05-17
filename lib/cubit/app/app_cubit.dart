@@ -155,6 +155,7 @@ class AppCubit extends Cubit<AppStates> {
         isImage: mediaSource == MediaSource.image,
         isVideo: mediaSource == MediaSource.video,
         isDoc: mediaSource == MediaSource.doc,
+        isDeleted: false,
         date: DateTime.now().toString(),
         storyDate: storyDate,
     );
@@ -166,13 +167,15 @@ class AppCubit extends Cubit<AppStates> {
         .collection('messages')
         .add(myMessageModel.toJson())
         .then((value) {
+          print(value.id);
       FirebaseFirestore.instance
           .collection('users')
           .doc(friendID)
           .collection('chats')
           .doc(uId)
           .collection('messages')
-          .add(myMessageModel.toJson())
+          .doc(value.id)
+          .set(myMessageModel.toJson())
           .then((value) {
         sendLastMessage(
             friendID: friendID,
@@ -183,7 +186,11 @@ class AppCubit extends Cubit<AppStates> {
         if (isFirstMessage == true) {
           getChats(firstMessage: true);
         } else {
-          emit(AppSendMessageState());
+          if(isStoryReply==true) {
+            emit(AppSendStoryReplyState());
+          }else {
+            emit(AppSendMessageState());
+          }
         }
       }).catchError((error) {
         printError("sendMessage", error.toString());
@@ -210,6 +217,7 @@ class AppCubit extends Cubit<AppStates> {
         isImage: mediaSource == MediaSource.image,
         isVideo: mediaSource == MediaSource.video,
         isDoc: mediaSource == MediaSource.doc,
+        isDeleted: false,
         date: DateTime.now().toString(),
         isRead: true);
 
@@ -222,6 +230,7 @@ class AppCubit extends Cubit<AppStates> {
         isImage: mediaSource == MediaSource.image,
         isVideo: mediaSource == MediaSource.video,
         isDoc: mediaSource == MediaSource.doc,
+        isDeleted: false,
         date: DateTime.now().toString(),
         isRead: false);
 
@@ -457,6 +466,7 @@ class AppCubit extends Cubit<AppStates> {
     required String friendID,
     required String messageID,
     required LastMessageModel? lastMessageModel,
+
   }) {
     emit(AppDeleteMessageLoadingState());
     FirebaseFirestore.instance
@@ -472,6 +482,7 @@ class AppCubit extends Cubit<AppStates> {
         updateLastMessageInDelete(
           friendID: friendID,
           lastMessageModel: lastMessageModel,
+          messageModel: null,
           isForEveryone: false,
         );
       } else {
@@ -506,14 +517,15 @@ class AppCubit extends Cubit<AppStates> {
           .doc(uId)
           .collection('messages')
           .doc(messageID)
-          .delete()
+          .update({"isDeleted":true})
           .then((value) {
-        if (messageModel.isImage! ||
-            messageModel.isVideo! ||
-            messageModel.isDoc!) {
+        if (messageModel.isImage == true ||
+            messageModel.isVideo == true ||
+            messageModel.isDoc == true) {
           deleteMediaMessage(
               media: messageModel.media!,
               lastMessageModel: lastMessageModel,
+              messageModel: messageModel,
               friendID: friendID,
               messageID: messageID,
               isVideo: messageModel.isVideo!);
@@ -522,6 +534,7 @@ class AppCubit extends Cubit<AppStates> {
             updateLastMessageInDelete(
               friendID: friendID,
               lastMessageModel: lastMessageModel,
+              messageModel: messageModel,
               isForEveryone: true,
             );
           } else {
@@ -541,6 +554,7 @@ class AppCubit extends Cubit<AppStates> {
   void updateLastMessageInDelete({
     required String friendID,
     required LastMessageModel? lastMessageModel,
+    required MessageModel? messageModel,
     required bool isForEveryone,
   }) {
     FirebaseFirestore.instance
@@ -551,12 +565,24 @@ class AppCubit extends Cubit<AppStates> {
         .update(lastMessageModel!.toJson())
         .then((value) {
       if (isForEveryone) {
+        LastMessageModel friendLastMessageModel = LastMessageModel(
+          senderID: messageModel!.senderID,
+          receiverID: messageModel.receiverID,
+          message: messageModel.message,
+          media: messageModel.media,
+          isImage: messageModel.isImage,
+          isVideo: messageModel.isVideo,
+          isDoc: messageModel.isDoc,
+          date: messageModel.date,
+          isRead: false,
+          isDeleted: true
+        );
         FirebaseFirestore.instance
             .collection('users')
             .doc(friendID)
             .collection('chats')
             .doc(uId)
-            .update(lastMessageModel.toJson())
+            .update(friendLastMessageModel.toJson())
             .then((value) {
           debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
           emit(AppDeleteMessageState());
@@ -578,6 +604,7 @@ class AppCubit extends Cubit<AppStates> {
     required String friendID,
     required String media,
     required LastMessageModel? lastMessageModel,
+    required MessageModel messageModel,
     required bool isVideo,
     required String messageID,
   }) {
@@ -591,10 +618,11 @@ class AppCubit extends Cubit<AppStates> {
         updateLastMessageInDelete(
           friendID: friendID,
           lastMessageModel: lastMessageModel,
+          messageModel: messageModel,
           isForEveryone: true,
         );
       } else {
-        debugPrint("MESSAGE DELETED AND LAST MESSAGE UPDATED");
+        debugPrint("MEDIA MESSAGE DELETED AND LAST MESSAGE UPDATED");
         emit(AppDeleteMessageState());
       }
     }).catchError((error) {

@@ -74,8 +74,10 @@ class _MyMessageState extends State<MyMessage> {
                     children: [
                       StoryReplyMessage(
                         storyMedia: widget.messageModel.storyMedia!,
-                      isStoryVideoReply: widget.messageModel.isStoryVideoReply!,
-                      isValidDate: checkValidStory(date: widget.messageModel.storyDate!),
+                        isStoryVideoReply: widget.messageModel.isStoryVideoReply!,
+                        isValidDate: checkValidStory(date: widget.messageModel.storyDate!),
+                        isMyMessage: widget.messageModel.senderID==uId,
+                        name: "Your",
                       ),
                       SizedBox(height: 0.5.h,)
                     ],
@@ -233,7 +235,6 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
   ChewieController? _chewieController;
 
   Future<void>? _future;
-  bool done = false;
 
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
@@ -247,7 +248,6 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
             looping: false,
             materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
         );
-        done = true;
       });
     });
   }
@@ -278,8 +278,12 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
 
   @override
   void dispose() {
-    _controller!.dispose();
-    _chewieController!.dispose();
+    if(_controller!=null) {
+      _controller!.dispose();
+    }
+    if(_chewieController!=null) {
+      _chewieController!.dispose();
+    }
     super.dispose();
   }
 
@@ -298,7 +302,6 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
 
               return Center(
                 child: _controller!.value.isInitialized
-                    && done
                     ?
                 FittedBox(
                   fit: BoxFit.cover,

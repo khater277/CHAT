@@ -190,6 +190,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                     isDoc: messages[index-1].isDoc,
                                                     isRead: true,
                                                     date: messages[index-1].date,
+                                                    isDeleted: messages[index-1].isDeleted
                                                   ):null;
                                                   return Column(
                                                     children: [
