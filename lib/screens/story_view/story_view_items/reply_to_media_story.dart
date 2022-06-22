@@ -27,7 +27,7 @@ class _ReplyToMediaStoryState extends State<ReplyToMediaStory> {
   @override
   void initState() {
     if(widget.isVideo) {
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async{
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
         VideoThumbnail.thumbnailFile(
           video: widget.storyMedia,
           thumbnailPath: (await getTemporaryDirectory()).path,

@@ -49,10 +49,7 @@ class ContactsScreen extends StatelessWidget {
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context,index)=>Padding(
-                            padding:  EdgeInsets.symmetric(vertical: 1.8.h),
-                            child: ContactItem(user: cubit.users[index],),
-                          ),
+                          itemBuilder: (context,index)=>ContactItem(user: cubit.users[index],),
                           itemCount: cubit.users.length,
                         ),
                       ),

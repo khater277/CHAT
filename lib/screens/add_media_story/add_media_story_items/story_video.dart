@@ -1,4 +1,5 @@
 import 'package:chat/shared/colors.dart';
+import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,8 @@ class _StoryVideoState extends State<StoryVideo> {
     super.initState();
     _controller = VideoPlayerController.file(widget.cubit.storyFile!)
       ..initialize().then((_) {
+        widget.cubit.setVideoDuration(_controller!.value.duration.toString());
+        // print("==============>${_controller!.value.duration}");
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {
         });

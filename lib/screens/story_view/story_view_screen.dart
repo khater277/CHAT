@@ -3,11 +3,13 @@ import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/screens/story_view/story_view_items/show_story_head.dart';
 import 'package:chat/shared/constants.dart';
+import 'package:chat/shared/duration_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:story_view/story_view.dart';
+import 'package:video_player/video_player.dart';
 
 import 'story_view_items/my_story_viewers.dart';
 import 'story_view_items/reply_to_story.dart';
@@ -51,6 +53,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
               StoryItem.pageVideo(
                   widget.stories[i].media!,
                   controller: controller,
+                  duration: durationParser(duration: widget.stories[i].videoDuration!)
                   // caption: widget.stories[i].text!,
               ));
         }

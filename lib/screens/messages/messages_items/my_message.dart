@@ -238,7 +238,7 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
 
   Future<void> initVideoPlayer() async {
     await _controller!.initialize();
-    SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
         debugPrint(_controller!.value.aspectRatio.toString());
         _chewieController = ChewieController(

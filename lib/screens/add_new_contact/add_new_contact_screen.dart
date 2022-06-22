@@ -77,14 +77,6 @@ class _AddNewContactScreenState extends State<AddNewContactScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 2.w),
                 child: IconButton(
                   onPressed: (){
-                    showSnackBar(
-                        context: context,
-                        title: "Contact Added",
-                        content: "Contact added successfully , check your contacts",
-                        color: MyColors.white,
-                        fontColor: MyColors.black,
-                        icon: IconBroken.Shield_Done
-                    );
                     Contact contact = Contact(
                         givenName: _firstNameController.text,
                         familyName: _lastNameController.text,

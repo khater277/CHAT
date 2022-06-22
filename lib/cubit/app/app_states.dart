@@ -10,6 +10,7 @@ class AppLogoutState extends AppStates{}
 
 class AppChangeNavBarState extends AppStates{}
 
+class AppGetContactsLoadingState extends AppStates{}
 class AppGetContactsState extends AppStates{}
 
 class AppGetUserDataState extends AppStates{}
@@ -54,6 +55,8 @@ class AppUpdateProfileImageState extends AppStates{}
 
 class AppUpdateNameLoadingState extends AppStates{}
 class AppUpdateNameState extends AppStates{}
+
+class AppSetVideoDurationState extends AppStates{}
 
 class AppSendLastStoryLoadingState extends AppStates{}
 class AppSendLastStoryState extends AppStates{}

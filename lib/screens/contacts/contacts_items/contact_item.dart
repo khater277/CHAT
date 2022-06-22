@@ -18,61 +18,64 @@ class ContactItem extends StatelessWidget {
   Widget build(BuildContext context) {
 
     if(user.uId!=uId){
-      return GestureDetector(
-        onTap: (){
-          Get.to(()=>MessagesScreen(
-            user: user,
-            isFirstMessage: true,
-          ));},
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Row(
-            children: [
-              if(user.image=="")
-                SizedBox(
-                  width: 10.w,
-                  child: Icon(
-                    IconBroken.Profile,
-                    size: 20.sp,
-                    color: MyColors.blue,
-                  ),
-                )
-              else
-                SizedBox(
-                  width: 10.w,
-                  child: CircleAvatar(
-                    radius: 15.sp,
-                    backgroundColor: MyColors.blue,
-                    backgroundImage: CachedNetworkImageProvider(
-                        "${user.image}"
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 1.8.h),
+        child: GestureDetector(
+          onTap: (){
+            Get.to(()=>MessagesScreen(
+              user: user,
+              isFirstMessage: true,
+            ));},
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Row(
+              children: [
+                if(user.image=="")
+                  SizedBox(
+                    width: 10.w,
+                    child: Icon(
+                      IconBroken.Profile,
+                      size: 20.sp,
+                      color: MyColors.blue,
                     ),
-                  ),
-                ),
-              SizedBox(width: 3.w,),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${user.name}",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontSize: 13.sp
+                  )
+                else
+                  SizedBox(
+                    width: 10.w,
+                    child: CircleAvatar(
+                      radius: 15.sp,
+                      backgroundColor: MyColors.blue,
+                      backgroundImage: CachedNetworkImageProvider(
+                          "${user.image}"
                       ),
                     ),
-                    SizedBox(height: 0.5.h,),
-                    Text(
-                      "${user.phone}",
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          fontSize: 10.sp,
-                          color: MyColors.grey
+                  ),
+                SizedBox(width: 3.w,),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${user.name}",
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            fontSize: 13.sp
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 0.5.h,),
+                      Text(
+                        "${user.phone}",
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            fontSize: 10.sp,
+                            color: MyColors.grey
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(width: 3.w,),
-              Icon(IconBroken.Arrow___Right_2,size: 12.sp,color: Colors.grey,)
-            ],
+                SizedBox(width: 3.w,),
+                Icon(IconBroken.Arrow___Right_2,size: 12.sp,color: Colors.grey,)
+              ],
+            ),
           ),
         ),
       );

@@ -77,10 +77,14 @@ class AppCubit extends Cubit<AppStates> {
   List<String> phones = [];
   List<UserModel> users = [];
 
-  void getContacts() {
+  void getContacts({bool? addNewContact}) {
     if (contactsPermission!) {
       emit(AppLoadingState());
       ContactsService.getContacts().then((contactList) {
+        usersID = [];
+        users = [];
+        contacts = [];
+        phones = [];
         for (var element in contactList) {
           FirebaseFirestore.instance.collection('users').get().then((value) {
             if (element.phones!.isNotEmpty) {
@@ -111,8 +115,12 @@ class AppCubit extends Cubit<AppStates> {
           });
         }
         debugPrint("=============GET CONTACTS=============");
-        getChats();
-        //emit(AppGetContactsState());
+        if(addNewContact!=true) {
+          getChats();
+        }else{
+          emit(AppGetContactsState());
+        }
+        //
       }).catchError((error) {
         emit(AppErrorState());
       });
@@ -122,7 +130,7 @@ class AppCubit extends Cubit<AppStates> {
   void addNewContact(Contact contact) {
     ContactsService.addContact(contact).then((value) {
       debugPrint("NEW CONTACT ADDED");
-      getContacts();
+      getContacts(addNewContact: true);
       emit(AppAddNewContactState());
     }).catchError((error) {
       emit(AppErrorState());
@@ -799,6 +807,11 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+  String? videoDuration;
+  void setVideoDuration(String duration){
+    videoDuration = duration;
+    emit(AppSetVideoDurationState());
+  }
 
   void sendLastStory({
     required String phone,
@@ -814,6 +827,7 @@ class AppCubit extends Cubit<AppStates> {
       media: media ?? "",
       isImage: mediaSource != null ? mediaSource == MediaSource.image : false,
       isVideo: mediaSource != null ? mediaSource == MediaSource.video : false,
+      videoDuration: mediaSource == MediaSource.video ? videoDuration!:"0",
       isRead: false,
       viewers: [],
       canView: usersID
