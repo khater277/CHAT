@@ -38,6 +38,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
   ValueNotifier showAnimatedContainer = ValueNotifier<bool?>(false);
   ValueNotifier canScroll = ValueNotifier<bool>(true);
 
+  @override
+  void initState() {
+    AppCubit.get(context).changeCurrentChat(id: widget.user.uId);
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -105,6 +110,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 child: WillPopScope(
                   onWillPop: () async{
                     cubit.cancelSelectFile();
+                    cubit.changeCurrentChat(id: null);
                     return true;
                   },
                   child: ValueListenableBuilder(
@@ -134,6 +140,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               leading: IconButton(
                                 onPressed: (){
                                   Get.back();
+                                  cubit.changeCurrentChat(id: null);
                                   cubit.cancelSelectFile();
                                   },
                                 icon: Icon(
@@ -203,6 +210,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                         lastMessageModel: lastMessageModel,
                                                         messageID: messagesID[index],
                                                         friendID: widget.user.uId!,
+                                                        friendName: widget.user.name!,
                                                       ),
                                                       if(messages.length-1==index)
                                                         SizedBox(height: 2.h,)
@@ -252,6 +260,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   cubit: cubit,
                                   state: state,
                                   friendID: widget.user.uId!,
+                                  friendToken: widget.user.token!,
                                 )
                               ],
                             )

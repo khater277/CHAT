@@ -81,9 +81,7 @@ class _StoryReplyMessageState extends State<StoryReplyMessage> {
           maxHeight: 64,
           quality: 75,
         ).then((value){
-          setState(() {
             fileName = value!;
-          });
           return null;
         });
       });

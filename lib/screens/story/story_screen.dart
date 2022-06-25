@@ -93,6 +93,7 @@ class StoryScreen extends StatelessWidget {
                                 children: [
                                   // Text("${stories.length}"),
                                   MyStory(
+                                    userToken: cubit.userModel!.token!,
                                     image: cubit.userModel == null
                                         ? null
                                         : "${cubit.userModel!.image}",

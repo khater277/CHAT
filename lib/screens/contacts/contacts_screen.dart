@@ -49,7 +49,8 @@ class ContactsScreen extends StatelessWidget {
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context,index)=>ContactItem(user: cubit.users[index],),
+                          itemBuilder: (context,index)=>ContactItem(
+                            user: cubit.users[index],),
                           itemCount: cubit.users.length,
                         ),
                       ),

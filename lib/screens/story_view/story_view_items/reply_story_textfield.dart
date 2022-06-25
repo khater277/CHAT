@@ -12,12 +12,13 @@ class ReplyStoryTextField extends StatelessWidget {
   final AppStates state;
   final TextEditingController messageController;
   final String userID;
+  final String userToken;
   final String storyMedia;
   final String storyDate;
   final MediaSource? mediaSource;
   const ReplyStoryTextField({Key? key, required this.messageController,
     required this.cubit, required this.state, required this.userID,
-    required this.storyMedia, required this.mediaSource, required this.storyDate}) : super(key: key);
+    required this.storyMedia, required this.mediaSource, required this.storyDate, required this.userToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,7 @@ class ReplyStoryTextField extends StatelessWidget {
                   onPressed: value.text.isNotEmpty?() {
                     String finalMessage = messageController.text.trimLeft().trimRight();
                       cubit.sendMessage(
+                        friendToken: userToken,
                         friendID: userID,
                         message: finalMessage,
                         isStoryReply: true,

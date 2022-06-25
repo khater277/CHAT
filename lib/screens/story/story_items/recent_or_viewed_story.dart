@@ -24,6 +24,7 @@ class RecentOrViewedStories extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index)=>ContactStory(
+            userToken: infoList[index].token!,
               userID: infoList[index].uId!,
               name: infoList[index].name!,
               image: infoList[index].image!,

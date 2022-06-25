@@ -16,9 +16,11 @@ class SendMessageButton extends StatelessWidget {
   final AppStates state;
   final bool isFirstMessage;
   final TextEditingController messageController;
+  final String friendToken;
   final String friendID;
   const SendMessageButton({Key? key, required this.messageController,
-    required this.cubit, required this.state, required this.friendID, required this.isFirstMessage}) : super(key: key);
+    required this.cubit, required this.state, required this.friendID,
+    required this.isFirstMessage, required this.friendToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +44,28 @@ class SendMessageButton extends StatelessWidget {
             //scrollDown(scrollController);
             if(state is AppSelectFileState) {
               cubit.sendMediaMessage(
+                friendToken: friendToken,
                   friendID: friendID,
                   mediaSource: MediaSource.doc,
                   isFirstMessage: isFirstMessage,
               );
             }else if(state is AppSelectMessageImageState){
               cubit.sendMediaMessage(
+                friendToken:friendToken,
                   friendID: friendID,
                   mediaSource: MediaSource.image,
                   isFirstMessage: isFirstMessage,
               );
             }else if(state is AppSelectMessageVideoState){
               cubit.sendMediaMessage(
+                friendToken:friendToken,
                   friendID: friendID,
                   mediaSource: MediaSource.video,
                   isFirstMessage: isFirstMessage,
               );
             }else{
               cubit.sendMessage(
+                  friendToken:friendToken,
                   friendID: friendID,
                   isFirstMessage: isFirstMessage,
                   message: messageController.text.substring(
@@ -94,10 +100,11 @@ class SendMessageTextFiled extends StatelessWidget {
   final TextEditingController messageController;
   final ValueNotifier showAnimatedContainer;
   final String friendID;
+  final String friendToken;
   const SendMessageTextFiled(
       {Key? key,required this.messageController, required this.cubit,
         required this.friendID, required this.isFirstMessage,
-        required this.showAnimatedContainer, required this.state, }) : super(key: key);
+        required this.showAnimatedContainer, required this.state, required this.friendToken, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +182,7 @@ class SendMessageTextFiled extends StatelessWidget {
             messageController: messageController,
           isFirstMessage: isFirstMessage,
           friendID: friendID,
+          friendToken: friendToken,
         )
       ],
     );

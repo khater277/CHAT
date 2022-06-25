@@ -6,6 +6,7 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -189,8 +190,8 @@ class LoginCubit extends Cubit<LoginStates>{
 
   void test(context){
     AppCubit.get(context).getUserData(isOpening: true);
-    AppCubit.get(context).getChats();
-    // AppCubit.get(context).getC123ontacts();
+    // AppCubit.get(context).getChats(isLogin: true);
+    AppCubit.get(context).getContacts(addNewContact: true);
   }
 
   void checkUser(String phoneNumber,context){
@@ -211,9 +212,12 @@ class LoginCubit extends Cubit<LoginStates>{
         }
       }
       print("=========checkUser========> $exist");
+      // FirebaseFirestore.instance.collection('users')
+      // .doc()
       if(exist){
+        print("==============>$uId");
         test(context);
-        Get.offAll(()=> const HomeScreen());
+        updateToken();
       }else{
         test(context);
         Get.offAll(()=> SetImageScreen(phone: "+2$phoneNumber",));
@@ -224,12 +228,30 @@ class LoginCubit extends Cubit<LoginStates>{
     });
   }
 
+  void updateToken(){
+    FirebaseMessaging.instance.getToken()
+        .then((token){
+      FirebaseFirestore.instance.collection('users')
+          .doc(uId)
+          .update({"token":"$token"})
+          .then((value){
+        print("TOKEN UPDATED");
+        Get.offAll(()=>  const HomeScreen());
+      }).catchError((error){
+        printError("updateToken", error.toString());
+        emit(LoginErrorState(error.toString()));
+      });
+    });
+  }
+
   void createUser({
     String? name,
     String? image
-  }){
+  })async{
     emit(LoginLoadingState());
+    String? token = await FirebaseMessaging.instance.getToken();
     UserModel userModel = UserModel(
+      token: token,
       name: name??"user",
       uId: uId,
       phone: getLoggedUser().phoneNumber!,

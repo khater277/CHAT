@@ -21,9 +21,10 @@ class StoryViewScreen extends StatefulWidget {
   final String profileImage;
   final String name;
   final String userID;
+  final String userToken;
   // final String? storyID;
   const StoryViewScreen({Key? key, required this.stories, required this.storiesIDs,
-    required this.profileImage, required this.name, required this.userID,}) : super(key: key);
+    required this.profileImage, required this.name, required this.userID, required this.userToken,}) : super(key: key);
 
   @override
   State<StoryViewScreen> createState() => _StoryViewScreenState();
@@ -157,6 +158,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                       cubit: cubit,
                       state: state,
                       storyController: controller,
+                    userToken: widget.userToken,
                     userID: widget.userID,
                     name: widget.name,
                     text: widget.stories[index].text!,

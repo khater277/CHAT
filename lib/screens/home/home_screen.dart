@@ -1,5 +1,6 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
+import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/add_text_story/add_text_story_screen.dart';
 import 'package:chat/screens/home/stories_fab.dart';
 import 'package:chat/shared/colors.dart';
@@ -7,15 +8,52 @@ import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../notifications/local_notifications.dart';
 import '../add_media_story/add_media_story_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+
+  @override
+  void initState() {
+    AppCubit cubit = AppCubit.get(context);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification!.body}');
+      }
+
+      UserModel? userModel = cubit.users.firstWhereOrNull((element) =>
+      element.uId==message.data['senderID']);
+      String? name = userModel!=null?userModel.name!
+          :message.data['phoneNumber'];
+      int id = (DateTime.now().millisecondsSinceEpoch/1000).floor();
+      print("current=================>${cubit.currentChat}");
+      print("sender=================>${message.data['senderID']}");
+      if(cubit.currentChat != message.data['senderID']) {
+        NotificationsHelper.showNotification(id: id,name: name!,senderID: message.data['senderID']);
+        if(cubit.currentChat == null) {
+          // NotificationsHelper.configureSelectNotificationSubject(cubit);
+        }
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -23,11 +23,12 @@ class MessageBuilder extends StatelessWidget {
   final MessageModel previousMessage;
   final int index;
   final String friendID;
+  final String friendName;
   final String messageID;
   final LastMessageModel? lastMessageModel;
   const MessageBuilder({Key? key, required this.cubit,required this.message, required this.index,
     required this.previousMessage, required this.friendID, required this.messageID,
-    required this.lastMessageModel,}) : super(key: key);
+    required this.lastMessageModel, required this.friendName,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +95,7 @@ class MessageBuilder extends StatelessWidget {
                 messageID: messageID,
                 lastMessageModel: lastMessageModel,
                 friendID: friendID,
-                name: cubit.users.firstWhere((element) => element.uId==friendID).name!,
+                name: friendName,
               ),
               if(message.isDoc==true||message.isImage==true||message.isVideo==true)
                 DownloadButton(

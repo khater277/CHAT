@@ -20,6 +20,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../models/ContactModel.dart';
+import '../../notifications/api.dart';
 import '../../screens/calls/calls_screen.dart';
 import '../../shared/constants.dart';
 import 'app_states.dart';
@@ -59,7 +61,7 @@ class AppCubit extends Cubit<AppStates> {
   UserModel? userModel;
 
   void getUserData({bool? isOpening}) {
-    if(uId!=null) {
+    if(uId!=null&&uId!.isNotEmpty) {
       FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
       userModel = UserModel.fromJson(value.data());
       if (isOpening != true) {
@@ -85,6 +87,7 @@ class AppCubit extends Cubit<AppStates> {
         users = [];
         contacts = [];
         phones = [];
+        deleteContactsFormFirebase();
         for (var element in contactList) {
           FirebaseFirestore.instance.collection('users').get().then((value) {
             if (element.phones!.isNotEmpty) {
@@ -94,17 +97,26 @@ class AppCubit extends Cubit<AppStates> {
                 if (element.phones![0].value!.length >= 11) {
                   if ((phoneFormat(phoneNumber: element.phones![0].value!) ==
                       phoneFormat(phoneNumber: user.phone!))) {
-                    // if(phoneNumber)
-                    // debugPrint(user.name);
-                    // debugPrint(element.displayName);
                     usersID.add(e.id);
-                    users.add(UserModel(
+                    UserModel finalUser = UserModel(
                         name: element.displayName,
+                        token: user.token,
                         uId: user.uId,
                         phone: user.phone,
-                        image: user.image));
+                        image: user.image);
+                    users.add(finalUser);
                     contacts.add(element);
                     phones.add(user.phone!);
+                    if(finalUser.uId!=uId) {
+                      ContactModel contactModel = ContactModel(
+                        phoneNumber: finalUser.phone,
+                        name: finalUser.name
+                      );
+                      addContactsToFirebase(
+                        userID: finalUser.uId!,
+                        contactModel: contactModel
+                      );
+                    }
                   }
                 }
               }
@@ -127,6 +139,38 @@ class AppCubit extends Cubit<AppStates> {
     }
   }
 
+  void deleteContactsFormFirebase(){
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId!)
+        .collection('contacts')
+        .get()
+        .then((value){
+      for (var element in value.docs) {
+        element.reference.delete();
+      }
+    }).catchError((error){
+      printError("deleteContactsFormFirebase", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  void addContactsToFirebase({required String userID,required ContactModel contactModel}){
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId!)
+        .collection('contacts')
+        .doc(userID)
+        .set(contactModel.toJson())
+        .then((value) {
+          // emit(AppLoadingState());
+        }
+    )
+        .catchError((error){
+      printError("addContactsToFirebase", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+
   void addNewContact(Contact contact) {
     ContactsService.addContact(contact).then((value) {
       debugPrint("NEW CONTACT ADDED");
@@ -137,7 +181,14 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+  String? currentChat;
+  void changeCurrentChat({required String? id}){
+    currentChat = id;
+    emit(AppChangeCurrentChatState());
+  }
+
   void sendMessage({
+    required String friendToken,
     required String friendID,
     required String message,
     bool? isFirstMessage,
@@ -189,7 +240,11 @@ class AppCubit extends Cubit<AppStates> {
             friendID: friendID,
             message: message,
             file: file,
-            mediaSource: mediaSource);
+            mediaSource: mediaSource
+        );
+        sendNotification(
+            userToken: friendToken,
+            userID: friendID);
         debugPrint("MESSAGE SENT");
         if (isFirstMessage == true) {
           getChats(firstMessage: true);
@@ -208,6 +263,47 @@ class AppCubit extends Cubit<AppStates> {
       printError("sendMessage", error.toString());
       emit(AppErrorState());
     });
+  }
+
+  void pushNotification({
+    required String userToken,
+    required String userID,
+    required String userName,
+  }){
+      DioHelper.pushNotification(
+        myPhoneNumber: userModel!.phone!,
+        token: userToken,
+        userID: userID,
+        userName: userName)
+        .then((value){
+      print("MESSAGE SENT");
+    }).catchError((error){
+      printError("pushNotification", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  void sendNotification({
+    required String userToken,
+    required String userID,
+    }){
+    // if(userModel!.token!=userToken) {
+      FirebaseFirestore.instance.collection('users')
+    .doc(userID)
+    .collection('contacts')
+    .doc(uId)
+    .get()
+    .then((value){
+      ///if that number in my contacts i well send notification with contact name saved on my phone
+      ContactModel contactModel = ContactModel.fromJson(value.data());
+      pushNotification(userToken: userToken, userID: userID, userName: contactModel.name!);
+    }).catchError((error){
+      ///if that number not in my contacts i well send notification with phone number
+      pushNotification(userToken: userToken, userID: userID, userName: userModel!.phone!);
+      printError("getNotificationUser", error.toString());
+      emit(AppErrorState());
+    });
+    // }
   }
 
   void sendLastMessage({
@@ -242,6 +338,7 @@ class AppCubit extends Cubit<AppStates> {
         date: DateTime.now().toString(),
         isRead: false);
 
+    ///send message to my chat with that friend in firebase
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -249,6 +346,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(friendID)
         .set(myLastMessageModel.toJson())
         .then((value) {
+      ///send message to my friend chat with me in firebase
       FirebaseFirestore.instance
           .collection('users')
           .doc(friendID)
@@ -268,7 +366,11 @@ class AppCubit extends Cubit<AppStates> {
   List<UserModel> chats = [];
   List<LastMessageModel> chatsLastMessages = [];
 
-  void getChats({bool? firstMessage}) {
+  void getChats({
+    bool? firstMessage,
+    bool? isLogin,
+  }) {
+    ///don't loading when i send first message when i enter messages screen from contacts list
     if (firstMessage != true) {
       emit(AppLoadingState());
     }
@@ -299,6 +401,7 @@ class AppCubit extends Cubit<AppStates> {
               : userModel.phone!;
           UserModel finalUserModel = UserModel(
               name: name,
+              token: userModel.token,
               uId: userModel.uId,
               phone: userModel.phone,
               image: userModel.image);
@@ -313,7 +416,9 @@ class AppCubit extends Cubit<AppStates> {
         });
       }
       debugPrint("GET CHATS");
-      // emit(AppGetChatsState());
+      // if(isLogin==true) {
+        emit(AppGetChatsState());
+      // }
     }).catchError((error) {
       printError("getChats", error.toString());
       emit(AppErrorState());
@@ -421,6 +526,7 @@ class AppCubit extends Cubit<AppStates> {
   double? percentage;
 
   void sendMediaMessage({
+    required String friendToken,
     required String friendID,
     required MediaSource mediaSource,
     required bool isFirstMessage,
@@ -444,6 +550,7 @@ class AppCubit extends Cubit<AppStates> {
         case TaskState.success:
           taskSnapshot.ref.getDownloadURL().then((value) {
             sendMessage(
+              friendToken: friendToken,
                 friendID: friendID,
                 isFirstMessage: isFirstMessage,
                 mediaSource: mediaSource,

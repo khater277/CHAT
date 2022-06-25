@@ -15,6 +15,7 @@ class ReplyToStory extends StatefulWidget {
   final AppCubit cubit;
   final AppStates state;
   final StoryController storyController;
+  final String userToken;
   final String userID;
   final String name;
   final String text;
@@ -23,7 +24,7 @@ class ReplyToStory extends StatefulWidget {
   final MediaSource? mediaSource;
   const ReplyToStory({Key? key, required this.storyController, required this.cubit,
     required this.state, required this.userID, required this.storyMedia,
-    required this.mediaSource, required this.name, required this.storyDate, required this.text}) : super(key: key);
+    required this.mediaSource, required this.name, required this.storyDate, required this.text, required this.userToken}) : super(key: key);
 
   @override
   State<ReplyToStory> createState() => _ReplyToStoryState();
@@ -91,6 +92,7 @@ class _ReplyToStoryState extends State<ReplyToStory> {
                                   state: widget.state,
                                   messageController: _messageController,
                               userID: widget.userID,
+                              userToken: widget.userToken,
                               storyMedia: widget.storyMedia,
                               storyDate: widget.storyDate,
                               mediaSource: widget.mediaSource,)

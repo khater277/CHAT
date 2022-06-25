@@ -15,9 +15,10 @@ class ContactStory extends StatelessWidget {
   final String image;
   final String storyDate;
   final String userID;
+  final String userToken;
   final bool isViewed;
   const ContactStory({Key? key, required this.image, required this.storyDate,
-    required this.name, required this.userID, required this.isViewed}) : super(key: key);
+    required this.name, required this.userID, required this.isViewed, required this.userToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,7 @@ class ContactStory extends StatelessWidget {
                 name: name,
                 userID: userID,
                 storiesIDs: storiesIDs,
+                userToken: userToken,
               ));
           }:null,
           child: Container(

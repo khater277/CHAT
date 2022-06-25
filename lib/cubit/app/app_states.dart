@@ -21,6 +21,8 @@ class AppSendLastMessageState extends AppStates{}
 
 class AppSendMessageState extends AppStates{}
 
+class AppChangeCurrentChatState extends AppStates{}
+
 class AppGetChatsState extends AppStates{}
 
 class AppGetChatsLoopState extends AppStates{}

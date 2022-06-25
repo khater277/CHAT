@@ -46,15 +46,24 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 for (int i=0;i<snapshot.data!.size;i++) {
                   var element = snapshot.data!.docs[i];
                   lastMessages.add(LastMessageModel.fromJson(element.data()));
-                  chats.add(cubit.chats.firstWhere((user) =>
-                  user.uId==element.id));
+                  ///here i get chat user details and check that
+                  ///if my chat with him is already exist in my account i get that chat details from chats list in my cubit
+                  ///if it isn't i will get my chats and it will be in them
+                  UserModel? userModel = cubit.chats.firstWhereOrNull((user) =>
+                  user.uId==element.id);
+                  if(userModel==null){
+                    cubit.getChats();
+                  }else {
+                    chats.add(cubit.chats.firstWhere((user) => user.uId==element.id));
+                  }
+                  // }
                 }
                 lastMessages = lastMessages.reversed.toList();
                 chats = chats.reversed.toList();
                 hasData = true;
               }
-              return hasData?
-                cubit.chats.isNotEmpty?
+              if (hasData) {
+                return chats.isNotEmpty?
               Scaffold(
                 body: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -147,7 +156,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ),
                   actions: [
                     IconButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          AppCubit.get(context).sendMessage(
+                              friendToken: "cUQgq0suQDScY_EtBy40YA:APA91bF961EW9UsRVCMHRcs3GefATTdnn-5TjX1699r5xRuOPtZ_OFxcdUtJxKF1JuXQE_TvxJ6NuH6k9r3fYd5BnZb1lRxuVwjzdmJDmixqK4IU05AilLuCKG2psz91iEMxl4PUvZWx",
+                              friendID: "1O5pTx02tCXsKSl6PPSrEULtebe2",
+                              message: "message");
+                        },
                         icon: Icon(IconBroken.Search,size: 18.sp,color: MyColors.grey,)
                     )
                   ],
@@ -156,8 +170,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     text: "Start now new conversations with your friends",
                     widget: Icon(IconBroken.Message,
                       color: Colors.grey.withOpacity(0.7),size: 150.sp,)),
-              ) :
-              const DefaultProgressIndicator(icon: IconBroken.Chat);
+              );
+              } else {
+                return const DefaultProgressIndicator(icon: IconBroken.Chat);
+              }
             }
           );
       },

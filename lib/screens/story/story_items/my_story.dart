@@ -117,9 +117,10 @@ class NoStoryExist extends StatelessWidget {
 }
 
 class MyStory extends StatelessWidget {
+  final String userToken;
   final String? image;
   final List<StoryModel> stories;
-  const MyStory({Key? key, required this.image, required this.stories}) : super(key: key);
+  const MyStory({Key? key, required this.image, required this.stories, required this.userToken}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +135,7 @@ class MyStory extends StatelessWidget {
             profileImage: image!,
             name: "My Story",
             userID: uId!,
+            userToken: userToken,
             storiesIDs: null,
           ));
         }
