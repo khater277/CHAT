@@ -3,6 +3,7 @@ import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/add_text_story/add_text_story_screen.dart';
 import 'package:chat/screens/home/stories_fab.dart';
+import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
@@ -47,9 +48,20 @@ class _HomeScreenState extends State<HomeScreen> {
       print("sender=================>${message.data['senderID']}");
       if(cubit.currentChat != message.data['senderID']) {
         NotificationsHelper.showNotification(id: id,name: name!,senderID: message.data['senderID']);
-        if(cubit.currentChat == null) {
-          // NotificationsHelper.configureSelectNotificationSubject(cubit);
-        }
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      // Detect your current screen if you wish when "onResume" called.
+      UserModel? userModel = cubit.chats.firstWhereOrNull((element) =>
+      element.uId==message.data['senderID']);
+      if(userModel==null){
+        cubit.getChats();
+        userModel = cubit.chats.firstWhereOrNull((element) =>
+        element.uId==message.data['senderID']);
+        Get.to(()=>MessagesScreen(user: userModel!, isFirstMessage: false));
+      }else {
+        Get.to(()=>MessagesScreen(user: userModel!, isFirstMessage: false));
       }
     });
     super.initState();

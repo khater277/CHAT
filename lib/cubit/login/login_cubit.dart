@@ -191,7 +191,7 @@ class LoginCubit extends Cubit<LoginStates>{
   void test(context){
     AppCubit.get(context).getUserData(isOpening: true);
     // AppCubit.get(context).getChats(isLogin: true);
-    AppCubit.get(context).getContacts(addNewContact: true);
+    AppCubit.get(context).getContacts();
   }
 
   void checkUser(String phoneNumber,context){

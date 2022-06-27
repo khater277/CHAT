@@ -52,7 +52,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   UserModel? userModel = cubit.chats.firstWhereOrNull((user) =>
                   user.uId==element.id);
                   if(userModel==null){
-                    cubit.getChats();
+                    cubit.getChats(firstMessage: true);
+                    print("GET YASTA");
+                    // chats.add(cubit.chats.firstWhere((user) => user.uId==element.id));
                   }else {
                     chats.add(cubit.chats.firstWhere((user) => user.uId==element.id));
                   }
@@ -63,7 +65,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 hasData = true;
               }
               if (hasData) {
-                return chats.isNotEmpty?
+                return chats.isNotEmpty==cubit.chats.isNotEmpty?
               Scaffold(
                 body: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
