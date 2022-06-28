@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:chat/cubit/login/login_cubit.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/notifications/api.dart';
+import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/home/home_screen.dart';
 import 'package:chat/screens/login/login_screen.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/themes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -24,29 +26,6 @@ import 'notifications/local_notifications.dart';
 import 'translation/translations.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
-String senderID = "";
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  senderID = message.data['senderID'];
-  // final _notificationService =
-  // NotificationService(StorageRepository(), UserRepository());
-  // FirebaseFirestore.instance.collection('users')
-  // .doc(message.data['senderID'])
-  // .get()
-  // .then((value){
-  //   UserModel user = UserModel.fromJson(value);
-  //   Get.to(()=> MessagesScreen(isFirstMessage: false, user: user,));
-  // }).catchError((error){
-  //   print(error.toString());
-  // });
-  // UserModel user = AppCubit.get(context).chats[0];
-  // Get.to(()=>const MessagesScreen(isFirstMessage: false, user: null,));
-  print("Handling a background message: ${message.data}");
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,14 +47,18 @@ void main() async {
   }else{
     homeWidget=const LoginScreen();
   }
+  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    // If you're going to use other Firebase services in the background, such as Firestore,
+    // make sure you call `initializeApp` before using other Firebase services.
+    Get.to(()=>const ContactsScreen());
+    print("Handling a background message: ${message.data}");
+  }
 
-
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   String? token = await FirebaseMessaging.instance.getToken();
   print("======>$token");
 
 
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   NotificationsHelper.init();
 
   BlocOverrides.runZoned(
@@ -118,7 +101,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    print("sender id ================> $senderID");
     NotificationsHelper.configureDidReceiveLocalNotificationSubject(context);
     NotificationsHelper.configureSelectNotificationSubject(widget.cubit);
   }

@@ -1,6 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/UserModel.dart';
+import 'package:chat/notifications/notifications_receiver.dart';
 import 'package:chat/screens/add_text_story/add_text_story_screen.dart';
 import 'package:chat/screens/home/stories_fab.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
@@ -31,39 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     AppCubit cubit = AppCubit.get(context);
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification!.body}');
-      }
-
-      UserModel? userModel = cubit.users.firstWhereOrNull((element) =>
-      element.uId==message.data['senderID']);
-      String? name = userModel!=null?userModel.name!
-          :message.data['phoneNumber'];
-      int id = (DateTime.now().millisecondsSinceEpoch/1000).floor();
-      print("current=================>${cubit.currentChat}");
-      print("sender=================>${message.data['senderID']}");
-      if(cubit.currentChat != message.data['senderID']) {
-        NotificationsHelper.showNotification(id: id,name: name!,senderID: message.data['senderID']);
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      // Detect your current screen if you wish when "onResume" called.
-      UserModel? userModel = cubit.chats.firstWhereOrNull((element) =>
-      element.uId==message.data['senderID']);
-      if(userModel==null){
-        cubit.getChats();
-        userModel = cubit.chats.firstWhereOrNull((element) =>
-        element.uId==message.data['senderID']);
-        Get.to(()=>MessagesScreen(user: userModel!, isFirstMessage: false));
-      }else {
-        Get.to(()=>MessagesScreen(user: userModel!, isFirstMessage: false));
-      }
-    });
+    NotificationsReceiver.handelForegroundMessage(cubit: cubit);
+    NotificationsReceiver.handelBackgroundMessage(cubit: cubit);
     super.initState();
   }
 
