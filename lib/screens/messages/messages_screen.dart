@@ -1,6 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
+import 'package:chat/screens/call_content/call_content_screen.dart';
 import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
 import 'package:chat/screens/messages/messages_items/send_file_message.dart';
@@ -152,8 +153,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 3.w),
                                   child: IconButton(
-                                      onPressed: ()async{
-                                        await Permission.storage.request();
+                                      onPressed: (){
+                                        Get.to(()=>const CallContentScreen());
                                       },
                                       icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
                                   ),

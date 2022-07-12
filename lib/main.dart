@@ -26,6 +26,12 @@ import 'notifications/local_notifications.dart';
 import 'translation/translations.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  Get.to(()=>const ContactsScreen());
+  print("Handling a background message: ${message.data}");
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,12 +52,6 @@ void main() async {
     homeWidget=const HomeScreen();
   }else{
     homeWidget=const LoginScreen();
-  }
-  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    // If you're going to use other Firebase services in the background, such as Firestore,
-    // make sure you call `initializeApp` before using other Firebase services.
-    Get.to(()=>const ContactsScreen());
-    print("Handling a background message: ${message.data}");
   }
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

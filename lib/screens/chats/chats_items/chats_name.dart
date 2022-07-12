@@ -13,12 +13,6 @@ class ChatsName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // String? name;
-    // bool isContact = AppCubit.get(context).usersID.contains(userModel.uId);
-    // name = isContact?AppCubit.get(context).users.firstWhere((element) =>
-    // element.uId==userModel.uId).name!:userModel.name!;
-
-
     return Row(
       children: [
         Expanded(
