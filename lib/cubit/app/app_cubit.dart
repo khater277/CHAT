@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chat/agora/agora_server.dart';
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
+import 'package:chat/screens/call_content/call_content_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/story/story_screen.dart';
@@ -16,6 +18,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -60,8 +63,11 @@ class AppCubit extends Cubit<AppStates> {
 
   UserModel? userModel;
 
-  void getUserData({bool? isOpening}) {
+  void getUserData({bool? isOpening,bool? updateInCall}) {
     if(uId!=null&&uId!.isNotEmpty) {
+      if(updateInCall==true) {
+        updateInCallStatus(isTrue: false,isOpening: true);
+      }
       FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
       userModel = UserModel.fromJson(value.data());
       if (isOpening != true) {
@@ -103,7 +109,9 @@ class AppCubit extends Cubit<AppStates> {
                         token: user.token,
                         uId: user.uId,
                         phone: user.phone,
-                        image: user.image);
+                        image: user.image,
+                      inCall: user.inCall
+                    );
                     users.add(finalUser);
                     contacts.add(element);
                     phones.add(user.phone!);
@@ -404,7 +412,8 @@ class AppCubit extends Cubit<AppStates> {
               token: userModel.token,
               uId: userModel.uId,
               phone: userModel.phone,
-              image: userModel.image);
+              image: userModel.image,
+          inCall: userModel.inCall);
           chats.add(finalUserModel);
           debugPrint("${v.size} == ${chats.length}");
           if (v.size == chats.length) {
@@ -1059,6 +1068,65 @@ class AppCubit extends Cubit<AppStates> {
           }
     }).catchError((error){
       printError("viewStory", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  void generateChannelToken({
+    required String receiverId,
+    required String userToken,
+  }){
+    emit(AppGenerateChannelTokenLoadingState());
+    AgoraServer.getToken(receiverId: receiverId)
+    .then((value){
+      if(userToken!=userModel!.token) {
+        DioHelper.pushCallNotification(
+          userToken: userToken,
+          channelToken: value.data['token'],
+          myPhoneNumber: userModel!.phone!,
+          receiverID: receiverId)
+      .then((v){
+        print("ALL WORKS SUCCESSFULLY ${value.data}");
+        Get.to(()=>CallContentScreen(
+            senderID: uId!,
+            token: value.data['token'],
+            channelName: "$uId$receiverId")
+        );
+        emit(AppGenerateChannelTokenState());
+      }).catchError((error){
+        printError("pushCallNotification", error.toString());
+        emit(AppErrorState());
+      });
+      }else{
+        print("THEY HAVE THE SAME TOKEN");
+        emit(AppGenerateChannelTokenState());
+      }
+    }).catchError((error){
+      printError("generateChannelToken", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+
+  void updateInCallStatus({required bool isTrue,bool? isOpening}){
+    if(isOpening!=true) {
+      emit(AppUpdateInCallStatusLoadingState());
+    }
+    Map<String,bool> map = {'inCall':isTrue?true:false};
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId!)
+    .update(map)
+    .then((value){
+      debugPrint("========> IN CALL UPDATED = $isTrue");
+      if(isOpening!=true){
+        if(isTrue) {
+          emit(AppUpdateInCallStatusTrueState());
+        }else{
+          emit(AppUpdateInCallStatusFalseState());
+        }
+      }
+    }).catchError((error){
+      printError("updateInCallStatus", error.toString());
       emit(AppErrorState());
     });
   }

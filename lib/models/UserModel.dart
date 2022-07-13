@@ -4,12 +4,14 @@ class UserModel {
       String? name,
       String? uId,
       String? phone,
-      String? image,}){
+      String? image,
+      bool? inCall,}){
     _token = token;
     _name = name;
     _uId = uId;
     _phone = phone;
     _image = image;
+    _inCall = inCall;
 }
 
   UserModel.fromJson(dynamic json) {
@@ -18,18 +20,21 @@ class UserModel {
     _uId = json['uId'];
     _phone = json['phone'];
     _image = json['image'];
+    _inCall = json['inCall'];
   }
   String? _token;
   String? _name;
   String? _uId;
   String? _phone;
   String? _image;
+  bool? _inCall;
 
   String? get token => _token;
   String? get name => _name;
   String? get uId => _uId;
   String? get phone => _phone;
   String? get image => _image;
+  bool? get inCall => _inCall;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -38,6 +43,7 @@ class UserModel {
     map['uId'] = _uId;
     map['phone'] = _phone;
     map['image'] = _image;
+    map['inCall'] = _inCall;
     return map;
   }
 

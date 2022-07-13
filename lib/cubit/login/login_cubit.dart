@@ -255,7 +255,8 @@ class LoginCubit extends Cubit<LoginStates>{
       name: name??"user",
       uId: uId,
       phone: getLoggedUser().phoneNumber!,
-      image: image??""
+      image: image??"",
+      inCall: false
     );
     FirebaseFirestore.instance.collection('users')
     .doc(uId)

@@ -1,8 +1,10 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/notifications/local_notifications.dart';
+import 'package:chat/screens/call_content/call_content_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
+import 'package:chat/screens/receive_calls/receive_calls_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
@@ -19,8 +21,17 @@ class NotificationsReceiver {
 
 
       if(message.data['type']=="call"){
-        cubit.changeNavBar(1);
-        // Get.to(()=>const ContactsScreen());
+        Get.to(()=> ReceiveCallScreen(
+            senderID: message.data['senderID'],
+            token: message.data['token'],
+            channelName: message.data['channelName'],
+        ));
+        // cubit.changeNavBar(1);
+        // Get.to(()=>CallContentScreen(
+        //   senderID: message.data['senderID'],
+        //   token: message.data['token'],
+        //   channelName: message.data['channelName'],
+        // ));
       }else{
         UserModel? userModel = cubit.users.firstWhereOrNull((element) =>
         element.uId==message.data['senderID']);

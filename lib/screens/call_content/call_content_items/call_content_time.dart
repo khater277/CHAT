@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class CallContentTime extends StatefulWidget {
@@ -39,7 +40,6 @@ class _CallContentTimeState extends State<CallContentTime> {
 
           String text = "${timeFormat(hours)!="00"?
           "${timeFormat(hours)}:":""}${timeFormat(minutes)}:${timeFormat(seconds)}";
-
 
           return Text(text,
             // "$seconds : $minutes : $hours",

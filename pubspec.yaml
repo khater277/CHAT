@@ -96,6 +96,7 @@ flutter:
   assets:
     - assets/images/
     - assets/fonts/
+    - assets/sounds/
 
   # assets:
   #   - images/a_dot_burr.jpeg

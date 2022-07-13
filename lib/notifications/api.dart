@@ -28,18 +28,6 @@ class DioHelper {
     required String userID,
     required String userName}){
 
-    // String? userName;
-    //
-    // FirebaseFirestore.instance.collection('users')
-    // .doc(userID)
-    // .collection('contacts')
-    // .doc(uId)
-    // .get()
-    // .then((value){
-    //   UserModel userModel = UserModel.fromJson(value.data());
-    //   userName = userModel.name;
-    // });
-
     Map<String,dynamic> data = {
       "to":token,
       "priority":"high",
@@ -52,6 +40,29 @@ class DioHelper {
       "data":{
         "type":"order",
         "id":"$uId$userID${DateTime.now().millisecondsSinceEpoch}",
+        "senderID":"$uId",
+        "phoneNumber":myPhoneNumber,
+        "click_action":"FLUTTER_NOTIFICATION_CLICK"
+      }
+    };
+
+    return dio!.post('',data: data);
+  }
+
+  static Future<Response> pushCallNotification({
+    required String userToken,
+    required String channelToken,
+    required String myPhoneNumber,
+    required String receiverID,
+    }){
+
+    Map<String,dynamic> data = {
+      "to":userToken,
+      "priority":"high",
+      "data":{
+        "type":"call",
+        "token":channelToken,
+        "channelName":"$uId$receiverID",
         "senderID":"$uId",
         "phoneNumber":myPhoneNumber,
         "click_action":"FLUTTER_NOTIFICATION_CLICK"

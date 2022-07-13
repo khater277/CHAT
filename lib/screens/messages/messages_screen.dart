@@ -100,6 +100,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 scrollDown(_scrollController);
               });
             }
+
             if(state is AppDeleteMessageState && messages.isEmpty){
               AppCubit.get(context).deleteChat(chatID: widget.user.uId!);
               Get.back();
@@ -152,12 +153,28 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               actions: [
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 3.w),
-                                  child: IconButton(
+                                  child: state is! AppGenerateChannelTokenLoadingState?
+                                  IconButton(
                                       onPressed: (){
-                                        Get.to(()=>const CallContentScreen());
+                                        cubit.updateInCallStatus(isTrue: true);
+                                        cubit.generateChannelToken(
+                                            receiverId: widget.user.uId!,
+                                            userToken: widget.user.token!);
+                                        // Get.to(()=>CallContentScreen(
+                                        //   senderID: widget.user.uId!,));
                                       },
                                       icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
-                                  ),
+                                  )
+                                      :
+                                  Align(
+                                    alignment: AlignmentDirectional.center,
+                                      child: Text(
+                                        "connecting..",
+                                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                                            fontSize: 12.sp,
+                                            color: MyColors.blue
+                                        ),
+                                      )),
                                 )
                               ],
                             ),
