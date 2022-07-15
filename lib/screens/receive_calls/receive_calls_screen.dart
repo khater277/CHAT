@@ -18,9 +18,10 @@ import 'package:sizer/sizer.dart';
 
 class ReceiveCallScreen extends StatefulWidget {
   final String senderID;
+  final String callID;
   final String token;
   final String channelName;
-  const ReceiveCallScreen({Key? key, required this.senderID, required this.token, required this.channelName,}) : super(key: key);
+  const ReceiveCallScreen({Key? key, required this.senderID, required this.token, required this.channelName, required this.callID,}) : super(key: key);
 
   @override
   State<ReceiveCallScreen> createState() => _ReceiveCallScreenState();
@@ -112,7 +113,14 @@ class _ReceiveCallScreenState extends State<ReceiveCallScreen> {
                             FloatingActionButton(
                               heroTag: "accept",
                               onPressed: (){
-                                cubit.updateInCallStatus(isTrue: true);
+                                // cubit.updateInCallStatus(isTrue: true);
+                                  Get.off(()=>CallContentScreen(
+                                    receiverID: null,
+                                    senderID: widget.senderID,
+                                    token: widget.token,
+                                    channelName: widget.channelName,
+                                    callID: widget.callID,
+                                  ));
                                 // _engine.leaveChannel();
                                 // Get.back();
                               },

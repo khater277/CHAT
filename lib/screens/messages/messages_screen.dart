@@ -1,3 +1,4 @@
+import 'package:chat/agora/agora_server.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
@@ -153,12 +154,30 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               actions: [
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 3.w),
-                                  child: state is! AppGenerateChannelTokenLoadingState?
+                                  child: state is! AppSetCallDataLoadingState?
                                   IconButton(
                                       onPressed: (){
-                                        cubit.updateInCallStatus(isTrue: true);
-                                        cubit.generateChannelToken(
-                                            receiverId: widget.user.uId!,
+                                        cubit.updateInCallStatus(isTrue: true, isOpening: true);
+
+                                        // AgoraServer.getToken(receiverId: widget.user.uId!)
+                                        // .then((value){
+                                        //   print("DONE");
+                                        // }).catchError((error){
+                                        //   print("ERROR----->$error");
+                                        // });
+
+                                        // cubit.generateChannelToken(
+                                        //       receiverId: widget.user.uId!,
+                                        //       callType: "voice",
+                                        //       userToken: widget.user.token!,
+                                        //     callID: '123'
+                                        // );
+
+                                        cubit.setCallData(
+                                            friendID: widget.user.uId!,
+                                            callType: "voice",
+                                            myCallStatus: "no response",
+                                            friendCallStatus: "missed",
                                             userToken: widget.user.token!);
                                         // Get.to(()=>CallContentScreen(
                                         //   senderID: widget.user.uId!,));

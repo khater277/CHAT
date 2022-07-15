@@ -2,8 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+enum CallStatus{noResponse,missed,inComing,outComing,}
 
 bool checkValidStory({required String date}){
+
+
   DateTime validStoryDate =
   DateTime.parse(date).add(const Duration(days: 1));
   DateTime nowDate = DateTime.now();

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chat/agora/agora_server.dart';
+import 'package:chat/models/CallModel.dart';
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/StoryModel.dart';
@@ -426,7 +427,7 @@ class AppCubit extends Cubit<AppStates> {
       }
       debugPrint("GET CHATS");
       // if(isLogin==true) {
-        emit(AppGetChatsState());
+      //   emit(AppGetChatsState());
       // }
     }).catchError((error) {
       printError("getChats", error.toString());
@@ -1075,12 +1076,23 @@ class AppCubit extends Cubit<AppStates> {
   void generateChannelToken({
     required String receiverId,
     required String userToken,
+    required String callType,
+    required String callID,
+    // required String myCallStatus,
+    // required String friendCallStatus,
   }){
-    emit(AppGenerateChannelTokenLoadingState());
+    // emit(AppGenerateChannelTokenLoadingState());
     AgoraServer.getToken(receiverId: receiverId)
     .then((value){
       if(userToken!=userModel!.token) {
+        // setCallData(
+        //     friendID: receiverId,
+        //     callType: callType,
+        //     myCallStatus: myCallStatus,
+        //     friendCallStatus: friendCallStatus,
+        //     inNotification: true);
         DioHelper.pushCallNotification(
+          callID: callID,
           userToken: userToken,
           channelToken: value.data['token'],
           myPhoneNumber: userModel!.phone!,
@@ -1090,7 +1102,8 @@ class AppCubit extends Cubit<AppStates> {
         Get.to(()=>CallContentScreen(
             senderID: uId!,
             token: value.data['token'],
-            channelName: "$uId$receiverId")
+            channelName: "$uId$receiverId",
+            receiverID: receiverId, callID: callID,)
         );
         emit(AppGenerateChannelTokenState());
       }).catchError((error){
@@ -1127,6 +1140,91 @@ class AppCubit extends Cubit<AppStates> {
       }
     }).catchError((error){
       printError("updateInCallStatus", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+  ///add new call information to both my account and friend account
+
+  void setCallData({
+    required String friendID,
+    required String callType,
+    required String myCallStatus,
+    required String friendCallStatus,
+    required String userToken,
+  }){
+    emit(AppSetCallDataLoadingState());
+
+    CallModel myCallModel = CallModel(
+      userID: friendID,
+      callType: callType,
+      callStatus: myCallStatus,
+      dateTime: DateTime.now().toString()
+    );
+
+    CallModel friendCallModel = CallModel(
+        userID: uId,
+        callType: callType,
+        callStatus: friendCallStatus,
+        dateTime: DateTime.now().toString()
+    );
+
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId!)
+    .collection('calls')
+    .add(myCallModel.toJson())
+    .then((value){
+      String callID = value.id;
+      FirebaseFirestore.instance.collection('users')
+          .doc(friendID)
+          .collection('calls')
+          .doc(callID)
+          .set(friendCallModel.toJson())
+          .then((value){
+            generateChannelToken(
+                receiverId: friendID,
+                userToken: userToken,
+                callType: callType,
+                callID: callID);
+      }).catchError((error){
+        printError("setCallDataToMyFriend", error.toString());
+        emit(AppErrorState());
+      });
+    }).catchError((error){
+      printError("setCallDataToMe", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+
+
+  void updateCallData({
+    required String friendID,
+    required String callID,
+    required String myCallStatus,
+    required String friendCallStatus,
+  }){
+    print("==============>$callID");
+         //==============>
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId!)
+        .collection('calls')
+        .doc(callID)
+        .update({"callStatus": myCallStatus,})
+        .then((value){
+      FirebaseFirestore.instance.collection('users')
+          .doc(friendID)
+          .collection('calls')
+          .doc(callID)
+          .set({"callStatus": friendCallStatus,})
+          .then((value){
+        debugPrint("Update Call Data Done");
+      }).catchError((error){
+        printError("updateCallDataToMyFriend", error.toString());
+        emit(AppErrorState());
+      });
+    }).catchError((error){
+      printError("updateCallDataToMe", error.toString());
       emit(AppErrorState());
     });
   }

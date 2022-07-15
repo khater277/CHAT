@@ -25,6 +25,7 @@ class NotificationsReceiver {
             senderID: message.data['senderID'],
             token: message.data['token'],
             channelName: message.data['channelName'],
+            callID: message.data['callID'],
         ));
         // cubit.changeNavBar(1);
         // Get.to(()=>CallContentScreen(

@@ -20,9 +20,11 @@ import 'package:sizer/sizer.dart';
 
 class CallContentScreen extends StatefulWidget {
   final String senderID;
+  final String? receiverID;
+  final String callID;
   final String token;
   final String channelName;
-  const CallContentScreen({Key? key, required this.senderID, required this.token, required this.channelName}) : super(key: key);
+  const CallContentScreen({Key? key, required this.senderID, required this.token, required this.channelName, required this.callID, required this.receiverID}) : super(key: key);
 
   @override
   State<CallContentScreen> createState() => _CallContentScreenState();
@@ -41,6 +43,12 @@ class _CallContentScreenState extends State<CallContentScreen> {
   void initState() {
     if(widget.senderID==uId) {
       playRingtone();
+    }else{
+      AppCubit.get(context).updateCallData(
+          callID: widget.callID,
+          friendID: widget.senderID,
+          myCallStatus: "incoming",
+          friendCallStatus: "outcoming",);
     }
     initAgora();
     super.initState();
@@ -71,6 +79,9 @@ class _CallContentScreenState extends State<CallContentScreen> {
         },
         userJoined: (int uid, int elapsed) {
           print("‘remote user $uid joined successfully’");
+          if(widget.senderID==uId){
+            _audioPlayer.stop();
+          }
           setState(() => _remoteUid = uid);
         },
         userOffline: (int uid, UserOfflineReason reason) {

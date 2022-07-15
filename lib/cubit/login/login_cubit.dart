@@ -204,6 +204,7 @@ class LoginCubit extends Cubit<LoginStates>{
         UserModel user = UserModel.fromJson(element.data());
         String? phone = phoneFormat(phoneNumber: user.phone!);
         print("=================> $phone");
+        print("=================> ${phoneFormat(phoneNumber: phoneNumber)}");
         if(phone==phoneFormat(phoneNumber: phoneNumber)){
           exist=true;
         }
