@@ -84,3 +84,6 @@ class AppUpdateInCallStatusFalseState extends AppStates{}
 
 class AppSetCallDataLoadingState extends AppStates{}
 class AppSetCallDataState extends AppStates{}
+
+class AppGetCallsDataLoadingState extends AppStates{}
+class AppGetCallsDataState extends AppStates{}

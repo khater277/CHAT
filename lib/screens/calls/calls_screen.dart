@@ -46,14 +46,15 @@ class CallsScreen extends StatelessWidget {
                                       padding: EdgeInsets.symmetric(vertical: 1.5.h),
                                       child: Row(
                                         children: [
-                                          CallsProfileImage(userModel: cubit.userModel!,),
+                                          CallsProfileImage(userID: cubit.calls[index].userID!,),
                                           SizedBox(width: 4.w,),
-                                          const CallsNameAndCaption(),
-                                          const CallStatusIcon()
+                                          CallsNameAndCaption(cubit: cubit,
+                                            callModel: cubit.calls[index],),
+                                          CallStatusIcon(callStatus: cubit.calls[index].callStatus!,)
                                         ],
                                       ),
                                     ),
-                                    if(index==10)
+                                    if(index==cubit.calls.length)
                                       SizedBox(height: 2.h,)
                                   ],
                                 );
@@ -61,7 +62,7 @@ class CallsScreen extends StatelessWidget {
                               separatorBuilder: (context,index)=>Divider(
                                 color: MyColors.grey.withOpacity(0.08),
                               ),
-                              itemCount: 10
+                              itemCount: cubit.calls.length
                           ),
                         )
                       ],

@@ -179,7 +179,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-
   void addNewContact(Contact contact) {
     ContactsService.addContact(contact).then((value) {
       debugPrint("NEW CONTACT ADDED");
@@ -377,10 +376,10 @@ class AppCubit extends Cubit<AppStates> {
 
   void getChats({
     bool? firstMessage,
-    bool? isLogin,
+    bool? getCalls,
   }) {
     ///don't loading when i send first message when i enter messages screen from contacts list
-    if (firstMessage != true) {
+    if (firstMessage != true || getCalls!=true) {
       emit(AppLoadingState());
     }
     chatsID = [];
@@ -418,7 +417,8 @@ class AppCubit extends Cubit<AppStates> {
           chats.add(finalUserModel);
           debugPrint("${v.size} == ${chats.length}");
           if (v.size == chats.length) {
-            emit(AppGetChatsState());
+            getCallsData(isOpening: true);
+            // emit(AppGetChatsState());
           }
         }).catchError((error) {
           printError("getChatsLoop", error.toString());
@@ -1216,7 +1216,7 @@ class AppCubit extends Cubit<AppStates> {
           .doc(friendID)
           .collection('calls')
           .doc(callID)
-          .set({"callStatus": friendCallStatus,})
+          .update({"callStatus": friendCallStatus,})
           .then((value){
         debugPrint("Update Call Data Done");
       }).catchError((error){
@@ -1225,6 +1225,30 @@ class AppCubit extends Cubit<AppStates> {
       });
     }).catchError((error){
       printError("updateCallDataToMe", error.toString());
+      emit(AppErrorState());
+    });
+  }
+
+
+  List<CallModel> calls = [];
+  void getCallsData({bool? isOpening}){
+    if(isOpening!=true) {
+      emit(AppLoadingState());
+    }
+    FirebaseFirestore.instance.collection('users')
+    .doc(uId!)
+    .collection('calls')
+    .orderBy('dateTime',descending: true)
+    .get()
+    .then((value){
+      calls = [];
+      for (var element in value.docs) {
+        CallModel callModel = CallModel.fromJson(element.data());
+        calls.add(callModel);
+      }
+      emit(AppGetCallsDataState());
+    }).catchError((error){
+      printError("getCallsData", error.toString());
       emit(AppErrorState());
     });
   }
