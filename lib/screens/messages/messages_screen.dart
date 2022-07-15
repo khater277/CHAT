@@ -175,6 +175,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
                                         cubit.setCallData(
                                             friendID: widget.user.uId!,
+                                            friendPhone: widget.user.phone!,
                                             callType: "voice",
                                             myCallStatus: "no response",
                                             friendCallStatus: "missed",

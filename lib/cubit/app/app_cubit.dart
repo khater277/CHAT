@@ -1148,6 +1148,7 @@ class AppCubit extends Cubit<AppStates> {
 
   void setCallData({
     required String friendID,
+    required String friendPhone,
     required String callType,
     required String myCallStatus,
     required String friendCallStatus,
@@ -1157,6 +1158,7 @@ class AppCubit extends Cubit<AppStates> {
 
     CallModel myCallModel = CallModel(
       userID: friendID,
+      phoneNumber: friendPhone,
       callType: callType,
       callStatus: myCallStatus,
       dateTime: DateTime.now().toString()
@@ -1164,6 +1166,7 @@ class AppCubit extends Cubit<AppStates> {
 
     CallModel friendCallModel = CallModel(
         userID: uId,
+        phoneNumber: userModel!.phone!,
         callType: callType,
         callStatus: friendCallStatus,
         dateTime: DateTime.now().toString()

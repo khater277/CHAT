@@ -22,7 +22,7 @@ class CallsNameAndCaption extends StatelessWidget {
     element.uId==callModel.userID);
 
     if(userModel==null){
-      name = callModel.userID!;
+      name = callModel.phoneNumber!;
     }else{
       name = userModel.name!;
     }
