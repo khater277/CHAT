@@ -108,7 +108,7 @@ class AppCubit extends Cubit<AppStates> {
                 // debugPrint(user.name);
                 if (element.phones![0].value!.length >= 11) {
                   if ((phoneFormat(phoneNumber: element.phones![0].value!) ==
-                      phoneFormat(phoneNumber: user.phone!))) {
+                      phoneFormat(phoneNumber: user.phone!))&&user.uId!=uId) {
                     usersID.add(e.id);
                     UserModel finalUser = UserModel(
                         name: element.displayName,
@@ -141,7 +141,6 @@ class AppCubit extends Cubit<AppStates> {
         } else {
           emit(AppGetContactsState());
         }
-        //
       }).catchError((error) {
         emit(AppErrorState());
       });
@@ -180,11 +179,16 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+  void emitStateInAddContact(){
+    emit(AppEmitStateInAddContactState());
+  }
+
   void addNewContact(Contact contact) {
     ContactsService.addContact(contact).then((value) {
+
       debugPrint("NEW CONTACT ADDED");
       getContacts(addNewContact: true);
-      emit(AppAddNewContactState());
+      // emit(AppAddNewContactState());
     }).catchError((error) {
       emit(AppErrorState());
     });

@@ -79,10 +79,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
               StoryView(
                   storyItems: storyItems,
                   controller: controller,
-                  repeat: true,
-                  // progressPosition: 0,
                   onStoryShow: (s) {
-                    // s.
                     index = storyItems.indexOf(s);
                     debugPrint(index.toString());
                     if(widget.storiesIDs!=null){
@@ -102,9 +99,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     cubit.changeStoryIndex(index: index,);
                     // print(s.duration);
                   },
-                  // onComplete: () {Get.back();},
                   onVerticalSwipeComplete: (direction) {
-                    // print("asd");
                     if (direction == Direction.down) {
                       Navigator.pop(context);
                     }

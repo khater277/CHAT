@@ -18,6 +18,7 @@ class AppGetContactsState extends AppStates{}
 class AppGetUserDataState extends AppStates{}
 
 class AppAddNewContactState extends AppStates{}
+class AppEmitStateInAddContactState extends AppStates{}
 
 class AppSendLastMessageState extends AppStates{}
 

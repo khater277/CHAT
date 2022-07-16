@@ -14,7 +14,12 @@ class ContactsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
-      listener: (context,state){},
+      listener: (context,state){
+        if(state is AppGetContactsState){
+          Future.delayed(const Duration(milliseconds: 500)).then((value) =>
+              AppCubit.get(context).emitStateInAddContact());
+        }
+      },
       builder: (context,state){
         AppCubit cubit = AppCubit.get(context);
         return Scaffold(
@@ -36,7 +41,7 @@ class ContactsScreen extends StatelessWidget {
                       NewContact(cubit: cubit,),
                       SizedBox(height: 3.5.h,),
                       Text(
-                        "Contacts",
+                        "Contacts ${cubit.users.length}",
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
                             fontSize: 14.sp,
                             color: MyColors.grey,
