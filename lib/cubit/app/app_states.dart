@@ -5,6 +5,8 @@ class AppInitialState extends AppStates{}
 class AppLoadingState extends AppStates{}
 
 class AppErrorState extends AppStates{}
+class AppConnectTimeOutErrorState extends AppStates{}
+class AppGenerateTokenErrorState extends AppStates{}
 
 class AppLogoutState extends AppStates{}
 

@@ -34,6 +34,9 @@ class CallsNameAndCaption extends StatelessWidget {
     }else{
       _icon = callModel.callType=="voice"?IconBroken.Call_Missed:null;
     }
+
+    bool condition = DateTime.parse(callModel.dateTime!).day == DateTime.now().day;
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,14 +63,17 @@ class CallsNameAndCaption extends StatelessWidget {
                   size: 10.sp,
                 ),
               SizedBox(width: 1.5.w,),
-              Text(
-                "${callModel.callStatus} - ${DateFormatter().lastMessageDate(callModel.dateTime!)}",
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                    fontSize: 10.5.sp,
-                    color: MyColors.grey
+              Flexible(
+                child: Text(
+                  "${callModel.callStatus} - ${DateFormatter().lastMessageDate(callModel.dateTime!)} "
+                       "${!condition?"at ${DateFormatter().time(callModel.dateTime!)}":""}",
+                  style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                      fontSize: 10.5.sp,
+                      color: MyColors.grey
+                  ),
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
+              SizedBox(width: 1.5.w,),
             ],
           )
         ],

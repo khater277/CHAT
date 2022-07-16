@@ -1,7 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/notifications/local_notifications.dart';
-import 'package:chat/screens/call_content/call_content_screen.dart';
+import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/screens/receive_calls/receive_calls_screen.dart';

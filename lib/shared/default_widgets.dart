@@ -43,6 +43,7 @@ SnackbarController showSnackBar ({
   @required Color? color,
   @required Color? fontColor,
   @required IconData? icon,
+  int duration = 3,
 }){
   return Get.snackbar(
       title!,
@@ -64,7 +65,7 @@ SnackbarController showSnackBar ({
         icon!,
         color: fontColor,
         size: 17.sp,),
-      duration: const Duration(seconds: 3),
+      duration: Duration(seconds: duration),
       snackPosition: SnackPosition.TOP,
       backgroundColor: color!,
       borderRadius: 5.sp,

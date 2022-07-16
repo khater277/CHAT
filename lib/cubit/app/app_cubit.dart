@@ -7,12 +7,14 @@ import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
-import 'package:chat/screens/call_content/call_content_screen.dart';
+import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/story/story_screen.dart';
+import 'package:chat/shared/default_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -61,23 +63,26 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppChangeNavBarState());
   }
 
-
   UserModel? userModel;
 
-  void getUserData({bool? isOpening,bool? updateInCall}) {
-    if(uId!=null&&uId!.isNotEmpty) {
-      if(updateInCall==true) {
-        updateInCallStatus(isTrue: false,isOpening: true);
+  void getUserData({bool? isOpening, bool? updateInCall}) {
+    if (uId != null && uId!.isNotEmpty) {
+      if (updateInCall == true) {
+        updateInCallStatus(isTrue: false, isOpening: true);
       }
-      FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
-      userModel = UserModel.fromJson(value.data());
-      if (isOpening != true) {
-        emit(AppGetUserDataState());
-      }
-    }).catchError((error) {
-      printError("getUserData", error.toString());
-      emit(AppErrorState());
-    });
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(uId)
+          .get()
+          .then((value) {
+        userModel = UserModel.fromJson(value.data());
+        if (isOpening != true) {
+          emit(AppGetUserDataState());
+        }
+      }).catchError((error) {
+        printError("getUserData", error.toString());
+        emit(AppErrorState());
+      });
     }
   }
 
@@ -111,20 +116,15 @@ class AppCubit extends Cubit<AppStates> {
                         uId: user.uId,
                         phone: user.phone,
                         image: user.image,
-                      inCall: user.inCall
-                    );
+                        inCall: user.inCall);
                     users.add(finalUser);
                     contacts.add(element);
                     phones.add(user.phone!);
-                    if(finalUser.uId!=uId) {
+                    if (finalUser.uId != uId) {
                       ContactModel contactModel = ContactModel(
-                        phoneNumber: finalUser.phone,
-                        name: finalUser.name
-                      );
+                          phoneNumber: finalUser.phone, name: finalUser.name);
                       addContactsToFirebase(
-                        userID: finalUser.uId!,
-                        contactModel: contactModel
-                      );
+                          userID: finalUser.uId!, contactModel: contactModel);
                     }
                   }
                 }
@@ -136,9 +136,9 @@ class AppCubit extends Cubit<AppStates> {
           });
         }
         debugPrint("=============GET CONTACTS=============");
-        if(addNewContact!=true) {
+        if (addNewContact != true) {
           getChats();
-        }else{
+        } else {
           emit(AppGetContactsState());
         }
         //
@@ -148,32 +148,33 @@ class AppCubit extends Cubit<AppStates> {
     }
   }
 
-  void deleteContactsFormFirebase(){
-    FirebaseFirestore.instance.collection('users')
+  void deleteContactsFormFirebase() {
+    FirebaseFirestore.instance
+        .collection('users')
         .doc(uId!)
         .collection('contacts')
         .get()
-        .then((value){
+        .then((value) {
       for (var element in value.docs) {
         element.reference.delete();
       }
-    }).catchError((error){
+    }).catchError((error) {
       printError("deleteContactsFormFirebase", error.toString());
       emit(AppErrorState());
     });
   }
 
-  void addContactsToFirebase({required String userID,required ContactModel contactModel}){
-    FirebaseFirestore.instance.collection('users')
+  void addContactsToFirebase(
+      {required String userID, required ContactModel contactModel}) {
+    FirebaseFirestore.instance
+        .collection('users')
         .doc(uId!)
         .collection('contacts')
         .doc(userID)
         .set(contactModel.toJson())
         .then((value) {
-          // emit(AppLoadingState());
-        }
-    )
-        .catchError((error){
+      // emit(AppLoadingState());
+    }).catchError((error) {
       printError("addContactsToFirebase", error.toString());
       emit(AppErrorState());
     });
@@ -190,7 +191,8 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   String? currentChat;
-  void changeCurrentChat({required String? id}){
+
+  void changeCurrentChat({required String? id}) {
     currentChat = id;
     emit(AppChangeCurrentChatState());
   }
@@ -207,24 +209,25 @@ class AppCubit extends Cubit<AppStates> {
     String? storyMedia,
     String? storyDate,
   }) {
-    if(isStoryReply==true) {
+    if (isStoryReply == true) {
       emit(AppSendStoryReplyLoadingState());
     }
+
     ///message model which will be stored in my firestore
     MessageModel myMessageModel = MessageModel(
-        senderID: uId,
-        receiverID: friendID,
-        message: message,
-        media: file ?? "",
-        storyMedia: storyMedia??"",
-        isStoryReply: isStoryReply??false,
-        isStoryVideoReply:isStoryVideoReply??false,
-        isImage: mediaSource == MediaSource.image,
-        isVideo: mediaSource == MediaSource.video,
-        isDoc: mediaSource == MediaSource.doc,
-        isDeleted: false,
-        date: DateTime.now().toString(),
-        storyDate: storyDate,
+      senderID: uId,
+      receiverID: friendID,
+      message: message,
+      media: file ?? "",
+      storyMedia: storyMedia ?? "",
+      isStoryReply: isStoryReply ?? false,
+      isStoryVideoReply: isStoryVideoReply ?? false,
+      isImage: mediaSource == MediaSource.image,
+      isVideo: mediaSource == MediaSource.video,
+      isDoc: mediaSource == MediaSource.doc,
+      isDeleted: false,
+      date: DateTime.now().toString(),
+      storyDate: storyDate,
     );
     FirebaseFirestore.instance
         .collection('users')
@@ -234,7 +237,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('messages')
         .add(myMessageModel.toJson())
         .then((value) {
-          print(value.id);
+      print(value.id);
       FirebaseFirestore.instance
           .collection('users')
           .doc(friendID)
@@ -248,18 +251,15 @@ class AppCubit extends Cubit<AppStates> {
             friendID: friendID,
             message: message,
             file: file,
-            mediaSource: mediaSource
-        );
-        sendNotification(
-            userToken: friendToken,
-            userID: friendID);
+            mediaSource: mediaSource);
+        sendNotification(userToken: friendToken, userID: friendID);
         debugPrint("MESSAGE SENT");
         if (isFirstMessage == true) {
           getChats(firstMessage: true);
         } else {
-          if(isStoryReply==true) {
+          if (isStoryReply == true) {
             emit(AppSendStoryReplyState());
-          }else {
+          } else {
             emit(AppSendMessageState());
           }
         }
@@ -277,15 +277,15 @@ class AppCubit extends Cubit<AppStates> {
     required String userToken,
     required String userID,
     required String userName,
-  }){
-      DioHelper.pushNotification(
-        myPhoneNumber: userModel!.phone!,
-        token: userToken,
-        userID: userID,
-        userName: userName)
-        .then((value){
+  }) {
+    DioHelper.pushNotification(
+            myPhoneNumber: userModel!.phone!,
+            token: userToken,
+            userID: userID,
+            userName: userName)
+        .then((value) {
       print("MESSAGE SENT");
-    }).catchError((error){
+    }).catchError((error) {
       printError("pushNotification", error.toString());
       emit(AppErrorState());
     });
@@ -294,20 +294,23 @@ class AppCubit extends Cubit<AppStates> {
   void sendNotification({
     required String userToken,
     required String userID,
-    }){
+  }) {
     // if(userModel!.token!=userToken) {
-      FirebaseFirestore.instance.collection('users')
-    .doc(userID)
-    .collection('contacts')
-    .doc(uId)
-    .get()
-    .then((value){
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .collection('contacts')
+        .doc(uId)
+        .get()
+        .then((value) {
       ///if that number in my contacts i well send notification with contact name saved on my phone
       ContactModel contactModel = ContactModel.fromJson(value.data());
-      pushNotification(userToken: userToken, userID: userID, userName: contactModel.name!);
-    }).catchError((error){
+      pushNotification(
+          userToken: userToken, userID: userID, userName: contactModel.name!);
+    }).catchError((error) {
       ///if that number not in my contacts i well send notification with phone number
-      pushNotification(userToken: userToken, userID: userID, userName: userModel!.phone!);
+      pushNotification(
+          userToken: userToken, userID: userID, userName: userModel!.phone!);
       printError("getNotificationUser", error.toString());
       emit(AppErrorState());
     });
@@ -379,7 +382,7 @@ class AppCubit extends Cubit<AppStates> {
     bool? getCalls,
   }) {
     ///don't loading when i send first message when i enter messages screen from contacts list
-    if (firstMessage != true || getCalls!=true) {
+    if (firstMessage != true || getCalls != true) {
       emit(AppLoadingState());
     }
     chatsID = [];
@@ -413,7 +416,7 @@ class AppCubit extends Cubit<AppStates> {
               uId: userModel.uId,
               phone: userModel.phone,
               image: userModel.image,
-          inCall: userModel.inCall);
+              inCall: userModel.inCall);
           chats.add(finalUserModel);
           debugPrint("${v.size} == ${chats.length}");
           if (v.size == chats.length) {
@@ -560,7 +563,7 @@ class AppCubit extends Cubit<AppStates> {
         case TaskState.success:
           taskSnapshot.ref.getDownloadURL().then((value) {
             sendMessage(
-              friendToken: friendToken,
+                friendToken: friendToken,
                 friendID: friendID,
                 isFirstMessage: isFirstMessage,
                 mediaSource: mediaSource,
@@ -591,7 +594,6 @@ class AppCubit extends Cubit<AppStates> {
     required String friendID,
     required String messageID,
     required LastMessageModel? lastMessageModel,
-
   }) {
     emit(AppDeleteMessageLoadingState());
     FirebaseFirestore.instance
@@ -642,8 +644,7 @@ class AppCubit extends Cubit<AppStates> {
           .doc(uId)
           .collection('messages')
           .doc(messageID)
-          .update({"isDeleted":true})
-          .then((value) {
+          .update({"isDeleted": true}).then((value) {
         if (messageModel.isImage == true ||
             messageModel.isVideo == true ||
             messageModel.isDoc == true) {
@@ -691,17 +692,16 @@ class AppCubit extends Cubit<AppStates> {
         .then((value) {
       if (isForEveryone) {
         LastMessageModel friendLastMessageModel = LastMessageModel(
-          senderID: messageModel!.senderID,
-          receiverID: messageModel.receiverID,
-          message: messageModel.message,
-          media: messageModel.media,
-          isImage: messageModel.isImage,
-          isVideo: messageModel.isVideo,
-          isDoc: messageModel.isDoc,
-          date: messageModel.date,
-          isRead: false,
-          isDeleted: true
-        );
+            senderID: messageModel!.senderID,
+            receiverID: messageModel.receiverID,
+            message: messageModel.message,
+            media: messageModel.media,
+            isImage: messageModel.isImage,
+            isVideo: messageModel.isVideo,
+            isDoc: messageModel.isDoc,
+            date: messageModel.date,
+            isRead: false,
+            isDeleted: true);
         FirebaseFirestore.instance
             .collection('users')
             .doc(friendID)
@@ -849,9 +849,7 @@ class AppCubit extends Cubit<AppStates> {
   File? storyFile;
 
   Future<void> pickStoryImage() async {
-
-    final pickedFile = await picker.pickImage(
-        source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       storyFile = File(pickedFile.path);
       emit(AppPickStoryImageState());
@@ -862,9 +860,7 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   Future<void> pickStoryVideo() async {
-
-    final pickedFile = await picker.pickVideo(
-        source: ImageSource.gallery);
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
     if (pickedFile != null) {
       storyFile = File(pickedFile.path);
       emit(AppPickStoryVideoState());
@@ -873,7 +869,6 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppErrorState());
     }
   }
-
 
   double? storyFilePercentage;
 
@@ -925,7 +920,8 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   String? videoDuration;
-  void setVideoDuration(String duration){
+
+  void setVideoDuration(String duration) {
     videoDuration = duration;
     emit(AppSetVideoDurationState());
   }
@@ -938,17 +934,16 @@ class AppCubit extends Cubit<AppStates> {
   }) {
     emit(AppSendLastStoryLoadingState());
     StoryModel storyModel = StoryModel(
-      phone: phone,
-      date: DateTime.now().toString(),
-      text: text ?? "",
-      media: media ?? "",
-      isImage: mediaSource != null ? mediaSource == MediaSource.image : false,
-      isVideo: mediaSource != null ? mediaSource == MediaSource.video : false,
-      videoDuration: mediaSource == MediaSource.video ? videoDuration!:"0",
-      isRead: false,
-      viewers: [],
-      canView: usersID
-    );
+        phone: phone,
+        date: DateTime.now().toString(),
+        text: text ?? "",
+        media: media ?? "",
+        isImage: mediaSource != null ? mediaSource == MediaSource.image : false,
+        isVideo: mediaSource != null ? mediaSource == MediaSource.video : false,
+        videoDuration: mediaSource == MediaSource.video ? videoDuration! : "0",
+        isRead: false,
+        viewers: [],
+        canView: usersID);
     FirebaseFirestore.instance
         .collection('stories')
         .doc(uId)
@@ -970,19 +965,14 @@ class AppCubit extends Cubit<AppStates> {
         .collection("currentStories")
         .add(storyModel.toJson())
         .then((value) {
-
       DateTime storyDate = DateTime.parse(storyModel.date!);
       DateTime validStoryDate =
-      DateTime.parse(storyModel.date!).add(const Duration(days: 1));
+          DateTime.parse(storyModel.date!).add(const Duration(days: 1));
       debugPrint("STORY UPLOADED");
-      Timer(
-          Duration(seconds: validStoryDate.difference(storyDate).inSeconds),
-              () {deleteStory(
-                userID: uId!,
-              storyID: value.id,
-              media: storyModel.media
-          );}
-      );
+      Timer(Duration(seconds: validStoryDate.difference(storyDate).inSeconds),
+          () {
+        deleteStory(userID: uId!, storyID: value.id, media: storyModel.media);
+      });
       emit(AppSendLastStoryState());
     }).catchError((error) {
       printError("sendLastStory", error.toString());
@@ -990,38 +980,35 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-
-
-  void deleteStory({
-    required String userID,
-    required String storyID,
-    required String? media
-  }){
-    FirebaseFirestore.instance.collection("stories").doc(userID)
+  void deleteStory(
+      {required String userID,
+      required String storyID,
+      required String? media}) {
+    FirebaseFirestore.instance
+        .collection("stories")
+        .doc(userID)
         .collection("currentStories")
         .doc(storyID)
         .delete()
-        .then((value){
-          if(media!=null){
-            String uri = Uri.parse(media).pathSegments.last;
-            deleteStoryFromStorage(uri: uri);
-          }else{
-            debugPrint("STORY DELETED");
-            emit(AppDeleteStoryState());
-          }
-    }).catchError((error){
+        .then((value) {
+      if (media != null) {
+        String uri = Uri.parse(media).pathSegments.last;
+        deleteStoryFromStorage(uri: uri);
+      } else {
+        debugPrint("STORY DELETED");
+        emit(AppDeleteStoryState());
+      }
+    }).catchError((error) {
       printError("deleteStory", error.toString());
       emit(AppErrorState());
     });
   }
 
-  void deleteStoryFromStorage({required String uri}){
-    FirebaseStorage.instance.ref(uri)
-        .delete()
-        .then((value){
+  void deleteStoryFromStorage({required String uri}) {
+    FirebaseStorage.instance.ref(uri).delete().then((value) {
       debugPrint("STORY DELETED");
       emit(AppDeleteStoryState());
-    }).catchError((error){
+    }).catchError((error) {
       printError("deleteStory", error.toString());
       emit(AppErrorState());
     });
@@ -1029,45 +1016,46 @@ class AppCubit extends Cubit<AppStates> {
 
   int storyCurrentIndex = 0;
   bool closeStory = false;
-  void changeStoryIndex({required int index}){
+
+  void changeStoryIndex({required int index}) {
     storyCurrentIndex = index;
     debugPrint(storyCurrentIndex.toString());
     emit(AppChangeStoryIndexState());
   }
 
-  void zeroStoryIndex(){
+  void zeroStoryIndex() {
     storyCurrentIndex = 0;
     emit(AppChangeStoryIndexState());
   }
 
   void viewStory({
-  required String userID,
-  required String storyID,
-  required List<String> viewers,
-  required bool isLast,
-}){
-    FirebaseFirestore.instance.collection('stories')
+    required String userID,
+    required String storyID,
+    required List<String> viewers,
+    required bool isLast,
+  }) {
+    FirebaseFirestore.instance
+        .collection('stories')
         .doc(userID)
         .collection('currentStories')
         .doc(storyID)
-        .update({'viewers':viewers})
-        .then((value){
-          if(isLast){
-            FirebaseFirestore.instance.collection('stories')
-                .doc(userID)
-                .update({'viewers':viewers})
-                .then((value){
-              debugPrint("ADDED TO VIEWERS LAST");
-              emit(AppViewStoryState());
-            }).catchError((error){
-              printError("viewStory", error.toString());
-              emit(AppErrorState());
-            });
-          }else{
-            debugPrint("ADDED TO VIEWERS");
-            emit(AppViewStoryState());
-          }
-    }).catchError((error){
+        .update({'viewers': viewers}).then((value) {
+      if (isLast) {
+        FirebaseFirestore.instance
+            .collection('stories')
+            .doc(userID)
+            .update({'viewers': viewers}).then((value) {
+          debugPrint("ADDED TO VIEWERS LAST");
+          emit(AppViewStoryState());
+        }).catchError((error) {
+          printError("viewStory", error.toString());
+          emit(AppErrorState());
+        });
+      } else {
+        debugPrint("ADDED TO VIEWERS");
+        emit(AppViewStoryState());
+      }
+    }).catchError((error) {
       printError("viewStory", error.toString());
       emit(AppErrorState());
     });
@@ -1075,70 +1063,62 @@ class AppCubit extends Cubit<AppStates> {
 
   void generateChannelToken({
     required String receiverId,
+    required String friendPhone,
     required String userToken,
     required String callType,
     required String callID,
-    // required String myCallStatus,
-    // required String friendCallStatus,
-  }){
-    // emit(AppGenerateChannelTokenLoadingState());
-    AgoraServer.getToken(receiverId: receiverId)
-    .then((value){
-      if(userToken!=userModel!.token) {
-        // setCallData(
-        //     friendID: receiverId,
-        //     callType: callType,
-        //     myCallStatus: myCallStatus,
-        //     friendCallStatus: friendCallStatus,
-        //     inNotification: true);
-        DioHelper.pushCallNotification(
-          callID: callID,
-          userToken: userToken,
-          channelToken: value.data['token'],
-          myPhoneNumber: userModel!.phone!,
-          receiverID: receiverId)
-      .then((v){
+    required String myCallStatus,
+    required String friendCallStatus,
+  }) {
+    emit(AppGenerateChannelTokenLoadingState());
+    if (userModel!.token != userToken) {
+      AgoraServer.getToken(receiverId: receiverId).then((value) {
+        setCallData(
+            friendID: receiverId,
+            callType: callType,
+            myCallStatus: myCallStatus,
+            friendCallStatus: friendCallStatus,
+            userToken: userToken,
+            friendPhone: friendPhone,
+            channelToken: value.data['token']);
         print("ALL WORKS SUCCESSFULLY ${value.data}");
-        Get.to(()=>CallContentScreen(
-            senderID: uId!,
-            token: value.data['token'],
-            channelName: "$uId$receiverId",
-            receiverID: receiverId, callID: callID,)
-        );
-        emit(AppGenerateChannelTokenState());
-      }).catchError((error){
-        printError("pushCallNotification", error.toString());
-        emit(AppErrorState());
+        // emit(AppGenerateChannelTokenState());
+      }).catchError((error) {
+        DioError dioError = error;
+        printError("generateChannelToken ${dioError.type}", error.toString());
+        if(dioError.type == DioErrorType.connectTimeout){
+          emit(AppConnectTimeOutErrorState());
+        }else if(dioError.type == DioErrorType.other){
+          emit(AppGenerateTokenErrorState());
+        }else {
+          emit(AppErrorState());
+        }
       });
-      }else{
-        print("THEY HAVE THE SAME TOKEN");
-        emit(AppGenerateChannelTokenState());
-      }
-    }).catchError((error){
-      printError("generateChannelToken", error.toString());
-      emit(AppErrorState());
-    });
+    } else {
+      print("THEY HAVE THE SAME TOKEN");
+      emit(AppGenerateChannelTokenState());
+    }
   }
 
-
-  void updateInCallStatus({required bool isTrue,bool? isOpening}){
-    if(isOpening!=true) {
+  void updateInCallStatus({required bool isTrue, bool? isOpening}) {
+    if (isOpening != true) {
       emit(AppUpdateInCallStatusLoadingState());
     }
-    Map<String,bool> map = {'inCall':isTrue?true:false};
-    FirebaseFirestore.instance.collection('users')
-    .doc(uId!)
-    .update(map)
-    .then((value){
+    Map<String, bool> map = {'inCall': isTrue ? true : false};
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId!)
+        .update(map)
+        .then((value) {
       debugPrint("========> IN CALL UPDATED = $isTrue");
-      if(isOpening!=true){
-        if(isTrue) {
+      if (isOpening != true) {
+        if (isTrue) {
           emit(AppUpdateInCallStatusTrueState());
-        }else{
+        } else {
           emit(AppUpdateInCallStatusFalseState());
         }
       }
-    }).catchError((error){
+    }).catchError((error) {
       printError("updateInCallStatus", error.toString());
       emit(AppErrorState());
     });
@@ -1153,107 +1133,125 @@ class AppCubit extends Cubit<AppStates> {
     required String myCallStatus,
     required String friendCallStatus,
     required String userToken,
-  }){
-    emit(AppSetCallDataLoadingState());
+    required String channelToken,
+  }) {
+    // emit(AppSetCallDataLoadingState());
 
     CallModel myCallModel = CallModel(
-      userID: friendID,
-      phoneNumber: friendPhone,
-      callType: callType,
-      callStatus: myCallStatus,
-      dateTime: DateTime.now().toString()
-    );
+        userID: friendID,
+        phoneNumber: friendPhone,
+        callType: callType,
+        callStatus: myCallStatus,
+        dateTime: DateTime.now().toString());
 
     CallModel friendCallModel = CallModel(
         userID: uId,
         phoneNumber: userModel!.phone!,
         callType: callType,
         callStatus: friendCallStatus,
-        dateTime: DateTime.now().toString()
-    );
+        dateTime: DateTime.now().toString());
 
-    FirebaseFirestore.instance.collection('users')
-    .doc(uId!)
-    .collection('calls')
-    .add(myCallModel.toJson())
-    .then((value){
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId!)
+        .collection('calls')
+        .add(myCallModel.toJson())
+        .then((value) {
       String callID = value.id;
-      FirebaseFirestore.instance.collection('users')
+      FirebaseFirestore.instance
+          .collection('users')
           .doc(friendID)
           .collection('calls')
           .doc(callID)
           .set(friendCallModel.toJson())
-          .then((value){
-            generateChannelToken(
-                receiverId: friendID,
-                userToken: userToken,
-                callType: callType,
-                callID: callID);
-      }).catchError((error){
+          .then((value) {
+        DioHelper.pushCallNotification(
+            callID: callID,
+            userToken: userToken,
+            channelToken: channelToken,
+            myPhoneNumber: userModel!.phone!,
+            receiverID: friendID);
+        Get.to(() => CallContentScreen(
+          senderID: uId!,
+          token: channelToken,
+          channelName: "$uId$friendID",
+          receiverID: friendID,
+          callID: callID,
+        ));
+        // generateChannelToken(
+        //     receiverId: friendID,
+        //     userToken: userToken,
+        //     callType: callType,
+        //     callID: callID);
+        getCallsData();
+      }).catchError((error) {
         printError("setCallDataToMyFriend", error.toString());
         emit(AppErrorState());
       });
-    }).catchError((error){
+    }).catchError((error) {
       printError("setCallDataToMe", error.toString());
       emit(AppErrorState());
     });
   }
-
-
 
   void updateCallData({
     required String friendID,
     required String callID,
     required String myCallStatus,
     required String friendCallStatus,
-  }){
+  }) {
     print("==============>$callID");
-         //==============>
-    FirebaseFirestore.instance.collection('users')
+    //==============>
+    FirebaseFirestore.instance
+        .collection('users')
         .doc(uId!)
         .collection('calls')
         .doc(callID)
-        .update({"callStatus": myCallStatus,})
-        .then((value){
-      FirebaseFirestore.instance.collection('users')
+        .update({
+      "callStatus": myCallStatus,
+    }).then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
           .doc(friendID)
           .collection('calls')
           .doc(callID)
-          .update({"callStatus": friendCallStatus,})
-          .then((value){
+          .update({
+        "callStatus": friendCallStatus,
+      }).then((value) {
         debugPrint("Update Call Data Done");
-      }).catchError((error){
+        getCallsData();
+      }).catchError((error) {
         printError("updateCallDataToMyFriend", error.toString());
         emit(AppErrorState());
       });
-    }).catchError((error){
+    }).catchError((error) {
       printError("updateCallDataToMe", error.toString());
       emit(AppErrorState());
     });
   }
 
-
   List<CallModel> calls = [];
-  void getCallsData({bool? isOpening}){
-    if(isOpening!=true) {
+
+  void getCallsData({bool? isOpening}) {
+    if (isOpening != true) {
       emit(AppLoadingState());
     }
-    FirebaseFirestore.instance.collection('users')
-    .doc(uId!)
-    .collection('calls')
-    .orderBy('dateTime',descending: true)
-    .get()
-    .then((value){
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId!)
+        .collection('calls')
+        .orderBy('dateTime', descending: true)
+        .get()
+        .then((value) {
       calls = [];
       for (var element in value.docs) {
         CallModel callModel = CallModel.fromJson(element.data());
         calls.add(callModel);
       }
       emit(AppGetCallsDataState());
-    }).catchError((error){
+    }).catchError((error) {
       printError("getCallsData", error.toString());
       emit(AppErrorState());
     });
   }
-
 }

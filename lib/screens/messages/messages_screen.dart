@@ -2,7 +2,7 @@ import 'package:chat/agora/agora_server.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
-import 'package:chat/screens/call_content/call_content_screen.dart';
+import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
 import 'package:chat/screens/messages/messages_items/send_file_message.dart';
@@ -106,6 +106,29 @@ class _MessagesScreenState extends State<MessagesScreen> {
               AppCubit.get(context).deleteChat(chatID: widget.user.uId!);
               Get.back();
             }
+
+            if(state is AppConnectTimeOutErrorState){
+              showSnackBar(
+                  context: context,
+                  duration: 5,
+                  title: "connection failed",
+                  content: "connection timeout , please check your internet connection and try again",
+                  color: MyColors.white,
+                  fontColor: MyColors.black,
+                  icon: Icons.error_outline_outlined);
+            }
+
+            if(state is AppGenerateTokenErrorState){
+              showSnackBar(
+                  context: context,
+                  duration: 5,
+                  title: "connection failed",
+                  content: "failed to connect server , please check your connection with token generator server and try again",
+                  color: MyColors.white,
+                  fontColor: MyColors.black,
+                  icon: Icons.error_outline_outlined);
+            }
+
           },
           builder: (context,state){
             AppCubit cubit = AppCubit.get(context);
@@ -154,32 +177,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               actions: [
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 3.w),
-                                  child: state is! AppSetCallDataLoadingState?
+                                  child: state is! AppGenerateChannelTokenLoadingState?
                                   IconButton(
                                       onPressed: (){
                                         cubit.updateInCallStatus(isTrue: true, isOpening: true);
-
-                                        // AgoraServer.getToken(receiverId: widget.user.uId!)
-                                        // .then((value){
-                                        //   print("DONE");
-                                        // }).catchError((error){
-                                        //   print("ERROR----->$error");
-                                        // });
-
-                                        // cubit.generateChannelToken(
-                                        //       receiverId: widget.user.uId!,
-                                        //       callType: "voice",
-                                        //       userToken: widget.user.token!,
-                                        //     callID: '123'
-                                        // );
-
-                                        cubit.setCallData(
-                                            friendID: widget.user.uId!,
+                                        cubit.generateChannelToken(
+                                            receiverId: widget.user.uId!,
                                             friendPhone: widget.user.phone!,
                                             callType: "voice",
                                             myCallStatus: "no response",
                                             friendCallStatus: "missed",
-                                            userToken: widget.user.token!);
+                                            userToken: widget.user.token!,
+                                            callID: '');
                                         // Get.to(()=>CallContentScreen(
                                         //   senderID: widget.user.uId!,));
                                       },

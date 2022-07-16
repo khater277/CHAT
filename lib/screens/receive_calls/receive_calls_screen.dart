@@ -4,7 +4,7 @@ import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_calling.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_friends_name.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_profile_image.dart';
-import 'package:chat/screens/call_content/call_content_screen.dart';
+import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';

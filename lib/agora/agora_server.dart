@@ -7,8 +7,9 @@ class AgoraServer {
   static init() {
     dio = Dio(
       BaseOptions(
-          baseUrl: 'http://192.168.1.3:8082/',
+          baseUrl: 'http://192.168.1.7:8082/',
           receiveDataWhenStatusError: true,
+          connectTimeout: 20*1000,
           headers: {
             'Content-Type': "application/json",
           }),
