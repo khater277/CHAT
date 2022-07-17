@@ -7,6 +7,7 @@ import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
 import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
+import 'package:chat/models/ViewerModel.dart';
 import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
@@ -255,7 +256,9 @@ class AppCubit extends Cubit<AppStates> {
             message: message,
             file: file,
             mediaSource: mediaSource);
-        sendNotification(userToken: friendToken, userID: friendID);
+        if(friendToken!=userModel!.token) {
+          sendNotification(userToken: friendToken, userID: friendID);
+        }
         debugPrint("MESSAGE SENT");
         if (isFirstMessage == true) {
           getChats(firstMessage: true);
@@ -1034,20 +1037,26 @@ class AppCubit extends Cubit<AppStates> {
   void viewStory({
     required String userID,
     required String storyID,
-    required List<String> viewers,
+    required List<ViewerModel> viewers,
     required bool isLast,
   }) {
+
+    List<Map<String,dynamic>> newViewers = [];
+    for (var element in viewers) {
+      newViewers.add(element.toJson());
+    }
+
     FirebaseFirestore.instance
         .collection('stories')
         .doc(userID)
         .collection('currentStories')
         .doc(storyID)
-        .update({'viewers': viewers}).then((value) {
+        .update({'viewers': newViewers}).then((value) {
       if (isLast) {
         FirebaseFirestore.instance
             .collection('stories')
             .doc(userID)
-            .update({'viewers': viewers}).then((value) {
+            .update({'viewers': newViewers}).then((value) {
           debugPrint("ADDED TO VIEWERS LAST");
           emit(AppViewStoryState());
         }).catchError((error) {

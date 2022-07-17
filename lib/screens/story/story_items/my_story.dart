@@ -69,7 +69,7 @@ class AddMyStoryProfileImage extends StatelessWidget {
           CircleAvatar(
             radius: 22.sp,
             backgroundColor: image==""?MyColors.lightBlack:MyColors.blue.withOpacity(0.2),
-            backgroundImage: image==null?null:
+            backgroundImage: image==""?null:
             CachedNetworkImageProvider("$image"),
             child: image!=""?null:
             const Icon(IconBroken.Profile),

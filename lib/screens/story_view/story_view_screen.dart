@@ -1,6 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/StoryModel.dart';
+import 'package:chat/models/ViewerModel.dart';
 import 'package:chat/screens/story_view/story_view_items/show_story_head.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/duration_parser.dart';
@@ -82,9 +83,13 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     index = storyItems.indexOf(s);
                     debugPrint(index.toString());
                     if(widget.storiesIDs!=null){
-                      List<String> viewers = widget.stories[index].viewers!;
-                      if(viewers.contains(uId)==false){
-                        viewers.add(uId!);
+                      List<ViewerModel> viewers = widget.stories[index].viewers!;
+                      //contains(viewers.firstWhere((element) => element.id==uId))==false
+                      if(viewers.firstWhereOrNull((element) => element.id==uId)==null){
+                        viewers.add(ViewerModel(
+                          id: uId,
+                          dateTime: DateTime.now().toString()
+                        ));
                         cubit.viewStory(
                             userID: widget.userID,
                             storyID: widget.storiesIDs![index],
@@ -150,7 +155,9 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   ),
 
                   if(widget.userID==uId)
-                    MyStoryViewers(viewers: widget.stories[index].viewers!,storyController: controller,)
+                    MyStoryViewers(
+                      viewers: widget.stories[index].viewers!,
+                      storyController: controller,)
                   else
                     ReplyToStory(
                       cubit: cubit,

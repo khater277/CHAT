@@ -8,6 +8,7 @@ import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../cubit/app/app_states.dart';
@@ -125,7 +126,8 @@ class StoryScreen extends StatelessWidget {
                                     if (checkValidStory(date: contactStory.date!)
                                         &&contactStory.canView!.contains(uId)
                                     ) {
-                                      if(contactStory.viewers!.contains(uId)){
+                              // .contains(uId)
+                                      if(contactStory.viewers!.firstWhereOrNull((element) => element.id==uId)!=null){
                                         viewedStories.add(contactStory);
                                         viewedInfo.add(contactUser);
                                       }else{

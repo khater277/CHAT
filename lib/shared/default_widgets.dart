@@ -431,8 +431,8 @@ class DefaultTextFiled extends StatelessWidget {
   bool? obscure;
   Color? cursorColor;
   VoidCallback? onTap;
-  Function? onSubmitted;
-  Function? onChanged;
+  var onSubmitted;
+  var onChanged;
 
   DefaultTextFiled(
       {Key? key,
@@ -467,12 +467,8 @@ class DefaultTextFiled extends StatelessWidget {
       controller: controller,
       autofocus: autoFocus??false,
       keyboardType: inputType,
-      onSubmitted: (value){
-        onSubmitted;
-      },
-      onChanged: (value) {
-        onChanged;
-      },
+      onSubmitted: onSubmitted,
+      onChanged: onChanged,
       obscureText: obscure ?? false,
       style: Theme.of(context).textTheme.bodyText2!.copyWith(
         fontSize: 14.sp,

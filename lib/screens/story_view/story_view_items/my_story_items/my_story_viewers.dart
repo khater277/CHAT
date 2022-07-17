@@ -1,5 +1,7 @@
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
+import 'package:chat/models/ViewerModel.dart';
 import 'package:chat/screens/story_view/story_view_items/my_story_items/viewers_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -8,7 +10,7 @@ import 'package:story_view/controller/story_controller.dart';
 import '../../../../shared/colors.dart';
 
 class MyStoryViewers extends StatelessWidget {
-  final List<String> viewers;
+  final List<ViewerModel> viewers;
   final StoryController storyController;
 
   const MyStoryViewers(
@@ -29,13 +31,17 @@ class MyStoryViewers extends StatelessWidget {
               builder: (BuildContext context) {
                 /// use viewer id to get viewer data
                 List<UserModel> users = [];
+                List<String> viewsDateTime = [];
                 for (var viewer in viewers) {
                   UserModel userModel = AppCubit.get(context)
                       .users
-                      .firstWhere((element) => element.uId == viewer);
+                      .firstWhere((element) => element.uId == viewer.id);
                   users.add(userModel);
+                  viewsDateTime.add(viewer.dateTime!);
                 }
-                return ViewersBottomSheet(users: users,);
+                return ViewersBottomSheet(
+                  users: users,
+                  viewsDateTime: viewsDateTime,);
               },
             ).then((value) => storyController.play());
           },

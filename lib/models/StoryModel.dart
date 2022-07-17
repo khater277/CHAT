@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'package:chat/models/ViewerModel.dart';
+
 class StoryModel {
   StoryModel({
     String? date,
@@ -10,7 +12,7 @@ class StoryModel {
     String? media,
     String? phone,
     String? text,
-    List<String>? viewers,
+    List<ViewerModel>? viewers,
     List<String>? canView,
   }){
     _date = date;
@@ -34,7 +36,13 @@ class StoryModel {
     _media = json['media'];
     _phone = json['phone'];
     _text = json['text'];
-    _viewers = json['viewers'] != null ? json['viewers'].cast<String>() : [];
+    if (json['viewers'] != null) {
+      _viewers = [];
+      json['viewers'].forEach((v) {
+        _viewers?.add(ViewerModel.fromJson(v));
+      });
+    }
+    // _viewers = json['viewers'] != null ? json['viewers'].cast<String>() : [];
     _canView = json['canView'] != null ? json['canView'].cast<String>() : [];
   }
   String? _date;
@@ -45,7 +53,7 @@ class StoryModel {
   String? _media;
   String? _phone;
   String? _text;
-  List<String>? _viewers;
+  List<ViewerModel>? _viewers;
   List<String>? _canView;
 
   String? get date => _date;
@@ -56,7 +64,7 @@ class StoryModel {
   String? get media => _media;
   String? get phone => _phone;
   String? get text => _text;
-  List<String>? get viewers => _viewers;
+  List<ViewerModel>? get viewers => _viewers;
   List<String>? get canView => _canView;
 
   Map<String, dynamic> toJson() {
@@ -69,7 +77,9 @@ class StoryModel {
     map['media'] = _media;
     map['phone'] = _phone;
     map['text'] = _text;
-    map['viewers'] = _viewers;
+    if (_viewers != null) {
+      map['viewers'] = _viewers?.map((v) => v.toJson()).toList();
+    }
     map['canView'] = _canView;
     return map;
   }

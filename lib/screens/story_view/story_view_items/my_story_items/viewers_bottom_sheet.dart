@@ -6,7 +6,8 @@ import 'package:sizer/sizer.dart';
 
 class ViewersBottomSheet extends StatelessWidget {
   final List<UserModel> users;
-  const ViewersBottomSheet({Key? key,required this.users}) : super(key: key);
+  final List<String> viewsDateTime;
+  const ViewersBottomSheet({Key? key,required this.users, required this.viewsDateTime}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,9 @@ class ViewersBottomSheet extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 1.8.h,horizontal: 2.w),
                       child: Container(
                         color: Theme.of(context).scaffoldBackgroundColor,
-                        child: ViewerDetails(user: users[index],),
+                        child: ViewerDetails(
+                          user: users[index],
+                          viewDateTime: viewsDateTime[index],),
                       ),
                     );
                   },
