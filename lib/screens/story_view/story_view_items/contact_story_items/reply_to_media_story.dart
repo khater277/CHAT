@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-import '../../../shared/colors.dart';
+import '../../../../shared/colors.dart';
 
 class ReplyToMediaStory extends StatefulWidget {
   final String name;

@@ -1,14 +1,10 @@
-import 'package:chat/notifications/api.dart';
 import 'package:chat/screens/profile/profile_screen.dart';
-import 'package:chat/screens/receive_calls/receive_calls_screen.dart';
 import 'package:chat/screens/search/search_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../cubit/app/app_cubit.dart';
 
 class HomeAppBar extends StatelessWidget {
   const HomeAppBar({Key? key}) : super(key: key);

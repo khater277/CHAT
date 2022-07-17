@@ -1,16 +1,12 @@
 import 'dart:io';
+
 import 'package:chat/agora/agora_server.dart';
 import 'package:chat/cubit/login/login_cubit.dart';
-import 'package:chat/models/UserModel.dart';
 import 'package:chat/notifications/api.dart';
-import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/home/home_screen.dart';
 import 'package:chat/screens/login/login_screen.dart';
-import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/themes.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,19 +15,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
 import 'cubit/app/app_cubit.dart';
 import 'cubit/app/app_states.dart';
 import 'cubit/app/bloc_observer.dart';
 import 'firebase_options.dart';
 import 'notifications/local_notifications.dart';
 import 'translation/translations.dart';
-import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   // Get.to(()=>const ContactsScreen());
-  print("Handling a background message: ${message.data}");
+  debugPrint("Handling a background message: ${message.data}");
 }
 
 void main() async {
@@ -49,7 +46,7 @@ void main() async {
   uId = GetStorage().read('uId')??"";
   contactsPermission = GetStorage().read('contactsPermission')??false;
   Widget? homeWidget;
-  print("============>${uId!}");
+  debugPrint("============>${uId!}");
   if(uId!.isNotEmpty){
     homeWidget=const HomeScreen();
   }else{
@@ -58,7 +55,7 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   String? token = await FirebaseMessaging.instance.getToken();
-  print("======>$token");
+  debugPrint("======>$token");
 
 
   NotificationsHelper.init();

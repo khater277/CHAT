@@ -1,7 +1,4 @@
-import 'package:chat/models/UserModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
 import '../shared/constants.dart';
 

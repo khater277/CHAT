@@ -417,11 +417,12 @@ class DefaultTextFiled extends StatelessWidget {
   final double hintSize;
   final double height;
   final double rounded;
-  final Widget suffix;
   final Color focusBorder;
   final Color border;
   final List<TextInputFormatter> formatters;
   final TextInputType inputType;
+  Widget? suffix;
+  Widget? prefix;
   bool? validate;
   Color? fillColor;
   bool? autoFocus;
@@ -430,8 +431,8 @@ class DefaultTextFiled extends StatelessWidget {
   bool? obscure;
   Color? cursorColor;
   VoidCallback? onTap;
-  var onSubmitted;
-  var onChanged;
+  Function? onSubmitted;
+  Function? onChanged;
 
   DefaultTextFiled(
       {Key? key,
@@ -439,11 +440,12 @@ class DefaultTextFiled extends StatelessWidget {
         required this.hint,
         required this.hintSize,
         required this.height,
-        required this.suffix,
         required this.focusBorder,
         required this.border,
         required this.inputType,
         required this.formatters,
+        this.suffix,
+        this.prefix,
         this.fillColor,
         this.validate,
         this.letterSpacing,
@@ -465,8 +467,12 @@ class DefaultTextFiled extends StatelessWidget {
       controller: controller,
       autofocus: autoFocus??false,
       keyboardType: inputType,
-      onSubmitted: onSubmitted ?? (value) {},
-      onChanged: onChanged ?? (value) {},
+      onSubmitted: (value){
+        onSubmitted;
+      },
+      onChanged: (value) {
+        onChanged;
+      },
       obscureText: obscure ?? false,
       style: Theme.of(context).textTheme.bodyText2!.copyWith(
         fontSize: 14.sp,
@@ -485,6 +491,7 @@ class DefaultTextFiled extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(
             vertical: 0, horizontal: 4.w),
         suffixIcon: suffix,
+        prefixIcon: prefix,
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(rounded),
             borderSide: BorderSide(

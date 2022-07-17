@@ -75,17 +75,17 @@ class _CallContentScreenState extends State<CallContentScreen> {
       RtcEngineEventHandler(
         joinChannelSuccess: (String channel, int uid, int elapsed) {
           // setState(() => joined = true);
-          print("‘local user $uid joined successfully’");
+          debugPrint("‘local user $uid joined successfully’");
         },
         userJoined: (int uid, int elapsed) {
-          print("‘remote user $uid joined successfully’");
+          debugPrint("‘remote user $uid joined successfully’");
           if(widget.senderID==uId){
             _audioPlayer.stop();
           }
           setState(() => _remoteUid = uid);
         },
         userOffline: (int uid, UserOfflineReason reason) {
-          print("‘remote user $uid left call’");
+          debugPrint("‘remote user $uid left call’");
           setState(() => _remoteUid = 0);
           Navigator.of(context).pop(true);
         },

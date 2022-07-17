@@ -7,6 +7,7 @@ import 'package:chat/screens/chats/chats_items/chats_last_message.dart';
 import 'package:chat/screens/chats/chats_items/chats_name.dart';
 import 'package:chat/screens/chats/chats_items/chats_profile_Image.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
+import 'package:chat/screens/search/search_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
@@ -53,7 +54,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   user.uId==element.id);
                   if(userModel==null){
                     cubit.getChats(firstMessage: true);
-                    print("GET YASTA");
+                    debugPrint("GET YASTA");
                     // chats.add(cubit.chats.firstWhere((user) => user.uId==element.id));
                   }else {
                     chats.add(cubit.chats.firstWhere((user) => user.uId==element.id));
@@ -159,10 +160,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   actions: [
                     IconButton(
                         onPressed: (){
-                          AppCubit.get(context).sendMessage(
-                              friendToken: "cUQgq0suQDScY_EtBy40YA:APA91bF961EW9UsRVCMHRcs3GefATTdnn-5TjX1699r5xRuOPtZ_OFxcdUtJxKF1JuXQE_TvxJ6NuH6k9r3fYd5BnZb1lRxuVwjzdmJDmixqK4IU05AilLuCKG2psz91iEMxl4PUvZWx",
-                              friendID: "1O5pTx02tCXsKSl6PPSrEULtebe2",
-                              message: "message");
+                          Get.to(()=>const SearchScreen());
                         },
                         icon: Icon(IconBroken.Search,size: 18.sp,color: MyColors.grey,)
                     )

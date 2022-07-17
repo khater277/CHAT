@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../shared/colors.dart';
-import '../../../styles/icons_broken.dart';
+import '../../../../shared/colors.dart';
+import '../../../../styles/icons_broken.dart';
 
 class ReplyToTextStory extends StatelessWidget {
   final String name;

@@ -1,22 +1,18 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
-import 'package:chat/models/UserModel.dart';
 import 'package:chat/notifications/notifications_receiver.dart';
 import 'package:chat/screens/add_text_story/add_text_story_screen.dart';
 import 'package:chat/screens/home/stories_fab.dart';
-import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../notifications/local_notifications.dart';
 import '../add_media_story/add_media_story_screen.dart';
 
 class HomeScreen extends StatefulWidget {

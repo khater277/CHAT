@@ -6,7 +6,6 @@ import 'package:chat/screens/call_content/call_content_items/call_content_friend
 import 'package:chat/screens/call_content/call_content_items/call_content_profile_image.dart';
 import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/shared/colors.dart';
-import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

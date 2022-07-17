@@ -1,14 +1,14 @@
-import 'package:chat/screens/story_view/story_view_items/reply_story_textfield.dart';
-import 'package:chat/screens/story_view/story_view_items/reply_to_text_story.dart';
+import 'package:chat/screens/story_view/story_view_items/contact_story_items/reply_story_textfield.dart';
+import 'package:chat/screens/story_view/story_view_items/contact_story_items/reply_to_text_story.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:story_view/controller/story_controller.dart';
 
-import '../../../cubit/app/app_cubit.dart';
-import '../../../cubit/app/app_states.dart';
-import '../../../shared/colors.dart';
+import '../../../../cubit/app/app_cubit.dart';
+import '../../../../cubit/app/app_states.dart';
+import '../../../../shared/colors.dart';
 import 'reply_to_media_story.dart';
 
 class ReplyToStory extends StatefulWidget {

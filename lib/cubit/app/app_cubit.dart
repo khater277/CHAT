@@ -11,7 +11,6 @@ import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.d
 import 'package:chat/screens/chats/chats_screen.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/story/story_screen.dart';
-import 'package:chat/shared/default_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dio/dio.dart';
@@ -241,7 +240,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('messages')
         .add(myMessageModel.toJson())
         .then((value) {
-      print(value.id);
+      debugPrint(value.id);
       FirebaseFirestore.instance
           .collection('users')
           .doc(friendID)
@@ -288,7 +287,7 @@ class AppCubit extends Cubit<AppStates> {
             userID: userID,
             userName: userName)
         .then((value) {
-      print("MESSAGE SENT");
+      debugPrint("MESSAGE SENT");
     }).catchError((error) {
       printError("pushNotification", error.toString());
       emit(AppErrorState());
@@ -1085,7 +1084,7 @@ class AppCubit extends Cubit<AppStates> {
             userToken: userToken,
             friendPhone: friendPhone,
             channelToken: value.data['token']);
-        print("ALL WORKS SUCCESSFULLY ${value.data}");
+        debugPrint("ALL WORKS SUCCESSFULLY ${value.data}");
         // emit(AppGenerateChannelTokenState());
       }).catchError((error) {
         DioError dioError = error;
@@ -1099,7 +1098,7 @@ class AppCubit extends Cubit<AppStates> {
         }
       });
     } else {
-      print("THEY HAVE THE SAME TOKEN");
+      debugPrint("THEY HAVE THE SAME TOKEN");
       emit(AppGenerateChannelTokenState());
     }
   }
@@ -1204,7 +1203,7 @@ class AppCubit extends Cubit<AppStates> {
     required String myCallStatus,
     required String friendCallStatus,
   }) {
-    print("==============>$callID");
+    debugPrint("==============>$callID");
     //==============>
     FirebaseFirestore.instance
         .collection('users')

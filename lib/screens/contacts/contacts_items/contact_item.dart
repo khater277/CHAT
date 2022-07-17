@@ -12,7 +12,8 @@ import '../../../shared/colors.dart';
 
 class ContactItem extends StatelessWidget {
   final UserModel user;
-  const ContactItem({Key? key, required this.user}) : super(key: key);
+  final bool fromSearch;
+  const ContactItem({Key? key, required this.user, this.fromSearch = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +74,7 @@ class ContactItem extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 3.w,),
+                if(!fromSearch)
                 Icon(IconBroken.Arrow___Right_2,size: 12.sp,color: Colors.grey,)
               ],
             ),

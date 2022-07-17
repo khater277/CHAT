@@ -9,10 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:story_view/story_view.dart';
-import 'package:video_player/video_player.dart';
 
-import 'story_view_items/my_story_viewers.dart';
-import 'story_view_items/reply_to_story.dart';
+import 'story_view_items/contact_story_items/reply_to_story.dart';
+import 'story_view_items/my_story_items/my_story_viewers.dart';
 
 
 class StoryViewScreen extends StatefulWidget {
@@ -99,6 +98,10 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                     cubit.changeStoryIndex(index: index,);
                     // print(s.duration);
                   },
+                  onComplete: (){
+                    debugPrint("COMPLETED");
+                    Get.back();
+                  },
                   onVerticalSwipeComplete: (direction) {
                     if (direction == Direction.down) {
                       Navigator.pop(context);
@@ -147,7 +150,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                   ),
 
                   if(widget.userID==uId)
-                    MyStoryViewers(viewersNumber: widget.stories[index].viewers!.length,)
+                    MyStoryViewers(viewers: widget.stories[index].viewers!,storyController: controller,)
                   else
                     ReplyToStory(
                       cubit: cubit,

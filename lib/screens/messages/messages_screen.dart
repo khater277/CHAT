@@ -1,8 +1,6 @@
-import 'package:chat/agora/agora_server.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
-import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
 import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
 import 'package:chat/screens/messages/messages_items/send_file_message.dart';
@@ -15,7 +13,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../models/MessageModel.dart';

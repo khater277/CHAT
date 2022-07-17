@@ -1,7 +1,6 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class CallContentCalling extends StatefulWidget {
