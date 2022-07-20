@@ -1,10 +1,8 @@
-import 'package:chat/models/StoryModel.dart';
+import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/screens/profile/profile_screen.dart';
 import 'package:chat/screens/search/search_screen.dart';
 import 'package:chat/shared/colors.dart';
-import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';

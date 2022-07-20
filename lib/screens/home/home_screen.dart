@@ -1,6 +1,6 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
-import 'package:chat/notifications/notifications_receiver.dart';
+import 'package:chat/services/notifications/notifications_receiver.dart';
 import 'package:chat/screens/add_text_story/add_text_story_screen.dart';
 import 'package:chat/screens/home/stories_fab.dart';
 import 'package:chat/shared/colors.dart';

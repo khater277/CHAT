@@ -1,9 +1,9 @@
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/models/UserModel.dart';
-import 'package:chat/notifications/local_notifications.dart';
 import 'package:chat/screens/contacts/contacts_screen.dart';
 import 'package:chat/screens/messages/messages_screen.dart';
 import 'package:chat/screens/receive_calls/receive_calls_screen.dart';
+import 'package:chat/services/notifications/local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -64,9 +64,4 @@ class NotificationsReceiver {
     });
   }
 
-  static void handelBackgroundVideoCall(){
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      Get.to(()=>const ContactsScreen());
-    });
-  }
 }

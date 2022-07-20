@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import '../shared/constants.dart';
+import '../../shared/constants.dart';
 
 
 class DioHelper {

@@ -18,6 +18,7 @@ class SearchTextField extends StatelessWidget {
           child: DefaultTextFiled(
             controller: controller,
             autoFocus: true,
+            fontSize: 12.sp,
             hint: "search...",
             hintSize: 12.sp,
             height: 5.h,

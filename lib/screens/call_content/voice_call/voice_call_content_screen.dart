@@ -1,12 +1,12 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
-import 'package:chat/screens/call_content/agora_manager.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_calling.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_friends_name.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_profile_image.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_time.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:chat/services/agora/agora_server.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +68,7 @@ class _CallContentScreenState extends State<CallContentScreen> {
 
   Future<void> initAgora() async {
     await [Permission.microphone, Permission.camera].request();
-    _engine = await RtcEngine.create(AgoraManager.appId);
+    _engine = await RtcEngine.create(AgoraServer.appId);
     _engine.enableVideo();
     // _engine.enableAudio();
     _engine.setEventHandler(
@@ -85,6 +85,7 @@ class _CallContentScreenState extends State<CallContentScreen> {
           setState(() => _remoteUid = uid);
         },
         userOffline: (int uid, UserOfflineReason reason) {
+          AppCubit.get(context).getCallsData();
           debugPrint("‘remote user $uid left call’");
           setState(() => _remoteUid = 0);
           Navigator.of(context).pop(true);

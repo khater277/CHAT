@@ -2,6 +2,7 @@ import 'package:chat/shared/constants.dart';
 import 'package:dio/dio.dart';
 
 class AgoraServer {
+  static const String appId = "b54c7201e14d46c5876e4ab169ee1193";
   static Dio? dio;
 
   static init() {

@@ -2,6 +2,7 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/screens/messages/messages_items/animated_container_builder.dart';
+import 'package:chat/screens/messages/messages_items/call_button.dart';
 import 'package:chat/screens/messages/messages_items/message_builder.dart';
 import 'package:chat/screens/messages/messages_items/send_file_message.dart';
 import 'package:chat/screens/send_media_message/send_media_screen.dart';
@@ -105,6 +106,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             }
 
             if(state is AppConnectTimeOutErrorState){
+              AppCubit.get(context).updateInCallStatus(isTrue: false,isOpening: true);
               showSnackBar(
                   context: context,
                   duration: 5,
@@ -116,6 +118,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             }
 
             if(state is AppGenerateTokenErrorState){
+              AppCubit.get(context).updateInCallStatus(isTrue: false,isOpening: true);
               showSnackBar(
                   context: context,
                   duration: 5,
@@ -175,21 +178,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 3.w),
                                   child: state is! AppGenerateChannelTokenLoadingState?
-                                  IconButton(
-                                      onPressed: (){
-                                        cubit.updateInCallStatus(isTrue: true, isOpening: true);
-                                        cubit.generateChannelToken(
-                                            receiverId: widget.user.uId!,
-                                            friendPhone: widget.user.phone!,
-                                            callType: "voice",
-                                            myCallStatus: "no response",
-                                            friendCallStatus: "missed",
-                                            userToken: widget.user.token!,
-                                            callID: '');
-                                        // Get.to(()=>CallContentScreen(
-                                        //   senderID: widget.user.uId!,));
-                                      },
-                                      icon: Icon(IconBroken.Call,color: MyColors.blue,size: 18.sp,)
+                                  Row(
+                                    children: [
+                                      CallButton(
+                                        user: widget.user,
+                                        type: 'video',
+                                        icon: IconBroken.Video,
+                                      ),
+                                      CallButton(
+                                        user: widget.user,
+                                        type: 'voice',
+                                        icon: IconBroken.Call,
+                                      ),
+                                    ],
                                   )
                                       :
                                   Align(

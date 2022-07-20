@@ -421,6 +421,7 @@ class DefaultTextFiled extends StatelessWidget {
   final Color border;
   final List<TextInputFormatter> formatters;
   final TextInputType inputType;
+  double? fontSize;
   Widget? suffix;
   Widget? prefix;
   bool? validate;
@@ -444,6 +445,7 @@ class DefaultTextFiled extends StatelessWidget {
         required this.border,
         required this.inputType,
         required this.formatters,
+        this.fontSize,
         this.suffix,
         this.prefix,
         this.fillColor,
@@ -471,7 +473,7 @@ class DefaultTextFiled extends StatelessWidget {
       onChanged: onChanged,
       obscureText: obscure ?? false,
       style: Theme.of(context).textTheme.bodyText2!.copyWith(
-        fontSize: 14.sp,
+        fontSize: fontSize??14.sp,
         letterSpacing: letterSpacing??0,
       ),
       onTap: onTap,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class LoginHead extends StatelessWidget {
@@ -11,14 +10,14 @@ class LoginHead extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "loginHead".tr,
+          "What is your phone number?",
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
             fontSize: 15.5.sp,
           ),
         ),
         SizedBox(height: 3.h,),
         Text(
-          "loginCaption".tr,
+        "please enter your phone number to verify your account",
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
             fontSize: 13.sp,
             color: Colors.grey.shade500

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chat/agora/agora_server.dart';
+import 'package:chat/services/agora/agora_server.dart';
 import 'package:chat/models/CallModel.dart';
 import 'package:chat/models/LastMessageModel.dart';
 import 'package:chat/models/MessageModel.dart';
@@ -27,7 +27,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../models/ContactModel.dart';
-import '../../notifications/api.dart';
+import '../../services/notifications/api.dart';
 import '../../screens/calls/calls_screen.dart';
 import '../../shared/constants.dart';
 import 'app_states.dart';
@@ -36,6 +36,7 @@ class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
 
   static AppCubit get(context) => BlocProvider.of(context);
+
 
   void logOut() {
     emit(AppLoadingState());
@@ -50,6 +51,8 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+
+  // bottom navigation bar screens
   List<Widget> screens = [
     const ChatsScreen(),
     const StoryScreen(),
@@ -63,10 +66,12 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppChangeNavBarState());
   }
 
-  UserModel? userModel;
+  UserModel? userModel; // user model where i save logged in user data
 
-  void getUserData({bool? isOpening, bool? updateInCall}) {
-    if (uId != null && uId!.isNotEmpty) {
+  // get data of user who open the app
+  void getUserData({bool? isOpening,bool? updateInCall}) {
+    // first check user id (uId) to perform function content
+    if (uId != null && uId!.isNotEmpty ) {
       if (updateInCall == true) {
         updateInCallStatus(isTrue: false, isOpening: true);
       }
@@ -76,6 +81,8 @@ class AppCubit extends Cubit<AppStates> {
           .get()
           .then((value) {
         userModel = UserModel.fromJson(value.data());
+
+        // i don't have to emit state when i open the app
         if (isOpening != true) {
           emit(AppGetUserDataState());
         }
@@ -86,10 +93,10 @@ class AppCubit extends Cubit<AppStates> {
     }
   }
 
-  List<Contact> contacts = [];
-  List<String> usersID = [];
-  List<String> phones = [];
-  List<UserModel> users = [];
+  List<Contact> contacts = [];    // contacts that use the app
+  List<String> usersID = [];      // ids of my contacts from database
+  List<String> phones = [];       // phones of my contacts
+  List<UserModel> users = [];     // contacts information from database
 
   void getContacts({bool? addNewContact}) {
     if (contactsPermission!) {
@@ -99,19 +106,23 @@ class AppCubit extends Cubit<AppStates> {
         users = [];
         contacts = [];
         phones = [];
+
+        // delete user contacts and add them later when i access device contacts to keep them updated
         deleteContactsFormFirebase();
+
         for (var element in contactList) {
+
           FirebaseFirestore.instance.collection('users').get().then((value) {
-            if (element.phones!.isNotEmpty) {
+            if (element.phones!.isNotEmpty) { // contact have phone number
               for (var e in value.docs) {
                 UserModel user = UserModel.fromJson(e.data());
-                // debugPrint(user.name);
+                // check phone format and it isn't my number
                 if (element.phones![0].value!.length >= 11) {
                   if ((phoneFormat(phoneNumber: element.phones![0].value!) ==
                       phoneFormat(phoneNumber: user.phone!))&&user.uId!=uId) {
                     usersID.add(e.id);
                     UserModel finalUser = UserModel(
-                        name: element.displayName,
+                        name: element.displayName, // the name of that number in my contacts
                         token: user.token,
                         uId: user.uId,
                         phone: user.phone,
@@ -120,12 +131,12 @@ class AppCubit extends Cubit<AppStates> {
                     users.add(finalUser);
                     contacts.add(element);
                     phones.add(user.phone!);
+
+                    // add new contacts to my database
                     if (finalUser.uId != uId) {
                       ContactModel contactModel = ContactModel(
                           phoneNumber: finalUser.phone, name: finalUser.name);
-                      addContactsToFirebase(
-                          userID: finalUser.uId!, contactModel: contactModel);
-                    }
+                      addContactsToFirebase(userID: finalUser.uId!, contactModel: contactModel);}
                   }
                 }
               }
@@ -137,7 +148,7 @@ class AppCubit extends Cubit<AppStates> {
         }
         debugPrint("=============GET CONTACTS=============");
         if (addNewContact != true) {
-          getChats();
+          getChats(); // get chats when i get calls but not when i add new contact
         } else {
           emit(AppGetContactsState());
         }
@@ -185,16 +196,14 @@ class AppCubit extends Cubit<AppStates> {
 
   void addNewContact(Contact contact) {
     ContactsService.addContact(contact).then((value) {
-
       debugPrint("NEW CONTACT ADDED");
       getContacts(addNewContact: true);
-      // emit(AppAddNewContactState());
     }).catchError((error) {
       emit(AppErrorState());
     });
   }
 
-  String? currentChat;
+  String? currentChat; // id of user when i being in his chat screen use that to avoid notification when i receive new message from him
 
   void changeCurrentChat({required String? id}) {
     currentChat = id;
@@ -217,7 +226,7 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppSendStoryReplyLoadingState());
     }
 
-    ///message model which will be stored in my firestore
+    //message model which will be stored in my database and friend database
     MessageModel myMessageModel = MessageModel(
       senderID: uId,
       receiverID: friendID,
@@ -233,6 +242,8 @@ class AppCubit extends Cubit<AppStates> {
       date: DateTime.now().toString(),
       storyDate: storyDate,
     );
+
+    // add new message to my database and then to my friend
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -256,10 +267,14 @@ class AppCubit extends Cubit<AppStates> {
             message: message,
             file: file,
             mediaSource: mediaSource);
+        // don't send notification when friend's token is similar to my token
         if(friendToken!=userModel!.token) {
           sendNotification(userToken: friendToken, userID: friendID);
         }
         debugPrint("MESSAGE SENT");
+
+        // if i access messages screen from search or contacts screen
+        // my chat with this user may be not exist so i need to get chats when i send first message
         if (isFirstMessage == true) {
           getChats(firstMessage: true);
         } else {
@@ -309,12 +324,12 @@ class AppCubit extends Cubit<AppStates> {
         .doc(uId)
         .get()
         .then((value) {
-      ///if that number in my contacts i well send notification with contact name saved on my phone
+      //if that number in my contacts i well send notification with contact name saved on my phone
       ContactModel contactModel = ContactModel.fromJson(value.data());
       pushNotification(
           userToken: userToken, userID: userID, userName: contactModel.name!);
     }).catchError((error) {
-      ///if that number not in my contacts i well send notification with phone number
+      //if that number not in my contacts i well send notification with phone number
       pushNotification(
           userToken: userToken, userID: userID, userName: userModel!.phone!);
       printError("getNotificationUser", error.toString());
@@ -329,7 +344,7 @@ class AppCubit extends Cubit<AppStates> {
     String? file,
     MediaSource? mediaSource,
   }) {
-    ///set data of my last message
+    //set data of my last message
     LastMessageModel myLastMessageModel = LastMessageModel(
         senderID: uId,
         receiverID: friendID,
@@ -342,7 +357,7 @@ class AppCubit extends Cubit<AppStates> {
         date: DateTime.now().toString(),
         isRead: true);
 
-    ///set data of my friend last message
+    //set data of my friend last message
     LastMessageModel friendLastMessageModel = LastMessageModel(
         senderID: uId,
         receiverID: friendID,
@@ -355,7 +370,7 @@ class AppCubit extends Cubit<AppStates> {
         date: DateTime.now().toString(),
         isRead: false);
 
-    ///send message to my chat with that friend in firebase
+    //send message to my chat with that friend in firebase
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -363,7 +378,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(friendID)
         .set(myLastMessageModel.toJson())
         .then((value) {
-      ///send message to my friend chat with me in firebase
+      //send message to my friend chat with me in firebase
       FirebaseFirestore.instance
           .collection('users')
           .doc(friendID)
@@ -387,10 +402,11 @@ class AppCubit extends Cubit<AppStates> {
     bool? firstMessage,
     bool? getCalls,
   }) {
-    ///don't loading when i send first message when i enter messages screen from contacts list
+    //don't loading when i send first message when i enter messages screen from contacts list
     if (firstMessage != true || getCalls != true) {
       emit(AppLoadingState());
     }
+    debugPrint("GETttttttttt CHATS loading");
     chatsID = [];
     chats = [];
     FirebaseFirestore.instance
@@ -400,44 +416,50 @@ class AppCubit extends Cubit<AppStates> {
         .orderBy('date')
         .get()
         .then((v) {
-      for (int i = 0; i < v.size; i++) {
-        var element = v.docs[i];
-        chatsID.add(element.id);
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(element.id)
-            .get()
-            .then((value) {
-          UserModel userModel = UserModel.fromJson(value.data());
-          String? name;
-          bool isContact = usersID.contains(userModel.uId);
-          name = isContact
-              ? users
-                  .firstWhere((element) => element.uId == userModel.uId)
-                  .name!
-              : userModel.phone!;
-          UserModel finalUserModel = UserModel(
-              name: name,
-              token: userModel.token,
-              uId: userModel.uId,
-              phone: userModel.phone,
-              image: userModel.image,
-              inCall: userModel.inCall);
-          chats.add(finalUserModel);
-          debugPrint("${v.size} == ${chats.length}");
-          if (v.size == chats.length) {
+          if(v.docs.isNotEmpty){
+            for (int i = 0; i < v.size; i++) {
+              var element = v.docs[i];
+              chatsID.add(element.id);
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(element.id)
+                  .get()
+                  .then((value) {
+                UserModel userModel = UserModel.fromJson(value.data());
+                String? name;
+                bool isContact = usersID.contains(userModel.uId); // check if that user in my contacts or not
+                // if in my contacts i will use his name , not i will use his phone number
+                name = isContact
+                    ? users
+                    .firstWhere((element) => element.uId == userModel.uId)
+                    .name!
+                    : userModel.phone!;
+                UserModel finalUserModel = UserModel(
+                    name: name,
+                    token: userModel.token,
+                    uId: userModel.uId,
+                    phone: userModel.phone,
+                    image: userModel.image,
+                    inCall: userModel.inCall);
+                chats.add(finalUserModel);
+                debugPrint("${v.size} == ${chats.length}");
+
+                // make sure i'm in then end of loop
+                if (v.size == chats.length) {
+                  getCallsData(isOpening: true);
+                  // emit(AppGetChatsState());
+                }
+                print("${v.size} ${chats.length}");
+              }).catchError((error) {
+                printError("getChatsLoop", error.toString());
+                emit(AppErrorState());
+              });
+            }
+          }else{
             getCallsData(isOpening: true);
             // emit(AppGetChatsState());
           }
-        }).catchError((error) {
-          printError("getChatsLoop", error.toString());
-          emit(AppErrorState());
-        });
-      }
       debugPrint("GET CHATS");
-      // if(isLogin==true) {
-      //   emit(AppGetChatsState());
-      // }
     }).catchError((error) {
       printError("getChats", error.toString());
       emit(AppErrorState());
@@ -446,6 +468,8 @@ class AppCubit extends Cubit<AppStates> {
 
   void deleteChat({required String chatID}) {
     emit(AppDeleteChatLoadingState());
+
+    // delete each message in the chat
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -457,6 +481,8 @@ class AppCubit extends Cubit<AppStates> {
       for (var element in value.docs) {
         element.reference.delete();
       }
+
+      // delete user chat from my chats
       FirebaseFirestore.instance
           .collection('users')
           .doc(uId)
@@ -1078,12 +1104,11 @@ class AppCubit extends Cubit<AppStates> {
     required String friendPhone,
     required String userToken,
     required String callType,
-    required String callID,
+    // required String callID,
     required String myCallStatus,
     required String friendCallStatus,
   }) {
     emit(AppGenerateChannelTokenLoadingState());
-    if (userModel!.token != userToken) {
       AgoraServer.getToken(receiverId: receiverId).then((value) {
         setCallData(
             friendID: receiverId,
@@ -1097,7 +1122,7 @@ class AppCubit extends Cubit<AppStates> {
         // emit(AppGenerateChannelTokenState());
       }).catchError((error) {
         DioError dioError = error;
-        printError("generateChannelToken ${dioError.type}", error.toString());
+        // printError("generateChannelToken ${dioError.type}", error.toString());
         if(dioError.type == DioErrorType.connectTimeout){
           emit(AppConnectTimeOutErrorState());
         }else if(dioError.type == DioErrorType.other){
@@ -1105,11 +1130,8 @@ class AppCubit extends Cubit<AppStates> {
         }else {
           emit(AppErrorState());
         }
+        // updateInCallStatus(isTrue: false,isOpening: true);
       });
-    } else {
-      debugPrint("THEY HAVE THE SAME TOKEN");
-      emit(AppGenerateChannelTokenState());
-    }
   }
 
   void updateInCallStatus({required bool isTrue, bool? isOpening}) {
@@ -1136,7 +1158,7 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  ///add new call information to both my account and friend account
+  //add new call information to both my account and friend account
 
   void setCallData({
     required String friendID,
@@ -1177,12 +1199,14 @@ class AppCubit extends Cubit<AppStates> {
           .doc(callID)
           .set(friendCallModel.toJson())
           .then((value) {
-        DioHelper.pushCallNotification(
+        if (userModel!.token != userToken) {
+          DioHelper.pushCallNotification(
             callID: callID,
             userToken: userToken,
             channelToken: channelToken,
             myPhoneNumber: userModel!.phone!,
             receiverID: friendID);
+        }
         Get.to(() => CallContentScreen(
           senderID: uId!,
           token: channelToken,

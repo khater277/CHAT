@@ -31,10 +31,10 @@ class SearchResults extends StatelessWidget {
       icon: IconBroken.Delete,);
     } else {
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: 2.h,horizontal: 5.w),
+        padding: EdgeInsets.symmetric(horizontal: 5.w),
         child: ListView.separated(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           itemBuilder: (context,index){
             return ContactItem(
               user: totalResult[index],

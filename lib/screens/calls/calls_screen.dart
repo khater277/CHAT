@@ -5,6 +5,8 @@ import 'package:chat/screens/calls/calls_items/calls_name_and_caption.dart';
 import 'package:chat/screens/calls/calls_items/calls_profile_image.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/shared/colors.dart';
+import 'package:chat/shared/default_widgets.dart';
+import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -31,7 +33,8 @@ class CallsScreen extends StatelessWidget {
                       left: 5.w,
                       top: 3.h,
                     ),
-                    child: Column(
+                    child: cubit.calls.isNotEmpty?
+                    Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Flexible(
@@ -66,6 +69,16 @@ class CallsScreen extends StatelessWidget {
                           ),
                         )
                       ],
+                    )
+                        :
+                    SizedBox(
+                      height: 70.h,
+                      child: NoItemsFounded(
+                          text: "you don't have calls record yet, start now",
+                          widget: Icon(
+                              IconBroken.Call_Missed,
+                          size: 100.sp,
+                          color: MyColors.grey.withOpacity(0.5),)),
                     )
                 ),
               )

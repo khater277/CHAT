@@ -33,8 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
         return SafeArea(
           child: Scaffold(
             body: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.h)
-                  .add(EdgeInsets.only(right: 2.w)),
+              padding: EdgeInsets.only(top:4.h,right: 2.w),
               child: Column(
                 children: [
                   SearchTextField(controller: _controller,),

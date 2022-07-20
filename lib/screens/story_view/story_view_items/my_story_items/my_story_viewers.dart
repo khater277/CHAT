@@ -1,9 +1,9 @@
 import 'package:chat/cubit/app/app_cubit.dart';
-import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/models/ViewerModel.dart';
 import 'package:chat/screens/story_view/story_view_items/my_story_items/viewers_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:story_view/controller/story_controller.dart';
 
@@ -33,10 +33,20 @@ class MyStoryViewers extends StatelessWidget {
                 List<UserModel> users = [];
                 List<String> viewsDateTime = [];
                 for (var viewer in viewers) {
-                  UserModel userModel = AppCubit.get(context)
+                  UserModel? userModel = AppCubit.get(context)
                       .users
-                      .firstWhere((element) => element.uId == viewer.id);
-                  users.add(userModel);
+                      .firstWhereOrNull((element) => element.uId == viewer.id);
+                  if(userModel!=null) {
+                    users.add(userModel);
+                  }else{
+                    UserModel notContactUser = UserModel(
+                      uId: viewer.id,
+                      name: viewer.phoneNumber,
+                      phone: viewer.phoneNumber,
+                      image: "",
+                    );
+                    users.add(notContactUser);
+                  }
                   viewsDateTime.add(viewer.dateTime!);
                 }
                 return ViewersBottomSheet(

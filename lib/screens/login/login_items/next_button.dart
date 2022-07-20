@@ -2,10 +2,10 @@
 
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../../cubit/login/login_cubit.dart';
 import '../../../cubit/login/login_states.dart';
 import '../../../shared/constants.dart';
@@ -26,7 +26,7 @@ class NextButton extends StatelessWidget {
       child: DefaultElevatedButton(
           child: state is! LoginLoadingState
               ? Text(
-                  "next".tr,
+                  "Next",
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1!

@@ -2,8 +2,11 @@ import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/contacts/contacts_items/contact_item.dart';
 import 'package:chat/screens/contacts/contacts_items/new_contact.dart';
+import 'package:chat/screens/contacts/contacts_items/no_contacts_founded.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/shared/colors.dart';
+import 'package:chat/shared/default_widgets.dart';
+import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
@@ -41,7 +44,7 @@ class ContactsScreen extends StatelessWidget {
                       NewContact(cubit: cubit,),
                       SizedBox(height: 3.5.h,),
                       Text(
-                        "Contacts ${cubit.users.length}",
+                        "Contacts",
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
                             fontSize: 14.sp,
                             color: MyColors.grey,
@@ -49,6 +52,7 @@ class ContactsScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 1.h,),
+                      if(cubit.users.isNotEmpty)
                       Flexible(
                         fit: FlexFit.loose,
                         child: ListView.builder(
@@ -58,7 +62,9 @@ class ContactsScreen extends StatelessWidget {
                             user: cubit.users[index],),
                           itemCount: cubit.users.length,
                         ),
-                      ),
+                      )
+                      else
+                        const NoContactsFounded(),
                     ],
                   ),
                 ),

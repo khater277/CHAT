@@ -3,6 +3,7 @@ import 'package:chat/models/StoryModel.dart';
 import 'package:chat/models/UserModel.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
 import 'package:chat/screens/story/story_items/my_story.dart';
+import 'package:chat/screens/story/story_items/no_stories.dart';
 import 'package:chat/shared/default_widgets.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -106,6 +107,7 @@ class StoryScreen extends StatelessWidget {
                         SizedBox(height: 1.h,),
                         Divider(color: MyColors.grey.withOpacity(0.5),),
                         SizedBox(height: 1.h,),
+                        cubit.phones.isNotEmpty?
                         StreamBuilder<QuerySnapshot>(
                             stream: FirebaseFirestore.instance.collection("stories")
                                 .where("phone", whereIn: cubit.phones).orderBy('date',descending: true).snapshots(),
@@ -164,17 +166,7 @@ class StoryScreen extends StatelessWidget {
                                     ),
                                 );
                                 }else{
-                                  return SizedBox(
-                                    height: MediaQuery.of(context).size.height/2,
-                                    child: NoItemsFounded(
-                                        text: "No stories yet",
-                                        widget: Icon(
-                                            IconBroken.Paper_Fail,
-                                          size: 100.sp,
-                                          color: Colors.grey.withOpacity(0.5),
-                                        )
-                                    ),
-                                  );
+                                  return const NoStoriesFounded();
                                 }
                                 }
                               else {
@@ -184,6 +176,8 @@ class StoryScreen extends StatelessWidget {
                               );
                               }
                             })
+                            :
+                        const NoStoriesFounded()
                       ],
                     )),
               ),

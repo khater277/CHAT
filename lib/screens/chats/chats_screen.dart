@@ -7,6 +7,7 @@ import 'package:chat/screens/chats/chats_items/chats_last_message.dart';
 import 'package:chat/screens/chats/chats_items/chats_name.dart';
 import 'package:chat/screens/chats/chats_items/chats_profile_Image.dart';
 import 'package:chat/screens/home/home_app_bar.dart';
+import 'package:chat/screens/profile/profile_screen.dart';
 import 'package:chat/screens/search/search_screen.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
@@ -66,7 +67,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 hasData = true;
               }
               if (hasData) {
-                return chats.isNotEmpty==cubit.chats.isNotEmpty?
+                return chats.isNotEmpty&&cubit.chats.isNotEmpty?
               Scaffold(
                 body: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -145,7 +146,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   toolbarHeight: 12.h,
                   titleSpacing: 0,
                   leading: IconButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        Get.to(()=>const ProfileScreen());
+                      },
                       icon: Icon(IconBroken.Edit_Square,size: 18.sp,color: MyColors.grey,)
                   ),
                   centerTitle: true,

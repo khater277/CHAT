@@ -1,6 +1,5 @@
 import 'package:chat/shared/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 
@@ -14,7 +13,7 @@ class OtpHead extends StatelessWidget {
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "otpHead".tr,
+          "Verify your phone number",
           style: Theme.of(context).textTheme.bodyText1!.copyWith(
               fontSize: 16.sp,
           ),
@@ -22,7 +21,7 @@ class OtpHead extends StatelessWidget {
         SizedBox(height: 4.h,),
         RichText(
             text: TextSpan(
-              text: "otpCaption".tr,
+              text: "Enter your 6 digit code number sent to ",
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
                   fontSize: 13.5.sp,
                 color: MyColors.grey,

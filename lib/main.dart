@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:chat/agora/agora_server.dart';
+import 'package:chat/services/agora/agora_server.dart';
 import 'package:chat/cubit/login/login_cubit.dart';
-import 'package:chat/notifications/api.dart';
+import 'package:chat/services/notifications/api.dart';
 import 'package:chat/screens/home/home_screen.dart';
 import 'package:chat/screens/login/login_screen.dart';
 import 'package:chat/shared/constants.dart';
@@ -21,8 +21,8 @@ import 'cubit/app/app_cubit.dart';
 import 'cubit/app/app_states.dart';
 import 'cubit/app/bloc_observer.dart';
 import 'firebase_options.dart';
-import 'notifications/local_notifications.dart';
-import 'translation/translations.dart';
+import 'services/notifications/local_notifications.dart';
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -121,14 +121,10 @@ class _MyAppState extends State<MyApp> {
           useInheritedMediaQuery: true,
           builder: DevicePreview.appBuilder,
           theme: darkTheme,
-          translations: Translation(),
-          //locale: Locale(languageFun(ar: 'ar', en: 'en')),
-          locale: const Locale('en'),
-          fallbackLocale: const Locale('en'),
           home: Sizer(
             builder: (context, orientation, screenType) {
               return widget.homeWidget;
-              // return LoginScreen();
+              return LoginScreen();
             },
           ),
         );

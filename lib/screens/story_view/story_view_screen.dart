@@ -88,6 +88,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
                       if(viewers.firstWhereOrNull((element) => element.id==uId)==null){
                         viewers.add(ViewerModel(
                           id: uId,
+                          phoneNumber: cubit.userModel!.phone,
                           dateTime: DateTime.now().toString()
                         ));
                         cubit.viewStory(

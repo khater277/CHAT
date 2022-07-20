@@ -59,14 +59,14 @@ class ContactItem extends StatelessWidget {
                       Text(
                         "${user.name}",
                         style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            fontSize: 13.sp
+                            fontSize: fromSearch?12.sp:13.sp
                         ),
                       ),
                       SizedBox(height: 0.5.h,),
                       Text(
                         "${user.phone}",
                         style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                            fontSize: 10.sp,
+                            fontSize: fromSearch?8.sp:10.sp,
                             color: MyColors.grey
                         ),
                       ),

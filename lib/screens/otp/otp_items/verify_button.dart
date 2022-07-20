@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../cubit/login/login_cubit.dart';
@@ -21,7 +20,7 @@ class VerifyButton extends StatelessWidget {
       child: DefaultElevatedButton(
           child: state is! LoginLoadingState
               ? Text(
-                  "verify".tr,
+                  "Verify",
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                     color: MyColors.black,
                       fontSize: 12.sp
