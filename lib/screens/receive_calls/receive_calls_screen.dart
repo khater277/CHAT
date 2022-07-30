@@ -5,6 +5,8 @@ import 'package:chat/screens/call_content/call_content_items/call_content_callin
 import 'package:chat/screens/call_content/call_content_items/call_content_friends_name.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_profile_image.dart';
 import 'package:chat/screens/call_content/voice_call/voice_call_content_screen.dart';
+import 'package:chat/screens/receive_calls/receive_call_items/accept_button.dart';
+import 'package:chat/screens/receive_calls/receive_call_items/cancel_button.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
@@ -14,22 +16,27 @@ import 'package:sizer/sizer.dart';
 
 /// Define App ID and Token
 
-
 class ReceiveCallScreen extends StatefulWidget {
   final String senderID;
   final String callID;
+  final String callType;
   final String token;
   final String channelName;
-  const ReceiveCallScreen({Key? key, required this.senderID, required this.token, required this.channelName, required this.callID,}) : super(key: key);
+  const ReceiveCallScreen({
+    Key? key,
+    required this.senderID,
+    required this.token,
+    required this.channelName,
+    required this.callID,
+    required this.callType,
+  }) : super(key: key);
 
   @override
   State<ReceiveCallScreen> createState() => _ReceiveCallScreenState();
 }
 
 class _ReceiveCallScreenState extends State<ReceiveCallScreen> {
-
   final AudioPlayer _audioPlayer = AudioPlayer();
-
 
   @override
   void initState() {
@@ -44,16 +51,13 @@ class _ReceiveCallScreenState extends State<ReceiveCallScreen> {
     super.dispose();
   }
 
-  void playRingtone()async{
-    await _audioPlayer.play(
-        AssetSource('sounds/receiver-ringtone.ogg'));
+  void playRingtone() async {
+    await _audioPlayer.play(AssetSource('sounds/receiver-ringtone.ogg'));
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {
         // if(state is AppUpdateInCallStatusTrueState){
@@ -64,7 +68,7 @@ class _ReceiveCallScreenState extends State<ReceiveCallScreen> {
         //   ));
         // }
 
-        if(state is AppUpdateInCallStatusFalseState){
+        if (state is AppUpdateInCallStatusFalseState) {
           Get.back();
         }
       },
@@ -79,63 +83,27 @@ class _ReceiveCallScreenState extends State<ReceiveCallScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CallContentProfileImage(image: cubit.userModel!.image!),
-                    SizedBox(height: 5.h,),
+                    SizedBox(
+                      height: 5.h,
+                    ),
                     const CallContentFriendName(name: "Ahmed Khater"),
-                    SizedBox(height: 1.h,),
+                    SizedBox(
+                      height: 1.h,
+                    ),
                     const CallContentCalling(),
-                    SizedBox(height: 5.h,),
+                    SizedBox(
+                      height: 5.h,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Column(
-                          children: [
-                            FloatingActionButton(
-                              heroTag: "cancel",
-                              onPressed: (){
-                                cubit.updateInCallStatus(isTrue: false);
-                              },
-                              backgroundColor: Colors.red,
-                              child: const Icon(IconBroken.Call_Missed,
-                                color: Colors.white,),
-                            ),
-                            SizedBox(height: 0.5.h,),
-                            Text(
-                              "cancel",
-                              style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                                  fontSize: 12.sp,
-                                  color: MyColors.grey
-                              ))
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            FloatingActionButton(
-                              heroTag: "accept",
-                              onPressed: (){
-                                // cubit.updateInCallStatus(isTrue: true);
-                                  Get.off(()=>CallContentScreen(
-                                    receiverID: null,
-                                    senderID: widget.senderID,
-                                    token: widget.token,
-                                    channelName: widget.channelName,
-                                    callID: widget.callID,
-                                  ));
-                                // _engine.leaveChannel();
-                                // Get.back();
-                              },
-                              backgroundColor: Colors.green,
-                              child: const Icon(IconBroken.Call,
-                                color: Colors.white,),
-                            ),
-                            SizedBox(height: 0.5.h,),
-                            Text(
-                                "accept",
-                                style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                                    fontSize: 12.sp,
-                                    color: MyColors.grey
-                                )),
-                          ],
-                        )
+                        CancelButton(cubit: cubit, callType: widget.callType),
+                        AcceptButton(
+                            senderID: widget.senderID,
+                            token: widget.token,
+                            channelName: widget.channelName,
+                            callID: widget.callID,
+                            callType: widget.callType)
                       ],
                     )
                   ],

@@ -17,23 +17,27 @@ import 'package:sizer/sizer.dart';
 
 /// Define App ID and Token
 
-
 class CallContentScreen extends StatefulWidget {
   final String senderID;
-  final String? receiverID;
+  // final String? receiverID;
   final String callID;
   final String token;
   final String channelName;
-  const CallContentScreen({Key? key, required this.senderID, required this.token, required this.channelName, required this.callID, required this.receiverID}) : super(key: key);
+  const CallContentScreen({
+    Key? key,
+    required this.senderID,
+    required this.token,
+    required this.channelName,
+    required this.callID,
+    // required this.receiverID
+  }) : super(key: key);
 
   @override
   State<CallContentScreen> createState() => _CallContentScreenState();
 }
 
 class _CallContentScreenState extends State<CallContentScreen> {
-
   final AudioPlayer _audioPlayer = AudioPlayer();
-
 
   late int _remoteUid = 0;
   late RtcEngine _engine;
@@ -41,14 +45,15 @@ class _CallContentScreenState extends State<CallContentScreen> {
 
   @override
   void initState() {
-    if(widget.senderID==uId) {
+    if (widget.senderID == uId) {
       playRingtone();
-    }else{
+    } else {
       AppCubit.get(context).updateCallData(
-          callID: widget.callID,
-          friendID: widget.senderID,
-          myCallStatus: "incoming",
-          friendCallStatus: "outcoming",);
+        callID: widget.callID,
+        friendID: widget.senderID,
+        myCallStatus: "incoming",
+        friendCallStatus: "outcoming",
+      );
     }
     initAgora();
     super.initState();
@@ -61,7 +66,7 @@ class _CallContentScreenState extends State<CallContentScreen> {
     super.dispose();
   }
 
-  void playRingtone()async{
+  void playRingtone() async {
     await _audioPlayer.play(AssetSource('sounds/sender-ringtone.ogg'));
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
   }
@@ -79,7 +84,7 @@ class _CallContentScreenState extends State<CallContentScreen> {
         },
         userJoined: (int uid, int elapsed) {
           debugPrint("‘remote user $uid joined successfully’");
-          if(widget.senderID==uId){
+          if (widget.senderID == uId) {
             _audioPlayer.stop();
           }
           setState(() => _remoteUid = uid);
@@ -93,15 +98,14 @@ class _CallContentScreenState extends State<CallContentScreen> {
       ),
     );
     await _engine.joinChannel(
-        widget.token, widget.channelName, null, widget.senderID==uId?0:1);
+        widget.token, widget.channelName, null, widget.senderID == uId ? 0 : 1);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {
-        if(state is AppUpdateInCallStatusFalseState){
+        if (state is AppUpdateInCallStatusFalseState) {
           Get.back();
         }
       },
@@ -116,11 +120,15 @@ class _CallContentScreenState extends State<CallContentScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CallContentProfileImage(image: cubit.userModel!.image!),
-                    SizedBox(height: 5.h,),
+                    SizedBox(
+                      height: 5.h,
+                    ),
                     const CallContentFriendName(name: "Ahmed Khater"),
-                    SizedBox(height: 1.h,),
-                    if(widget.senderID==uId&&_remoteUid == 0)
-                    const CallContentCalling()
+                    SizedBox(
+                      height: 1.h,
+                    ),
+                    if (widget.senderID == uId && _remoteUid == 0)
+                      const CallContentCalling()
                     else
                       const CallContentTime()
                   ],
@@ -128,13 +136,15 @@ class _CallContentScreenState extends State<CallContentScreen> {
               ),
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: (){
+              onPressed: () {
                 cubit.updateInCallStatus(isTrue: false);
                 Get.back();
               },
               backgroundColor: Colors.red,
-              child: const Icon(IconBroken.Call,
-              color: Colors.white,),
+              child: const Icon(
+                IconBroken.Call,
+                color: Colors.white,
+              ),
             ),
             // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           ),

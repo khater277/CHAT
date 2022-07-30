@@ -236,21 +236,23 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
 
   Future<void>? _future;
 
-  Future<void> initVideoPlayer() async {
-    await _controller!.initialize();
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        debugPrint(_controller!.value.aspectRatio.toString());
-        _chewieController = ChewieController(
-            videoPlayerController: _controller!,
-            aspectRatio: _controller!.value.aspectRatio,
-            autoPlay: false,
-            looping: false,
-            materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
-        );
-      });
-    });
+  @override
+  void initState() {
+    super.initState();
+    checkVideoStatus();
   }
+
+  @override
+  void dispose() {
+    if(_controller!=null) {
+      _controller!.dispose();
+    }
+    if(_chewieController!=null) {
+      _chewieController!.dispose();
+    }
+    super.dispose();
+  }
+
 
   void checkVideoStatus() {
     DefaultCacheManager().getFileFromCache(widget.messageID)
@@ -269,23 +271,25 @@ class _MyVideoMessageState extends State<MyVideoMessage> {
       });
     });
   }
-  
-  @override
-  void initState() {
-    super.initState();
-    checkVideoStatus();
+
+  Future<void> initVideoPlayer() async {
+    await _controller!.initialize();
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      if(mounted) {
+        setState(() {
+        debugPrint(_controller!.value.aspectRatio.toString());
+        _chewieController = ChewieController(
+            videoPlayerController: _controller!,
+            aspectRatio: _controller!.value.aspectRatio,
+            autoPlay: false,
+            looping: false,
+            materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
+        );
+      });
+      }
+    });
   }
 
-  @override
-  void dispose() {
-    if(_controller!=null) {
-      _controller!.dispose();
-    }
-    if(_chewieController!=null) {
-      _chewieController!.dispose();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

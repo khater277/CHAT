@@ -32,15 +32,22 @@ class FriendMessage extends StatefulWidget {
   final String messageID;
   final String name;
   final LastMessageModel? lastMessageModel;
-  const FriendMessage({Key? key, required this.cubit,required this.messageModel, required this.index,
-    required this.friendID, required this.messageID, required this.lastMessageModel, required this.name}) : super(key: key);
+  const FriendMessage(
+      {Key? key,
+      required this.cubit,
+      required this.messageModel,
+      required this.index,
+      required this.friendID,
+      required this.messageID,
+      required this.lastMessageModel,
+      required this.name})
+      : super(key: key);
 
   @override
   State<FriendMessage> createState() => _FriendMessageState();
 }
 
 class _FriendMessageState extends State<FriendMessage> {
-
   ValueNotifier valueNotifier = ValueNotifier<bool>(false);
   bool showDate = false;
 
@@ -54,7 +61,7 @@ class _FriendMessageState extends State<FriendMessage> {
         elevation: 0,
         backGroundColor: MyColors.lightBlack,
         child: GestureDetector(
-          onLongPress: (){
+          onLongPress: () {
             showModalBottomSheet(
               context: context,
               backgroundColor: Colors.transparent,
@@ -72,60 +79,68 @@ class _FriendMessageState extends State<FriendMessage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if(widget.messageModel.isStoryReply==true)
+              if (widget.messageModel.isStoryReply == true)
                 Column(
                   children: [
                     StoryReplyMessage(
                       storyMedia: widget.messageModel.storyMedia!,
                       name: widget.name,
                       isStoryVideoReply: widget.messageModel.isStoryVideoReply!,
-                      isValidDate: checkValidStory(date: widget.messageModel.storyDate!),
-                      isMyMessage: widget.messageModel.senderID==uId,
+                      isValidDate:
+                          checkValidStory(date: widget.messageModel.storyDate!),
+                      isMyMessage: widget.messageModel.senderID == uId,
                     ),
-                    SizedBox(height: 0.5.h,)
+                    SizedBox(
+                      height: 0.5.h,
+                    )
                   ],
                 ),
               SizedBox(
-                width: widget.messageModel.isStoryReply==true?50.w:null,
+                width: widget.messageModel.isStoryReply == true ? 50.w : null,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    widget.messageModel.isDeleted==true?
-                    DeletedMessage(
-                      date: widget.messageModel.date!,
-                      isMedia: widget.messageModel.isImage==true||
-                          widget.messageModel.isVideo==true,
-                    )
-                        :
-                    widget.messageModel.isImage==true?
-                    FriendImageMessage(
-                      media: widget.messageModel.media!,
-                      date: widget.messageModel.date!,)
-                        :widget.messageModel.isVideo==true?
-                    FriendVideoMessage(
-                      cubit: widget.cubit,
-                      media: widget.messageModel.media!,
-                      messageID: widget.messageID,
-                      date: widget.messageModel.date!,)
-                        :widget.messageModel.isDoc==true?
-                    FriendFileMessage(message: widget.messageModel.message!):
-                    FriendTextMessage(message: widget.messageModel.message!),
-                    if(widget.messageModel.isImage==false&&widget.messageModel.isVideo==false)
-                      widget.messageModel.isStoryReply==true?
-                      Expanded(
-                        child: Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 2.w),
-                            child: MessageDate(date: widget.messageModel.date!),
-                          ),
-                        ),
-                      )
-                          :
-                      Padding(
-                        padding: EdgeInsets.only(left: 2.w),
-                        child: MessageDate(date: widget.messageModel.date!),
-                      ),
+                    widget.messageModel.isDeleted == true
+                        ? DeletedMessage(
+                            date: widget.messageModel.date!,
+                            isMedia: widget.messageModel.isImage == true ||
+                                widget.messageModel.isVideo == true,
+                          )
+                        : widget.messageModel.isImage == true
+                            ? FriendImageMessage(
+                                media: widget.messageModel.media!,
+                                date: widget.messageModel.date!,
+                              )
+                            : widget.messageModel.isVideo == true
+                                ? FriendVideoMessage(
+                                    cubit: widget.cubit,
+                                    media: widget.messageModel.media!,
+                                    messageID: widget.messageID,
+                                    date: widget.messageModel.date!,
+                                  )
+                                : widget.messageModel.isDoc == true
+                                    ? FriendFileMessage(
+                                        message: widget.messageModel.message!)
+                                    : FriendTextMessage(
+                                        message: widget.messageModel.message!),
+                    if (widget.messageModel.isImage == false &&
+                        widget.messageModel.isVideo == false)
+                      widget.messageModel.isStoryReply == true
+                          ? Expanded(
+                              child: Align(
+                                alignment: AlignmentDirectional.centerEnd,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 2.w),
+                                  child: MessageDate(
+                                      date: widget.messageModel.date!),
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(left: 2.w),
+                              child:
+                                  MessageDate(date: widget.messageModel.date!),
+                            ),
                   ],
                 ),
               ),
@@ -145,10 +160,10 @@ class MessageDate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       DateFormatter().messageTimeFormat(date),
-      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-          fontSize: 9.sp,
-          color: MyColors.grey.withOpacity(0.8)
-      ),
+      style: Theme.of(context)
+          .textTheme
+          .bodyText2!
+          .copyWith(fontSize: 9.sp, color: MyColors.grey.withOpacity(0.8)),
     );
   }
 }
@@ -160,7 +175,8 @@ class DeleteMessageLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         color: Colors.transparent,
-        width: 20.sp,height: 20.sp,
+        width: 20.sp,
+        height: 20.sp,
         child: Padding(
           padding: EdgeInsets.all(2.sp),
           child: CircularProgressIndicator(
@@ -174,7 +190,8 @@ class DeleteMessageLoader extends StatelessWidget {
 class DeletedMessage extends StatelessWidget {
   final String date;
   final bool isMedia;
-  const DeletedMessage({Key? key, required this.date, required this.isMedia}) : super(key: key);
+  const DeletedMessage({Key? key, required this.date, required this.isMedia})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -189,21 +206,19 @@ class DeletedMessage extends StatelessWidget {
             "this message was deleted",
             style: Theme.of(context).textTheme.bodyText2!.copyWith(
                 fontSize: 11.5.sp,
-              color: Colors.grey.shade400,
-              fontStyle: FontStyle.italic
+                color: Colors.grey.shade400,
+                fontStyle: FontStyle.italic),
+          ),
+          if (isMedia)
+            Padding(
+              padding: EdgeInsets.only(left: 2.w),
+              child: MessageDate(date: date),
             ),
-          ),
-          if(isMedia)
-          Padding(
-            padding: EdgeInsets.only(left: 2.w),
-            child: MessageDate(date: date),
-          ),
         ],
       ),
     );
   }
 }
-
 
 class FriendTextMessage extends StatelessWidget {
   final String message;
@@ -217,9 +232,8 @@ class FriendTextMessage extends StatelessWidget {
       ),
       child: Text(
         message,
-        style: Theme.of(context).textTheme.bodyText2!.copyWith(
-            fontSize: 11.5.sp
-        ),
+        style:
+            Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 11.5.sp),
       ),
     );
   }
@@ -228,7 +242,8 @@ class FriendTextMessage extends StatelessWidget {
 class FriendImageMessage extends StatelessWidget {
   final String media;
   final String date;
-  const FriendImageMessage({Key? key, required this.media, required this.date}) : super(key: key);
+  const FriendImageMessage({Key? key, required this.media, required this.date})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -240,15 +255,15 @@ class FriendImageMessage extends StatelessWidget {
         alignment: AlignmentDirectional.bottomEnd,
         children: [
           SizedBox(
-            width: width,height: height,
+            width: width,
+            height: height,
             child: CachedNetworkImage(
                 imageUrl: media,
-                placeholder:(context,s)=> LoadingImage(width: width, height: height),
+                placeholder: (context, s) =>
+                    LoadingImage(width: width, height: height),
                 fit: BoxFit.cover,
-                errorWidget:(context,s,d)=>ErrorImage(
-                    width: width,
-                    height: height)
-            ),
+                errorWidget: (context, s, d) =>
+                    ErrorImage(width: width, height: height)),
           ),
           Padding(
             padding: EdgeInsets.all(4.sp),
@@ -265,52 +280,23 @@ class FriendVideoMessage extends StatefulWidget {
   final String media;
   final String messageID;
   final String date;
-  const FriendVideoMessage({Key? key, required this.cubit,required this.media,
-    required this.messageID, required this.date}) : super(key: key);
+  const FriendVideoMessage(
+      {Key? key,
+      required this.cubit,
+      required this.media,
+      required this.messageID,
+      required this.date})
+      : super(key: key);
 
   @override
   State<FriendVideoMessage> createState() => _FriendVideoMessageState();
 }
-class _FriendVideoMessageState extends State<FriendVideoMessage> {
 
+class _FriendVideoMessageState extends State<FriendVideoMessage> {
   VideoPlayerController? _controller;
   ChewieController? _chewieController;
 
   Future<void>? _future;
-
-  Future<void> initVideoPlayer() async {
-    await _controller!.initialize();
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        debugPrint(_controller!.value.aspectRatio.toString());
-        _chewieController = ChewieController(
-            videoPlayerController: _controller!,
-            aspectRatio: _controller!.value.aspectRatio,
-            autoPlay: false,
-            looping: false,
-            materialProgressColors: ChewieProgressColors(bufferedColor: Colors.white)
-        );
-      });
-    });
-  }
-
-  void checkVideoStatus() {
-    DefaultCacheManager().getFileFromCache(widget.messageID)
-        .then((value){
-      _controller = VideoPlayerController.file(value!.file);
-      _future = initVideoPlayer();
-      debugPrint("FILE FOUNDED");
-    }).catchError((error){
-      _controller = VideoPlayerController.network(widget.media);
-      _future = initVideoPlayer();
-      DefaultCacheManager().downloadFile(widget.media,key: widget.messageID)
-          .then((value){
-        debugPrint("FILE DOWNLOADED");
-      }).catchError((error){
-        debugPrint(error.toString());
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -320,13 +306,49 @@ class _FriendVideoMessageState extends State<FriendVideoMessage> {
 
   @override
   void dispose() {
-    if(_controller!=null) {
+    if (_controller != null) {
       _controller!.dispose();
     }
-    if(_chewieController!=null) {
+    if (_chewieController != null) {
       _chewieController!.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> initVideoPlayer() async {
+    await _controller!.initialize();
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        setState(() {
+          debugPrint(_controller!.value.aspectRatio.toString());
+          _chewieController = ChewieController(
+              videoPlayerController: _controller!,
+              aspectRatio: _controller!.value.aspectRatio,
+              autoPlay: false,
+              looping: false,
+              materialProgressColors:
+                  ChewieProgressColors(bufferedColor: Colors.white));
+        });
+      }
+    });
+  }
+
+  void checkVideoStatus() {
+    DefaultCacheManager().getFileFromCache(widget.messageID).then((value) {
+      _controller = VideoPlayerController.file(value!.file);
+      _future = initVideoPlayer();
+      debugPrint("FILE FOUNDED");
+    }).catchError((error) {
+      _controller = VideoPlayerController.network(widget.media);
+      _future = initVideoPlayer();
+      DefaultCacheManager()
+          .downloadFile(widget.media, key: widget.messageID)
+          .then((value) {
+        debugPrint("FILE DOWNLOADED");
+      }).catchError((error) {
+        debugPrint(error.toString());
+      });
+    });
   }
 
   @override
@@ -337,35 +359,37 @@ class _FriendVideoMessageState extends State<FriendVideoMessage> {
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.42,
           height: MediaQuery.of(context).size.height * 0.4,
-          child: _future!=null?
-          FutureBuilder(
-            future: _future,
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              return Center(
-                child: _controller!.value.isInitialized
-                    ?
-                FittedBox(
-                  fit: BoxFit.cover,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.sp),
-                    child: Chewie(
-                      controller: _chewieController!,
-                    ),
-                  ),
+          child: _future != null
+              ? FutureBuilder(
+                  future: _future,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    return Center(
+                      child: _controller!.value.isInitialized
+                          ? FittedBox(
+                              fit: BoxFit.cover,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10.sp),
+                                child: Chewie(
+                                  controller: _chewieController!,
+                                ),
+                              ),
+                            )
+                          : const CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                    );
+                  },
                 )
-                    : const CircularProgressIndicator(color: Colors.white,),
-              );
-            },)
-              :
-          const Center(
-              child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: CircularProgressIndicator(color: Colors.white,)
-              )
-          ),
+              : const Center(
+                  child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ))),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 0.5.h,horizontal: 2.w),
+          padding: EdgeInsets.symmetric(vertical: 0.5.h, horizontal: 2.w),
           child: MessageDate(date: widget.date),
         ),
       ],
@@ -382,11 +406,17 @@ class FriendFileMessage extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(IconBroken.Document,color: MyColors.grey,size: 18.sp,),
-        SizedBox(width: 2.w,),
+        Icon(
+          IconBroken.Document,
+          color: MyColors.grey,
+          size: 18.sp,
+        ),
+        SizedBox(
+          width: 2.w,
+        ),
         Flexible(
           child: GestureDetector(
-            onTap: ()async{
+            onTap: () async {
               final Directory? directory = await getExternalStorageDirectory();
               OpenFile.open("${directory!.path}/$message");
             },
@@ -395,8 +425,7 @@ class FriendFileMessage extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText2!.copyWith(
                   fontSize: 12.sp,
                   decoration: TextDecoration.underline,
-                  decorationThickness: 1
-              ),
+                  decorationThickness: 1),
               //overflow: TextOverflow.ellipsis,
             ),
           ),
