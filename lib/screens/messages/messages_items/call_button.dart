@@ -20,33 +20,16 @@ class CallButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: () {
-          AgoraServer.getToken(
+          AppCubit.get(context)
+              .updateInCallStatus(isTrue: true, isOpening: true);
+          AppCubit.get(context).generateChannelToken(
             receiverId: user.uId!,
+            friendPhone: user.phone!,
             callType: type,
-          ).then((value) {
-            Get.to(
-              () => VideoCallContentScreen(
-                senderID: uId!,
-                friendImage: user.image!,
-                friendName: user.name!,
-                token: value.data['token'],
-                channelName: "$uId${user.uId}$type",
-              ),
-            );
-          }).catchError((error) {
-            printError("getToken", error.toString());
-          });
-
-          // AppCubit.get(context)
-          //     .updateInCallStatus(isTrue: true, isOpening: true);
-          // AppCubit.get(context).generateChannelToken(
-          //   receiverId: user.uId!,
-          //   friendPhone: user.phone!,
-          //   callType: type,
-          //   myCallStatus: "no response",
-          //   friendCallStatus: "missed",
-          //   userToken: user.token!,
-          // );
+            myCallStatus: "no response",
+            friendCallStatus: "missed",
+            userToken: user.token!,
+          );
         },
         icon: Icon(
           icon,

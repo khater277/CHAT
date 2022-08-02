@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_calling.dart';
+import 'package:chat/screens/call_content/call_content_items/call_content_cancel.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_friends_name.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_profile_image.dart';
 import 'package:chat/screens/call_content/call_content_items/call_content_time.dart';
@@ -67,15 +68,14 @@ class _VoiceCallContentScreenState extends State<VoiceCallContentScreen> {
   }
 
   void playRingtone() async {
-    await _audioPlayer.play(AssetSource('sounds/sender-ringtone.ogg'));
+    await _audioPlayer.play(AssetSource('assets/sounds/sender-ringtone.ogg'));
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
   }
 
   Future<void> initAgora() async {
     await [Permission.microphone, Permission.camera].request();
     _engine = await RtcEngine.create(AgoraServer.appId);
-    _engine.enableVideo();
-    // _engine.enableAudio();
+    _engine.enableAudio();
     _engine.setEventHandler(
       RtcEngineEventHandler(
         joinChannelSuccess: (String channel, int uid, int elapsed) {
@@ -135,16 +135,7 @@ class _VoiceCallContentScreenState extends State<VoiceCallContentScreen> {
                 ),
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                cubit.updateInCallStatus(isTrue: false);
-              },
-              backgroundColor: Colors.red,
-              child: const Icon(
-                IconBroken.Call,
-                color: Colors.white,
-              ),
-            ),
+            floatingActionButton: const CancelCallButton(),
             // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           ),
         );

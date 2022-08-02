@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
+import 'package:chat/screens/messages/messages_items/show_image.dart';
 import 'package:chat/screens/messages/messages_items/story_reply_message.dart';
 import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/date_format.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
+import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
@@ -249,27 +251,34 @@ class FriendImageMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width * 0.5;
     double height = MediaQuery.of(context).size.height * 0.4;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5.sp),
-      child: Stack(
-        alignment: AlignmentDirectional.bottomEnd,
-        children: [
-          SizedBox(
-            width: width,
-            height: height,
-            child: CachedNetworkImage(
-                imageUrl: media,
-                placeholder: (context, s) =>
-                    LoadingImage(width: width, height: height),
-                fit: BoxFit.cover,
-                errorWidget: (context, s, d) =>
-                    ErrorImage(width: width, height: height)),
-          ),
-          Padding(
-            padding: EdgeInsets.all(4.sp),
-            child: MessageDate(date: date),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => ShowImage(
+              image: media,
+            ));
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5.sp),
+        child: Stack(
+          alignment: AlignmentDirectional.bottomEnd,
+          children: [
+            SizedBox(
+              width: width,
+              height: height,
+              child: CachedNetworkImage(
+                  imageUrl: media,
+                  placeholder: (context, s) =>
+                      LoadingImage(width: width, height: height),
+                  fit: BoxFit.cover,
+                  errorWidget: (context, s, d) =>
+                      ErrorImage(width: width, height: height)),
+            ),
+            Padding(
+              padding: EdgeInsets.all(4.sp),
+              child: MessageDate(date: date),
+            ),
+          ],
+        ),
       ),
     );
   }

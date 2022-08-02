@@ -50,8 +50,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   void playRingtone() async {
-    await _audioPlayer.play(AssetSource('sounds/receiver-ringtone.ogg'));
-    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('assets/sounds/receive-message.mp3'));
   }
 
   @override
@@ -121,6 +120,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               if (state is AppReceiveMessageState) {
                 receiveNewMessage = true;
                 _scrollController.jumpTo(_scrollController.offset + 0.1);
+                playRingtone();
                 print("555555555555");
               }
 

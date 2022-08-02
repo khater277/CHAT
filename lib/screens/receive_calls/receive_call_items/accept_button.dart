@@ -52,6 +52,7 @@ class AcceptButton extends StatelessWidget {
               Get.off(() => VideoCallContentScreen(
                     // receiverID: null,
                     senderID: senderID,
+                    callID: callID,
                     token: token,
                     channelName: channelName,
                   ));

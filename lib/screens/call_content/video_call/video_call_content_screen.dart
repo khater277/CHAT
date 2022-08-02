@@ -2,10 +2,13 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chat/cubit/app/app_cubit.dart';
 import 'package:chat/cubit/app/app_states.dart';
+import 'package:chat/screens/call_content/call_content_items/call_content_cancel.dart';
+import 'package:chat/screens/call_content/call_content_items/call_content_time.dart';
 import 'package:chat/screens/call_content/video_call/video_call_items/back_button.dart';
 import 'package:chat/screens/call_content/video_call/video_call_items/friend_view.dart';
 import 'package:chat/screens/call_content/video_call/video_call_items/my_view.dart';
 import 'package:chat/services/agora/agora_server.dart';
+import 'package:chat/shared/colors.dart';
 import 'package:chat/shared/constants.dart';
 import 'package:chat/styles/icons_broken.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +19,7 @@ import 'package:sizer/sizer.dart';
 
 class VideoCallContentScreen extends StatefulWidget {
   final String senderID;
+  final String callID;
   final String? friendImage;
   final String? friendName;
   final String token;
@@ -23,6 +27,7 @@ class VideoCallContentScreen extends StatefulWidget {
   const VideoCallContentScreen(
       {Key? key,
       required this.senderID,
+      required this.callID,
       required this.token,
       required this.channelName,
       this.friendImage,
@@ -61,9 +66,24 @@ class _VideoCallContentScreenState extends State<VideoCallContentScreen> {
         widget.token, widget.channelName, null, widget.senderID == uId ? 0 : 1);
   }
 
+  void playRingtone() async {
+    await _audioPlayer.play(AssetSource('assets/sounds/sender-ringtone.ogg'));
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+  }
+
   @override
   void initState() {
     initAgora();
+    if (widget.senderID == uId) {
+      playRingtone();
+    } else {
+      AppCubit.get(context).updateCallData(
+        callID: widget.callID,
+        friendID: widget.senderID,
+        myCallStatus: "incoming",
+        friendCallStatus: "outcoming",
+      );
+    }
     super.initState();
   }
 
@@ -77,9 +97,12 @@ class _VideoCallContentScreenState extends State<VideoCallContentScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is AppUpdateInCallStatusFalseState) {
+          Get.back();
+        }
+      },
       builder: (context, state) {
-        AppCubit cubit = AppCubit.get(context);
         return Scaffold(
           body: Stack(
             children: [
@@ -88,6 +111,8 @@ class _VideoCallContentScreenState extends State<VideoCallContentScreen> {
                   child: FriendView(
                     image: widget.friendImage!,
                     name: widget.friendName!,
+                    senderID: widget.senderID,
+                    remoteID: _remoteID,
                   )),
               Align(
                 alignment: AlignmentDirectional.topStart,
@@ -108,18 +133,21 @@ class _VideoCallContentScreenState extends State<VideoCallContentScreen> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 5.w),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: widget.senderID != uId && _remoteID != 0
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
                     children: [
-                      FloatingActionButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        backgroundColor: Colors.red,
-                        child: const Icon(
-                          IconBroken.Call_Missed,
-                          color: Colors.white,
-                        ),
-                      ),
+                      const CancelCallButton(),
+                      if (widget.senderID != uId && _remoteID != 0)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 1.h, horizontal: 2.w),
+                          decoration: BoxDecoration(
+                            color: MyColors.lightBlack,
+                            borderRadius: BorderRadius.circular(4.sp),
+                          ),
+                          child: const CallContentTime(),
+                        )
                     ],
                   ),
                 ),

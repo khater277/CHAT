@@ -1236,6 +1236,7 @@ class AppCubit extends Cubit<AppStates> {
             () => VideoCallContentScreen(
               channelName: "$uId$friendID$callType",
               senderID: uId!,
+              callID: callID,
               friendImage: friendImage,
               friendName: friendName,
               token: channelToken,
